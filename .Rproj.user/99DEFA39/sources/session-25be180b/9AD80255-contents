@@ -1,0 +1,5 @@
+# load retail electricity prices by jurisdiction
+
+source('R/setup.R')
+
+

@@ -1,0 +1,67 @@
+"","generator","technology","scope_1_emissions_intensity_kg_m_wh_as_gen"
+"1","Bayswater","Steam Sub Critical",889.201955708047
+"2","Eraring","Steam Sub Critical",878.937979925076
+"3","Mt Piper","Steam Sub Critical",801.164411533289
+"4","Vales Point B","Steam Sub Critical",944.703280657972
+"5","Callide B","Steam Sub Critical",942.840905782545
+"6","Callide C","Steam Super Critical",873.952738112746
+"7","Gladstone","Steam Sub Critical",985.804503656677
+"8","Kogan Creek","Steam Super Critical",861.933519422307
+"9","Millmerran","Steam Super Critical",825.249861811516
+"10","Stanwell","Steam Sub Critical",863.461260595243
+"11","Tarong","Steam Sub Critical",886.599794565531
+"12","Tarong North","Steam Super Critical",886.599794565531
+"13","Loy Yang A Power Station","Steam Sub Critical",1168.8606403492
+"14","Loy Yang B","Steam Sub Critical",1111.1527514656
+"15","Yallourn W","Steam Sub Critical",1286.60186707762
+"16","Tallawarra","CCGT",370.971236762836
+"17","Condamine A","CCGT",448.780029949955
+"18","Darling Downs","CCGT",420.667831292257
+"19","Swanbank E GT","CCGT",393.97667394228
+"20","Townsville Power Station","CCGT",571.809191576522
+"21","Yarwun Cogen","CCGT",458.808431690254
+"22","Osborne","CCGT",414.669237142311
+"23","Pelican Point","CCGT",400.249066002491
+"24","Tamar Valley Combined Cycle","CCGT",618.769402490495
+"25","Colongra","OCGT",625.448925622071
+"26","Smithfield Energy Facility","OCGT",704.969284774024
+"27","Uranquinty","OCGT",564.219629927595
+"28","Barcaldine Power Station","OCGT",793.262879788639
+"29","Braemar","OCGT",616.527575117553
+"30","Braemar 2 Power Station","OCGT",616.527575117553
+"31","Mt Stuart","OCGT",1001.63056446695
+"32","Oakey Power Station","OCGT",663.683198626174
+"33","Roma","OCGT",649.898419661639
+"34","Dry Creek GT","OCGT",892.189340400471
+"35","Hallett GT","OCGT",642.655923424106
+"36","Ladbroke Grove","OCGT",516.236371359796
+"37","Mintaro GT","OCGT",693.5415787252
+"38","Port Lincoln GT","OCGT",1334.58882611425
+"39","Quarantine","OCGT",603.9766983816
+"40","Snapper Point Power Station","OCGT",541.6007456765
+"41","Snuggery","OCGT",1106.8763326226
+"42","Bell Bay Three","OCGT",618.769402490495
+"43","Tamar Valley Peaking","OCGT",618.769402490495
+"44","Bairnsdale","OCGT",537.048921360517
+"45","Jeeralang A","OCGT",757.958053869903
+"46","Jeeralang B","OCGT",757.958053869903
+"47","Laverton North","OCGT",638.180084852066
+"48","Mortlake","OCGT",467.111770524233
+"49","Somerton","OCGT",732.594735503561
+"50","Valley Power","OCGT",805.783740632967
+"51","Torrens Island B","Gas-powered steam turbine",593.041085228738
+"52","Newport","Gas-powered steam turbine",532.542895249683
+"53","Angaston","Reciprocating Engine",685.757957201942
+"54","Barker Inlet Power Station","Reciprocating Engine",567.507343915481
+"55","Lonsdale","Reciprocating Engine",657.98462852263
+"56","Port Stanvac 1","Reciprocating Engine",657.98462852263
+"57","Kurri Kurri OCGT","OCGT",580.984670374115
+"58","Tallawarra B","OCGT",580.984670374115
+"59","Bolivar Power Station","OCGT",541.6007456765
+"60","Kogan Gas","Hydrogen-based gas turbines",580.984670374115
+"61","SA Hydrogen Turbine","Hydrogen-based gas turbines",580.984670374115
+"62","All Pumped Hydro","Pumped Hydro",0
+"63","All Large scale solar PV","Large scale solar PV",0
+"64","All Wind","Wind",0
+"65","All Hydro","Hydro",0
+"66","All Battery Storage","Battery Storage",0
