@@ -1,0 +1,6 @@
+name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
+retail_file|stem|239b67a08951f13b|26362976f9ee81b4|2c530c1562a7fbd1|-1612292150||t20144.2686344447s|s86b|86|rds|local|vector|||0.52||
+retail_data|stem|01872f481d34cd6f|31acfc8b6074540c|ba1d676bde17aefe|204779882||t20144.2691945904s|s378b|378|rds|local|vector|||0.3||
+plot_retail_data|function|bb8ac5d63170bfe8
+get_retail_data|function|956de22f37d41a07
+plot_retail|stem|f5f0ed627c4b57ee|b92f24b7bff59a6d|89ed69df2f506b4d|1300221265||t20144.2698363327s|s89279b|89279|rds|local|vector|||0.02||
