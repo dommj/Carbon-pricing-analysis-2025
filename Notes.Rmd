@@ -1,0 +1,18 @@
+---
+title: "Notes on analysis"
+author: "Dominic Jones"
+date: "2025-02-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We should use outputs from Jacobs (2016) as example data for the prelim building of analysis...
+
+https://www.climatechangeauthority.gov.au/reviews/special-review/modelling-illustrative-electricity-sector-policies
+
+#to determine jurisdictional connections forecast.
+#take forecast aggregate new connections and split proportionally to regions according to predicted population growth.
+

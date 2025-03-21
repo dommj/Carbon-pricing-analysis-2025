@@ -1,3 +1,6 @@
+# script to run the model
+
 
 tar_make()
-tar_read(plot_retail)
+tar_visnetwork()
+tar_read(gas_customer_projections)
