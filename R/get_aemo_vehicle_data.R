@@ -129,19 +129,19 @@ aemo_vehicle_data
 
 }
 
-ev_fleet_data %>%
-  group_by(year) %>%
-  summarise(vehicles_count = sum(vehicles_count))
-
-aemo_vehicle_data %>% 
-  group_by(year, vehicle_type) %>% 
-  summarise(vehicles_count = sum(vehicles_count)) %>% 
-  filter(str_detect(vehicle_type, 'Residential|Commercial'))
-
-aemo_vehicle_data %>% 
-  mutate(vehicle_type = case_when(str_detect(vehicle_type, 'Residential') ~ 'Residential',
-                                  str_detect(vehicle_type, 'Commercial') ~ 'Commercial',
-                                  .default = vehicle_type)) %>%
-  group_by(year, vehicle_type) %>% 
-  summarise(vehicles_count = sum(vehicles_count)) %>% 
-  filter(str_detect(vehicle_type, 'Residential|Commercial'))
+# ev_fleet_data %>%
+#   group_by(year) %>%
+#   summarise(vehicles_count = sum(vehicles_count))
+# 
+# aemo_vehicle_data %>% 
+#   group_by(year, vehicle_type) %>% 
+#   summarise(vehicles_count = sum(vehicles_count)) %>% 
+#   filter(str_detect(vehicle_type, 'Residential|Commercial'))
+# 
+# aemo_vehicle_data %>% 
+#   mutate(vehicle_type = case_when(str_detect(vehicle_type, 'Residential') ~ 'Residential',
+#                                   str_detect(vehicle_type, 'Commercial') ~ 'Commercial',
+#                                   .default = vehicle_type)) %>%
+#   group_by(year, vehicle_type) %>% 
+#   summarise(vehicles_count = sum(vehicles_count)) %>% 
+#   filter(str_detect(vehicle_type, 'Residential|Commercial'))

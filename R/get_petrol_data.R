@@ -19,7 +19,7 @@ get_petrol_data <- function(petrol_file) {
   
   inflator <- cpi_24/cpi_june_24
   
-  #load data and inflate
+  #load data and inflate to get 2024 dollars
   data <- read_csv(petrol_file) %>% 
     clean_names() %>% 
     mutate(category = "petrol",
@@ -28,6 +28,7 @@ get_petrol_data <- function(petrol_file) {
   
 }
 
+#get_petrol_data(petrol_file)
 
 #data <- get_petrol_data('data/accc_retail_fuel_04_24.csv')
 

@@ -20,9 +20,6 @@ connections|object|2cf195ed3b3b4dc0|||||||||||||||
 plot_retail_data|function|bb8ac5d63170bfe8|||||||||||||||
 esoo_2024_operational_file|stem|96b11d712d123eba|2f7a0848e4bcdc8d|2c530c1562a7fbd1|-47364473|Data/2024 ESOO/2024 ESOO operational (sent out).xlsx|t20150.9933962211s|s249409b|249409|file|local|vector|||0||
 household_connections_data|stem|e9ccb1afe2f165e4|70e45bb39d7eb917|00127ce3b5d90cbe|662943556||t20153.0734547946s|s933b|933|rds|local|vector|||0.36||
-electric_vehicle_workbook_file|stem|88bb018c891ee812|267f7d135675ec99|2c530c1562a7fbd1|882876925|Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx|t20153.1957060185s|s543459b|543459|file|local|vector|||0||
-ev_fleet_data|stem|82ecb65196365aa4|8bc6bfe9cb6a3f3c|f2dfc98e94b28165|756614376||t20153.2409479124s|s5843b|5843|rds|local|vector|||0.83||
-residential_ev_econsumption|stem|ebc753eee3acf593|0e1333458c6f1ebd|76a29aa65bc3367a|-574958609||t20153.2413320301s|s1637b|1637|rds|local|vector|||0.3||
 average_residential_operational_demand|stem|a2b676872e2d458d|46776aa711edba90|e434300203c61f71|-461555058||t20154.0159458414s|s7669b|7669|rds|local|vector|||0.45||
 get_average_petrol_use_per_vehicle|function|8026a1fb61add110|||||||||||||||
 esoo_2024_assumptions_workbook_file|stem|8747812e007b5666|a698ca6e94e85300|2c530c1562a7fbd1|-1128587985|Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx|t20154.1979917592s|s11551127b|11551127|file|local|vector|||0||
@@ -37,6 +34,12 @@ gas_volume_price_data|stem|a24e1428e8da55b1|ff8c362233d45af4|79c8bd1f81c69231|-7
 retail_price_data|stem|01872f481d34cd6f|31acfc8b6074540c|72fa6234c008e8ad|-1715373475||t20158.1781814932s|s378b|378|rds|local|vector|||0.19||
 petrol_price_projections|stem|722c513a4327eb27|34b7ad8839a8cb45|60bf41d4d2b54b4a|1848450527||t20165.2359912325s|s447b|447|rds|local|vector|||0||
 average_petrol_consumption|stem|d546f106265cea0f|d01b764e5e690cea|6fbc11d8ad53cac4|-1389792003||t20165.243852976s|s2066b|2066|rds|local|vector|||0.14||
+average_gas_consumption|stem|774ea647a2fd07fa|e86c17cdfd14bfc1|31de24e9e767c747|-985735551||t20165.2684435246s|s2333b|2333|rds|local|vector|||0.03||
+electric_vehicle_workbook_file|stem|8b7c0bb78270017f|267f7d135675ec99|2c530c1562a7fbd1|882876925|Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx|t20174.2774210603s|s544401b|544401|file|local|vector|||0||
+rbs_outputs_data_file|stem|4a1b51ea11227106|c9d52d89cf42759c|2c530c1562a7fbd1|1913406562|Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx|t20180.2429861111s|s864880b|864880|file|local|vector|||0||
+rbs_electricity_consumption_data_file|stem|cd2b299de1419dbd|ff5c2fd9548ee1ec|2c530c1562a7fbd1|914013005|Data/power_demand_by_time_of_use_data.xlsx|t20174.2775018462s|s44918839b|44918839|file|local|vector|||0||
+ev_fleet_data|stem|82ecb65196365aa4|8bc6bfe9cb6a3f3c|7becdfba31e6ad04|756614376||t20195.0333431064s|s5843b|5843|rds|local|vector|||2.42||
+residential_ev_econsumption|stem|ebc753eee3acf593|0e1333458c6f1ebd|2cbaede440cae0fa|-574958609||t20195.0333515862s|s1637b|1637|rds|local|vector|||0.7||
 write_numbers_in_text|function|6e4db2254ce212b9
 get_petrol_data|function|510566c670d7a221
 convert_states|function|b108e6f99c0b9df0
@@ -49,6 +52,7 @@ project_petrol_data|function|21ec718daef8eeee
 get_residential_ev_consumption_data|function|07fec2c99ee45a18
 get_retail_data|function|956de22f37d41a07
 get_aemo_vehicle_data|function|05270c82611a7fae
+create_esoo_demand_chart|function|7110cf90b697a435
 get_average_petrol_use_per_km|function|71f904784a51bae4
 project_gas_customers|function|fd1b7580ded2215a
 get_average_residential_operational_demand|function|0bfdf92e99f029c6
@@ -56,4 +60,4 @@ get_household_connections_data|function|41be3dd6efa8cb95
 get_gsoo_consumption_data|function|3e832340a9303e9a
 get_average_km_per_vehicle|function|435c1fe9998b89d9
 calc_gas_consumption_per_connection|function|a93c0d0f7a3f6c66
-average_gas_consumption|stem|774ea647a2fd07fa|e86c17cdfd14bfc1|31de24e9e767c747|-985735551||t20165.2684435246s|s2333b|2333|rds|local|vector|||0.03||
+esoo_demand_chart|stem|3ec62d61f7c1df2b|9ef392d7290be649|626b0146218732df|-1683620317||t20195.0531191535s|s208898b|208898|rds|local|vector|||12.18|Continuous limits supplied to discrete scale.ℹ Did you mean limits  factor... or scale__continuous. package gdtools was built under R version 4.4.3|

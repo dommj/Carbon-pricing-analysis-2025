@@ -1,5 +1,6 @@
 # script to run the model
-
+library(targets)
+library(tarchetypes)
 
 tar_make()
 tar_visnetwork()

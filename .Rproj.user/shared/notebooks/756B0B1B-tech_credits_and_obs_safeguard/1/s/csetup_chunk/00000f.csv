@@ -1,4 +1,0 @@
-"0","#| echo: false"
-"0","#|output: false"
-"0",""
-"0","knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())"

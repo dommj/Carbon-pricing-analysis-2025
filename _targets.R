@@ -20,6 +20,10 @@ library(lubridate)
 library(readxl)
 library(stringr)
 library(purrr)
+library(unpivotr)
+library(tidyxl)
+library(grattantheme)
+library(forcats)
 
 
 # Set target options:
@@ -50,6 +54,10 @@ tar_source('R/get_residential_ev_consumption.R')
 tar_source('R/get_average_residential_operational_demand.R')
 tar_source('R/get_average_gas_consumption.R')
 tar_source("R/calculate_average_petrol_consumption.R")
+
+
+
+tar_source("R/create_esoo_demand_chart.R")
 
 # Replace the target list below with your own:
 tar_plan(
@@ -90,6 +98,12 @@ tar_plan(
   
   #2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
+  
+  #RBS electricity consumption data
+  tar_file(rbs_electricity_consumption_data_file, 'Data/power_demand_by_time_of_use_data.xlsx'),
+  
+  #rbs connections estimates and fuel use data
+  tar_file(rbs_outputs_data_file, 'Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx'),
   
   ####################################################################
   #load and clean price data
@@ -184,8 +198,10 @@ tar_plan(
   
   
   
-  
-  
+  ####################################################################
+  #Create charts
+  ####################################################################
+  tar_target(esoo_demand_chart, create_esoo_demand_chart(esoo_2024_operational_file))
   
 )
 

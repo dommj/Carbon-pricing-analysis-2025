@@ -1,0 +1,236 @@
+---
+title: "creating_carbon_budgets"
+format: html
+editor: visual
+execute:
+freeze: auto  # re-render only when source changes
+---
+
+Load packages etc.
+
+```{r}
+#| echo: false
+
+library(dplyr)
+library(tidyr) 
+library(readr)
+library(janitor) 
+library(ggplot2)
+library(lubridate)
+library(readxl)
+library(stringr)
+library(grattantheme)
+library(ggdirectlabel)
+library(forcats)
+```
+
+Load demand forecast:
+
+```{r}
+#| echo: false
+
+#east coast electricity demand
+nem_esoo_2024_operational_file <- 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'
+
+#west coast electricity demand
+wem_esoo_2024_operational_file <- 'Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx'
+
+
+esoo_demand <- read_excel(nem_esoo_2024_operational_file) %>% 
+    clean_names() %>% 
+    #here, we select the observed and actual  
+    filter(scenario %in% c('Actual', 'Central'),
+           parent_category == 'Operational (Sent Out)',
+           category != "Operational (Sent Out)",
+           region == 'NEM') %>% 
+  group_by(year) %>% 
+  summarise(annual_consumption_t_wh = sum(annual_consumption_t_wh)) %>% 
+  filter(year >= 2025)
+
+# wem_esoo_demand <- read_excel(wem_esoo_2024_operational_file) %>% 
+#     clean_names() %>% 
+#     #here, we select the observed and actual  
+#     filter(scenario %in% c('Actual', 'Expected (Step Change)'),
+#            parent_category == 'Operational (Sent Out)',
+#            category != "Operational (Sent Out)",
+#            region == 'SWIS') %>% 
+#   group_by(year) %>% 
+#   summarise(annual_consumption_t_wh = sum(annual_consumption_t_wh)) %>% 
+#   filter(year >= 2025)
+
+```
+
+Load progressive change emissions intensity:
+
+```{r}
+
+
+
+```
+
+Load emissions intensities for CCA:
+
+```{r}
+#| echo: false
+
+cca_path <- "Data/20240911_EP2024-4366_Modelling_Sectoral_Pathways_to_Net_Zero_Emissions_Section 2_Sectors_Charts (1).xlsx"
+
+cca_intensities <- read_excel(cca_path, 
+                              sheet = "Fig 13",
+                              skip = 6) %>% 
+  rename(scenario = 1) %>% 
+  pivot_longer(cols = contains("20"), names_to = "year", values_to = "mt_c02e_twh") %>% 
+  mutate(year = as.numeric(year))
+
+
+#interpolate data
+
+cca_intensities_interpolated <- cca_intensities %>%
+    complete(scenario, year = seq(2025, 2050, by = 1)) %>%
+    # Group by scenario to interpolate within each scenario
+    group_by(scenario) %>%
+    # Use approx to linearly interpolate missing values
+    arrange(year) %>%
+    mutate(mt_c02e_twh = approx(x = year[!is.na(mt_c02e_twh)], 
+                                y = mt_c02e_twh[!is.na(mt_c02e_twh)], 
+                                xout = year)$y) %>%
+    ungroup()
+
+
+```
+
+\
+\
+Calculate emissions budget:
+
+```{r}
+#| echo: false
+
+nem_emissions <- full_join(cca_intensities_interpolated, esoo_demand) %>% 
+  mutate(emissions = annual_consumption_t_wh * mt_c02e_twh)
+
+
+emissions_budget <- nem_emissions %>% 
+  filter(!is.na(scenario)) %>% 
+  group_by(scenario) %>% 
+  summarise(budget = sum(emissions))
+
+emissions_budget
+
+```
+
+```{r}
+
+nem_emissions %>% 
+  filter(!is.na(scenario)) %>% 
+  ggplot(aes(x = year, y = mt_c02e_twh, fill = scenario, colour = scenario)) +
+  geom_line() +
+  theme_grattan() +
+  geom_richlegend(aes(label = scenario)) +
+  labs(title = "Emissions intensity over time",
+       subtitle = "Mt C02-e per TWh")
+
+```
+
+**No QC needed below here**
+
+Load emissions intensities according to CW government projections:
+
+```{r}
+#| echo: false
+
+cw_projections_file <- "Data/australias-emissions-projections-2024-chart-data.xlsx"
+
+bsline_electricity_ems <- read_excel(cw_projections_file,
+                                shee = 'Figure 5',
+                                range = "A3:AZ12") %>% 
+  clean_names() %>% 
+  rename(sector = 1) %>% 
+  pivot_longer(cols = matches('\\d\\d\\d\\d'),
+               names_to = 'year',
+               values_to = 'emissions') %>% 
+  mutate(year = parse_number(year)) %>% 
+  filter(sector == 'Electricity') 
+
+bsline_electricity_demand <- read_excel(cw_projections_file,
+                                shee = 'Figure 19',
+                                range = "A3:V12") %>% 
+  clean_names() %>% 
+  rename(fuel = 1) %>% 
+  #remove storage
+  filter(!str_detect(fuel, 'storage')) %>% 
+  pivot_longer(cols = matches('\\d\\d\\d\\d'),
+               names_to = 'year',
+               values_to = 'annual_consumption_t_wh') %>% 
+  mutate(year = parse_number(year)) %>% 
+  group_by(year) %>% 
+  summarise(annual_consumption_t_wh = sum(annual_consumption_t_wh))
+
+bsline_intensity <- full_join(bsline_electricity_ems, bsline_electricity_demand) %>% 
+  mutate(mt_c02e_twh = emissions / annual_consumption_t_wh,
+         scenario = "Projected") %>% 
+  select(-c(sector, emissions, annual_consumption_t_wh))
+```
+
+Climate works intensities:
+
+```{r}
+climworks_intensities_file <- "Data/climateworks_trajectories_!!!rough_numbers_!!!.xlsx"
+
+climworks_intensities <- read_excel(climworks_intensities_file,
+                                sheet = 'Sheet1',
+                                skip = 1) %>% 
+  clean_names() %>% 
+  mutate(mt_c02e_twh = mt_co2e / consumption_twh) %>% 
+  select(year, scenario, mt_c02e_twh) 
+
+
+```
+
+```{r}
+#| echo: false
+
+national_intensities <- bind_rows(cca_intensities, bsline_intensity, climworks_intensities) %>% 
+  filter(year >= 2020)
+
+national_intensities_interpolated <- national_intensities %>%
+    complete(scenario, year = seq(2025, 2050, by = 1)) %>%
+    # Group by scenario to interpolate within each scenario
+    group_by(scenario) %>%
+    # Use approx to linearly interpolate missing values
+    arrange(year) %>%
+    mutate(mt_c02e_twh = approx(x = year[!is.na(mt_c02e_twh)], 
+                                y = mt_c02e_twh[!is.na(mt_c02e_twh)], 
+                                xout = year)$y) %>%
+    ungroup()
+
+national_intensities_interpolated %>% 
+  mutate(scenario = factor(scenario, levels = c("CW 1.5", "CW < 2", "A40/G1.5", "A50/G2", "Projected")) %>% fct_rev()) %>% 
+  ggplot(aes(x = year, y = mt_c02e_twh, fill = scenario, colour = scenario)) +
+  geom_line() +
+  theme_grattan() +
+  geom_richlegend(aes(label = scenario)) +
+  geom_linepoint() +
+  labs(title = "Climateworks has a much steeper trajectory than projected emissions",
+       subtitle = "Mt C02-e per TWh")
+
+
+
+  #geom_finallabel(aes(label = scenario)) 
+
+```
+
+```{r}
+nem_emissions <- full_join(national_intensities_interpolated, esoo_demand) %>% 
+  mutate(emissions = annual_consumption_t_wh * mt_c02e_twh)
+
+
+emissions_budget_25_30 <- nem_emissions %>% 
+  filter(!is.na(scenario),
+         year >= 2025,
+         year<= 2030) %>% 
+  group_by(scenario) %>% 
+  summarise(budget_2025_2030 = sum(emissions))
+
+emissions_budget_25_30
+```

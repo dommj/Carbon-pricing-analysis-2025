@@ -25,10 +25,14 @@ get_average_residential_operational_demand <- function(esoo_2024_operational_fil
     left_join(household_connections, by = c('year', 'state')) %>% 
     ungroup() %>% 
     mutate(average_annual_consumption_kwh = annual_consumption_t_wh / connections * 1e9)
-  
 
 }
 
+# x <- read_excel(esoo_2024_operational_file) %>% 
+#   clean_names() %>%
+#   select(category, sub_category) %>% 
+#   unique()
+  
 # 
 # function(){
 # 

@@ -1,6 +1,6 @@
 get_residential_ev_consumption_data <- function(electric_vehicle_workbook_file){
   
-  #BEV data
+  
   aemo_consumption_nsw_act_data <- read_excel(electric_vehicle_workbook_file,
                                               sheet = "BEV_PHEV_Consumption (GWh)",
                                               range = "B69:AF79") %>% 
