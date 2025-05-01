@@ -1,7 +1,6 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 plot_retail|stem|52e65dedc5276ced|b92f24b7bff59a6d|2a6c4e37474145bd|1300221265||t20146.2348781748s|s89039b|89039|rds|local|vector|||0.01||
 start_year|stem|ce4ca6ecdcf0415e|6a4506337c1e567e|2c530c1562a7fbd1|-1704657576||t20146.2700910222s|s53b|53|rds|local|vector|||0||
-end_year|stem|9e4043853d2b2d5e|045e2968e3f41430|2c530c1562a7fbd1|-434758542||t20146.2700915362s|s53b|53|rds|local|vector|||0||
 retail_data|stem|da75c4f46ec5cdd2|31acfc8b6074540c|1c1e16832a13042c|204779882||t20146.2705579519s|s273b|273|rds|local|vector|||0.37||
 petrol_data|stem|281606a0c7d8b56b|84fc3053d8bdd7ab|b4b038093ed44ef5|-1693792362||t20146.2715911225s|s198b|198|rds|local|vector|||4.79||
 retail_file|stem|ff70da8847f90506|bb1217ffc40adbf4|2c530c1562a7fbd1|-1612292150|Data/AEMC price trends/nsw_25.csv|t20144.2214021924s|s137b|137|file|local|vector|||0||
@@ -11,16 +10,12 @@ connection_data_aer_file|stem|0a3af8bcc34ccf5e|7a85f5222c2c9d33|2c530c1562a7fbd1
 petrol_file|stem|8126afed6408a668|477c58cfde43e094|2c530c1562a7fbd1|-1970611614|Data/accc_retail_fuel_04_24.csv|t20146.0807027257s|s33b|33|file|local|vector|||0||
 gsoo_consumption_data_file|stem|9591a50e8c8d8746|8b1411a20d8ea10c|2c530c1562a7fbd1|-1085176827|Data/Gas/Gas GSOO 2024.xlsx|t20147.0247101818s|s320203b|320203|file|local|vector|||0||
 gas_prices_data|stem|a24e1428e8da55b1|ff8c362233d45af4|79c8bd1f81c69231|-1767761190||t20147.2766856068s|s1760b|1760|rds|local|vector|||0.2||
-gsoo_consumption_data|stem|3314557b3e9d3786|048e5114014b866a|971e8e6bcd1ffa37|1720146647||t20149.9736627238s|s783b|783|rds|local|vector|||0.18||
-gas_consumption_per_customer|stem|697f01eaea4822b5|dfa734d8e460d62d|ae72d3106d11cba9|-1861171432||t20149.9800696644s|s234b|234|rds|local|vector|||0.47||
-gas_customer_projections|stem|0f403c42ee745ca1|07fe1dfbabb96fdd|4dc96e5787c71696|-1832500665||t20149.9854989306s|s961b|961|rds|local|vector|||0.01||
 mv_survey_data_file|stem|31cb719e735564a4|89bd203b10b1403e|2c530c1562a7fbd1|5972448|Data/92080DO001_202006.xls|t20150.1809980882s|s1627136b|1627136|file|local|vector|||0||
 average_petrol_use_per_vehicle|stem|22cd3b5227a908d7|3e839f632b4653d6|13f62da0c39e51b8|-343313855||t20150.974586948s|s52b|52|rds|local|vector|||0.08||
 connections|object|2cf195ed3b3b4dc0|||||||||||||||
 plot_retail_data|function|bb8ac5d63170bfe8|||||||||||||||
 esoo_2024_operational_file|stem|96b11d712d123eba|2f7a0848e4bcdc8d|2c530c1562a7fbd1|-47364473|Data/2024 ESOO/2024 ESOO operational (sent out).xlsx|t20150.9933962211s|s249409b|249409|file|local|vector|||0||
 household_connections_data|stem|e9ccb1afe2f165e4|70e45bb39d7eb917|00127ce3b5d90cbe|662943556||t20153.0734547946s|s933b|933|rds|local|vector|||0.36||
-average_residential_operational_demand|stem|a2b676872e2d458d|46776aa711edba90|e434300203c61f71|-461555058||t20154.0159458414s|s7669b|7669|rds|local|vector|||0.45||
 get_average_petrol_use_per_vehicle|function|8026a1fb61add110|||||||||||||||
 esoo_2024_assumptions_workbook_file|stem|8747812e007b5666|a698ca6e94e85300|2c530c1562a7fbd1|-1128587985|Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx|t20154.1979917592s|s11551127b|11551127|file|local|vector|||0||
 household_connections|stem|e9ccb1afe2f165e4|70e45bb39d7eb917|897b2b573ce92bcd|1848347565||t20154.1983694782s|s933b|933|rds|local|vector|||0.53||
@@ -30,34 +25,66 @@ average_petrol_use_per_km|stem|2665cdf45c294d8d|79358adb088a28ac|484e397c42a49e1
 retail_prices_data|stem|da75c4f46ec5cdd2|31acfc8b6074540c|1c1e16832a13042c|-1306036774||t20158.1602841493s|s273b|273|rds|local|vector|||0.23||
 petrol_data_projections|stem|2d873fdbb41d60ea|1f0f4ba2d0f976dd|4253182d6c9e9fcc|1752614740||t20149.9788225535s||444|rds|local|vector|||0.03||object petrol_data not found
 petrol_price_data|stem|281606a0c7d8b56b|84fc3053d8bdd7ab|b4b038093ed44ef5|-844616824||t20158.1667216902s|s198b|198|rds|local|vector|||1.57||
-gas_volume_price_data|stem|a24e1428e8da55b1|ff8c362233d45af4|79c8bd1f81c69231|-739027721||t20158.1781787918s|s1760b|1760|rds|local|vector|||0.13||
-retail_price_data|stem|01872f481d34cd6f|31acfc8b6074540c|72fa6234c008e8ad|-1715373475||t20158.1781814932s|s378b|378|rds|local|vector|||0.19||
-petrol_price_projections|stem|722c513a4327eb27|34b7ad8839a8cb45|60bf41d4d2b54b4a|1848450527||t20165.2359912325s|s447b|447|rds|local|vector|||0||
 average_petrol_consumption|stem|d546f106265cea0f|d01b764e5e690cea|6fbc11d8ad53cac4|-1389792003||t20165.243852976s|s2066b|2066|rds|local|vector|||0.14||
-average_gas_consumption|stem|774ea647a2fd07fa|e86c17cdfd14bfc1|31de24e9e767c747|-985735551||t20165.2684435246s|s2333b|2333|rds|local|vector|||0.03||
 electric_vehicle_workbook_file|stem|8b7c0bb78270017f|267f7d135675ec99|2c530c1562a7fbd1|882876925|Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx|t20174.2774210603s|s544401b|544401|file|local|vector|||0||
 rbs_outputs_data_file|stem|4a1b51ea11227106|c9d52d89cf42759c|2c530c1562a7fbd1|1913406562|Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx|t20180.2429861111s|s864880b|864880|file|local|vector|||0||
 rbs_electricity_consumption_data_file|stem|cd2b299de1419dbd|ff5c2fd9548ee1ec|2c530c1562a7fbd1|914013005|Data/power_demand_by_time_of_use_data.xlsx|t20174.2775018462s|s44918839b|44918839|file|local|vector|||0||
 ev_fleet_data|stem|82ecb65196365aa4|8bc6bfe9cb6a3f3c|7becdfba31e6ad04|756614376||t20195.0333431064s|s5843b|5843|rds|local|vector|||2.42||
 residential_ev_econsumption|stem|ebc753eee3acf593|0e1333458c6f1ebd|2cbaede440cae0fa|-574958609||t20195.0333515862s|s1637b|1637|rds|local|vector|||0.7||
-write_numbers_in_text|function|6e4db2254ce212b9
-get_petrol_data|function|510566c670d7a221
-convert_states|function|b108e6f99c0b9df0
-get_vehicles_per_household|function|42ab09f12cca1469
-%nin%|function|5c849418054c52ef
-get_average_gas_consumption|function|ca51d424492c2c0a
-get_gas_prices_data|function|e1c5da4d8d79017a
-calculate_average_petrol_consumption|function|f051bc5e2ea9a143
-project_petrol_data|function|21ec718daef8eeee
-get_residential_ev_consumption_data|function|07fec2c99ee45a18
-get_retail_data|function|956de22f37d41a07
-get_aemo_vehicle_data|function|05270c82611a7fae
-create_esoo_demand_chart|function|7110cf90b697a435
-get_average_petrol_use_per_km|function|71f904784a51bae4
-project_gas_customers|function|fd1b7580ded2215a
-get_average_residential_operational_demand|function|0bfdf92e99f029c6
-get_household_connections_data|function|41be3dd6efa8cb95
-get_gsoo_consumption_data|function|3e832340a9303e9a
-get_average_km_per_vehicle|function|435c1fe9998b89d9
-calc_gas_consumption_per_connection|function|a93c0d0f7a3f6c66
 esoo_demand_chart|stem|3ec62d61f7c1df2b|9ef392d7290be649|626b0146218732df|-1683620317||t20195.0531191535s|s208898b|208898|rds|local|vector|||12.18|Continuous limits supplied to discrete scale.ℹ Did you mean limits  factor... or scale__continuous. package gdtools was built under R version 4.4.3|
+rbs_fuel_end_use_by_state|stem|ecc41d9bc4fe9ed6|cf0d2456f0984342|96116116215697c1|-1167025647||t20201.3102345383s|s34559b|34559|rds|local|vector|||1.78||
+gsoo_consumption_data|stem|72fa6e0dbaca371c|048e5114014b866a|1b1746c5df2c143e|1720146647||t20201.3133987801s|s1006b|1006|rds|local|vector|||0.21||
+average_residential_operational_demand|stem|a2b676872e2d458d|46776aa711edba90|8824a08eb121c891|-461555058||t20201.3134136047s|s7669b|7669|rds|local|vector|||0.53||
+aer_retail_markets_file|stem|533ff389d032df42|6d4f7a94e7aead9d|2c530c1562a7fbd1|853640266|Data/Data - State of the energy market 2024 - Chapter 6 - Retail energy markets.xlsx|t20174.0705524245s|s2452702b|2452702|file|local|vector|||0||
+gas_consumption_per_customer|stem|06b5f278854c6fb2|dfa734d8e460d62d|fad334e272046aa2|-1861171432||t20206.0866677933s|s482b|482|rds|local|vector|||0.5||
+get_average_gas_consumption|function|87db94010809801e|||||||||||||||
+calc_gas_consumption_per_connection|function|dc703f081f63f7fa|||||||||||||||
+aer_gas_benchmarks_file|stem|3b9d30415473b010|a782eb2dea4d4425|2c530c1562a7fbd1|1442108534|Data/aer_residential_gas_consumption_benchmarks.xlsx|t20206.2055208333s|s9499b|9499|file|local|vector|||0||
+gas_connections_data|stem|d3d9462f937203aa|f060afc029246186|01441303c01ab41d|1996402908||t20206.2533951929s|s364b|364|rds|local|vector|||0.49||
+gas_customer_projections|stem|189fa3cacc3f8a22|448b4fe33afe6e31|9216589366bac4d7|-1832500665||t20207.1594306735s|s1512b|1512|rds|local|vector|||0.18||
+gas_best_offers_data|stem||61ff4710abb3a2ef|3e830e1dd3b71cd8|-773619275||t20208.2921582595s||0|rds|local|vector|||0.03||could not find function get_gas_best_standing_offers_data
+benchmark_gas_consumption|stem|e109c599ae68ae55|84cc77c7f06697a9|0b0abc6ada9dabcd|1605973283||t20208.2931471722s|s328b|328|rds|local|vector|||0.11||
+gas_standing_offers_file|stem|5f294005b4df1e32|a620cc30f6a2e198|2c530c1562a7fbd1|-300127396|Data/gas_standing_offers_20250331.xlsx|t20209.0050347222s|s13073b|13073|file|local|vector|||0||
+gas_standing_offers|stem|5f8679e5da035031|7205ca988584555e|6d8f0c41b7268bd6|-1563974796||t20209.0201387319s|s1258b|1258|rds|local|vector|||0.94||
+standing_offer_bills|stem|d37e9c96de553cb2|9a549171385886f4|507e75d9bb601470|-1829188787||t20209.0201605176s|s677b|677|rds|local|vector|||1.8|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 3 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
+retail_price_data|stem|72a0298d9b31ef84|31acfc8b6074540c|588a4c51dd9e22cd|-1715373475||t20209.0771902595s|s248b|248|rds|local|vector|||3.28||
+gas_volume_price_data|stem|d94fbe81d5e8fa79|ff8c362233d45af4|4bb4f7dc92c43426|-739027721||t20209.0772179331s|s1773b|1773|rds|local|vector|||2.31||
+gas_network_charge_revenue|stem|56c4f7132d1f3407|79f79a695248bcf5|15ec03d2de0befce|164348950||t20209.0772204205s|s227b|227|rds|local|vector|||0.14||
+project_gas_customers|function|6f4031a7025713c6|||||||||||||||
+residential_gas_consumption_projections|stem|ed0ba77a53d38d51|da07243788f4f077|4060f0fa4627a489|-1874990663||t20209.1351669666s|s2704b|2704|rds|local|vector|||0.56||
+project_average_residential_gas_consumption|function|8006d2bbd8d28ae4|||||||||||||||
+gas_connection_charge_projections|stem|951bee233098855d|71d388595b9fc896|d5e1d0891c9b903b|-1628302150||t20209.1500885136s|s1498b|1498|rds|local|vector|||0.06||
+gas_retail_volumetric_price_projections|stem|ba42ea22d726410d|9fe48c42f6473063|3ab2a6c62ee9a9bc|1146751181||t20209.1556937376s|s1660b|1660|rds|local|vector|||0.22||
+end_year|stem|095b3d2abb668396|363da291a6578640|2c530c1562a7fbd1|-434758542||t20209.2065654926s|s53b|53|rds|local|vector|||0||
+petrol_price_projections|stem|45271c2d8102620d|34b7ad8839a8cb45|559d366ac46b7d58|1848450527||t20209.2065690577s|s532b|532|rds|local|vector|||0.05||
+average_gas_consumption|stem|b54ec4652215c911|012eb78bac0d3380|e47fee9643b2cc5e|-985735551||t20209.2608280632s|s1232b|1232|rds|local|vector|||0.09||
+get_rbs_fuel_end_use|function|01b780241f42c854
+calculate_average_household_costs|function|c776ddc239498d24
+convert_to_2024_dollars|function|9c530e819f9efa10
+create_esoo_demand_chart|function|7110cf90b697a435
+write_numbers_in_text|function|6e4db2254ce212b9
+convert_states|function|b108e6f99c0b9df0
+calculate_average_residential_gas_consumption|function|3a31b0ca059418c9
+get_average_petrol_use_per_km|function|71f904784a51bae4
+calculate_total_gas_network_revenue|function|4774541bfacf99fb
+%nin%|function|5c849418054c52ef
+get_vehicles_per_household|function|42ab09f12cca1469
+project_residential_gas_consumption|function|9903b6d6b60490e2
+project_petrol_data|function|21ec718daef8eeee
+project_gas_connection_charges|function|884d7ec35b0d9e05
+get_aemo_vehicle_data|function|05270c82611a7fae
+calculate_average_petrol_consumption|function|f051bc5e2ea9a143
+calculate_gas_bill|function|55239c566d6e595b
+project_gas_retail_volumetric_price|function|d4e11d5343704297
+get_petrol_data|function|510566c670d7a221
+get_residential_ev_consumption_data|function|07fec2c99ee45a18
+get_gas_prices_data|function|d2d73eb9c9dba449
+get_retail_data|function|07fdce5477673507
+get_gsoo_consumption_data|function|32941b7ceac31c05
+get_household_connections_data|function|41be3dd6efa8cb95
+get_gas_connections_data|function|5a5dd1dcd6d134ec
+get_benchmark_gas_consumption|function|7a14d874092c5d4f
+get_average_km_per_vehicle|function|435c1fe9998b89d9
+get_average_residential_operational_demand|function|b800399418b94f78
+get_gas_standing_offers|function|ccf76182101994ff
+average_household_costs|stem|3b08a77ef342500f|7a3642b8e699f65f|10a8c3e9e871cb08|-423444254||t20209.2952606663s|s3266b|3266|rds|local|vector|||0.25||

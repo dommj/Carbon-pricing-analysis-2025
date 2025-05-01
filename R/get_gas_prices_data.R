@@ -2,6 +2,9 @@
 
 get_gas_prices_data <- function(gas_prices_file){
   
+  #Forecasts are presented in calendar years, and are in real 2023 Australian dollars.  
+
+ 
   read_excel(gas_prices_file, 
              sheet = "Step Change - ResCom",
              skip = 3) %>% 
@@ -16,11 +19,14 @@ get_gas_prices_data <- function(gas_prices_file){
                              state == 'adelaide' ~ 'SA',
                              state == 'perth' ~ 'WA',
                              state == 'hobart' ~ 'Tas',
-                             state == 'darwin' ~ 'NT'))
+                             state == 'darwin' ~ 'NT'),
+           #need to convert to 2024 dollars
+           across(dollars_per_gj, 
+                  ~convert_to_2024_dollars(., 2023, financial = F)))
   
 }
 
-get_gas_prices_data('Data/Gas/ACIL Allen Natural Gas Price Forecast.xlsx')
+#get_gas_prices_data('Data/Gas/ACIL Allen Natural Gas Price Forecast.xlsx')
 
 
 #sandpit

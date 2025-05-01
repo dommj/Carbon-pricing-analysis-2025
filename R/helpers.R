@@ -1,17 +1,3 @@
-# setup
-
-
-#useful funcs
-
-# grattan_label(data = . %>% 
-#                 filter(year == 2040),
-#               aes(x = year,
-#                   y = emissions,
-#                   colour = sector,
-#                   label = sector),
-#               hjust = 0,
-#               vjust = 0.5,
-#               nudge_x = 0.5) 
 
 #convert states to Grattan style
 
@@ -31,6 +17,42 @@ convert_states <- function(state){
             state == 'ACT'| state == "AUSTRALIAN CAPITAL TERRITORY" ~ 'ACT',
             .default = NA)
   
+}
+
+
+convert_to_2024_dollars <- function(dollars, current_year, financial = F){
+  
+  cpi_fy <- read_cpi() %>%
+    filter(year(date)>2000) %>%
+    mutate(fy = date2fy(date)) %>%
+    group_by(fy) %>%
+    summarise(cpi=mean(cpi)) %>%
+    ungroup() 
+  
+  cpi_calendar <- read_cpi() %>%
+    filter(year(date)>2000) %>%
+    mutate(year = year(date)) %>%
+    group_by(year) %>%
+    summarise(cpi=mean(cpi)) %>%
+    ungroup()
+  
+  if (financial == F){
+    
+    dollars_24 <- dollars_24 <- dollars * 
+      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+      (cpi_calendar %>% filter(year == current_year) %>% pull(cpi))
+    
+  }
+  
+  if (financial == T){
+    
+    dollars_24 <- dollars_24 <- dollars * 
+      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+      (cpi_fy %>% filter(fy == current_year) %>% pull(cpi))
+    
+  }
+ 
+  dollars_24 
 }
 
 

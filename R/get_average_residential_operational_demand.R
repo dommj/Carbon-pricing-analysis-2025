@@ -14,7 +14,7 @@ get_average_residential_operational_demand <- function(esoo_2024_operational_fil
            region != 'NEM') %>% 
     rename(state = region) %>% 
     mutate(state = convert_states(state),
-           state = if_else(state == 'NSW', 'NSW and ACT', state),) %>% 
+           state = if_else(state == 'NSW', 'NSW and ACT', state)) %>% 
     group_by(year, state, category) %>% 
     summarise(annual_consumption_t_wh = sum(annual_consumption_t_wh)) %>% 
     

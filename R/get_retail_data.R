@@ -7,8 +7,11 @@
 
 get_retail_data <- function(retail_file) {
   read_csv(retail_file, col_types = cols()) %>% 
-    clean_names() 
+    clean_names() %>% 
+    mutate(across(c_kwh, 
+                  ~convert_to_2024_dollars(., "2024-25", financial = TRUE)))
 }
+
 
 
 #nsw_25 <- read.csv('data/AEMC price trends/nsw_25.csv')

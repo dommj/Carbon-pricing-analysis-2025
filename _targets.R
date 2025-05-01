@@ -24,6 +24,7 @@ library(unpivotr)
 library(tidyxl)
 library(grattantheme)
 library(forcats)
+library(scales)
 
 
 # Set target options:
@@ -33,17 +34,29 @@ tar_option_set(
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source('R/helpers.R')
 
+#load price data
 tar_source('R/get_retail_data.R')
 tar_source('R/get_petrol_data.R')
 tar_source('R/project_petrol_data.R')
-
-
 tar_source('R/get_gas_prices_data.R')
-tar_source('R/get_gsoo_consumption_data.R')
-tar_source('R/calc_gas_consumption_per_connection.R')
-tar_source('R/project_gas_customers.R')
-tar_source('R/get_household_connections_data.R')
 
+#load residential baseline study data
+tar_source('R/get_rbs_fuel_end_use.R')
+
+#project gas prices and use
+tar_source('R/get_gsoo_consumption_data.R')
+tar_source('R/get_gas_connections_data.R')
+tar_source('R/get_benchmark_gas_consumption.R')
+tar_source('R/project_average_residential_gas_consumption.R')
+tar_source('R/project_residential_gas_consumption.R')
+tar_source('R/get_gas_standing_offers.R')
+tar_source('R/calculate_gas_bill.R')
+tar_source('R/calculate_total_gas_network_revenue.R')
+tar_source('R/project_gas_retail_volumetric_price.R')
+tar_source('R/project_gas_connection_charges.R')
+
+#get average household level data
+tar_source('R/get_household_connections_data.R')
 tar_source('R/get_average_petrol_use_per_km.R')
 tar_source('R/get_aemo_vehicle_data.R')
 tar_source('R/get_vehicles_per_household.R')
@@ -52,18 +65,21 @@ tar_source('R/get_residential_ev_consumption.R')
 
 
 tar_source('R/get_average_residential_operational_demand.R')
-tar_source('R/get_average_gas_consumption.R')
+tar_source('R/calculate_average_residential_gas_consumption.R')
 tar_source("R/calculate_average_petrol_consumption.R")
 
 
+#calculate average household costs
+tar_source("R/calculate_average_household_costs.R")
 
+#create charts
 tar_source("R/create_esoo_demand_chart.R")
 
 # Replace the target list below with your own:
 tar_plan(
   
   start_year = 2025,
-  end_year = 2030,
+  end_year = 2040,
   
   ####################################################################
   #data files
@@ -78,6 +94,9 @@ tar_plan(
   #gas prices
   tar_file(gas_prices_file, 'Data/Gas/ACIL Allen Natural Gas Price Forecast.xlsx'),
   
+  #gas standing offers
+  tar_file(gas_standing_offers_file, 'Data/gas_standing_offers_20250331.xlsx'),
+  
   #aer gas customer data
   tar_file(connection_data_aer_file, 'Data/Gas/Schedule 2 - Quarter 3 2023-24 Retail Performance Data.xlsm'),
   
@@ -86,6 +105,9 @@ tar_plan(
   
   #GSOO gas consumption data
   tar_file(gsoo_consumption_data_file, 'Data/Gas/Gas GSOO 2024.xlsx'),
+  
+  #AER gas benchmarks file
+  tar_file(aer_gas_benchmarks_file, 'Data/aer_residential_gas_consumption_benchmarks.xlsx'),
   
   #motorvehicle use survey data
   tar_file(mv_survey_data_file, 'Data/92080DO001_202006.xls'),
@@ -104,6 +126,9 @@ tar_plan(
   
   #rbs connections estimates and fuel use data
   tar_file(rbs_outputs_data_file, 'Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx'),
+  
+  #AER retail markets 2024 file
+  tar_file(aer_retail_markets_file, 'Data/Data - State of the energy market 2024 - Chapter 6 - Retail energy markets.xlsx'),
   
   ####################################################################
   #load and clean price data
@@ -124,33 +149,51 @@ tar_plan(
   #load gas consumption data
   tar_target(gsoo_consumption_data, get_gsoo_consumption_data(gsoo_consumption_data_file)),
   
-  #calculate gas consumption per customer
-  tar_target(gas_consumption_per_customer, calc_gas_consumption_per_connection(connection_data_aer_file, 
-                                                                               connection_data_vic_file, 
-                                                                               gsoo_consumption_data)),
+  #get gas connections data
+  tar_target(gas_connections_data, get_gas_connections_data(connection_data_aer_file, connection_data_vic_file)),
   
-  #get gas network costs data
   
-  #project out estimated gas customers over time
-  tar_target(gas_customer_projections, project_gas_customers(gas_consumption_per_customer, gsoo_consumption_data)),
+  #get gas standing offers
+  tar_target(gas_standing_offers, get_gas_standing_offers(gas_standing_offers_file)),
   
-  ##INSERT TARGET##
+  #get AER benchmark gas use
+  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,                                                                      gas_connections_data)),
+  
+  #project residential gas consumption and connection projections
+  tar_target(residential_gas_consumption_projections, project_residential_gas_consumption(gas_connections_data,
+                                                                                          benchmark_gas_consumption,
+                                                                                          gsoo_consumption_data)),
+  #calculate gas bills from standing offers
+  tar_target(standing_offer_bills, calculate_gas_bill(gas_standing_offers, benchmark_gas_consumption)),
+  
+  #calculate total supply charge revenue (we assume this is held constant in real terms for now) (this is in 2024 dollars)
+  tar_target(gas_network_charge_revenue, 
+             calculate_total_gas_network_revenue(standing_offer_bills, 
+                                                 gas_standing_offers, 
+                                                 gas_connections_data)),
+  
+  #average gas volumetric charge (indexed to our volumetric price series)
+  tar_target(gas_retail_volumetric_price_projections, project_gas_retail_volumetric_price(standing_offer_bills,
+                                                                                          benchmark_gas_consumption,
+                                                                                          gas_volume_price_data)),
+  
+  
+  #get actual changes to revenue requirements (rather than hold constant)
   #tar_target(gas_network_costs)
   
-  #get current best standing offers data
   
-  ##INSERT TARGET##
-  #tar_target(gas_best_offers)
   
-  #Estimate projected supply charges
+  #Estimate projected supply charges per connection
   
-  ##INSERT TARGET##
-  #tar_target(gas_supply_charges_projections)
+  tar_target(gas_connection_charge_projections, project_gas_connection_charges(gas_network_charge_revenue, residential_gas_consumption_projections)),
   
   
   ####################################################################
   #Calculate average consumer energy use over time
   ####################################################################
+  
+  #residential baseline fuel use data
+  tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
   
   #number of connections
   tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file)),
@@ -159,14 +202,13 @@ tar_plan(
   tar_target(residential_ev_econsumption, get_residential_ev_consumption_data(electric_vehicle_workbook_file)),
   
   #Electricity use
-  tar_target(average_residential_operational_demand, get_average_residential_operational_demand(esoo_2024_operational_file, 
-                                                                                                residential_ev_econsumption, 
-                                                                                                household_connections)),
+  tar_target(average_residential_operational_demand, get_average_residential_operational_demand(esoo_2024_operational_file, residential_ev_econsumption, household_connections)),
   
-  #Gas use - average over all households with an electricity connection
-  tar_target(average_gas_consumption, get_average_gas_consumption(household_connections,
-                                                               gsoo_consumption_data)),
   
+  # Gas use - average over all households with an electricity connection
+  tar_target(average_gas_consumption, calculate_average_residential_gas_consumption(household_connections,
+                                                                                    residential_gas_consumption_projections)),
+
   
   #Petrol use - per km
   tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)),
@@ -194,7 +236,14 @@ tar_plan(
   ####################################################################
   #Calculate average consumer energy costs over time
   #################################################################### 
-  
+  tar_target(average_household_costs, calculate_average_household_costs(retail_price_data, 
+                                                                        gas_retail_volumetric_price_projections,
+                                                                        gas_network_charge_revenue,
+                                                                        petrol_price_projections,
+                                                                        household_connections,
+                                                                        average_residential_operational_demand,
+                                                                        average_gas_consumption,
+                                                                        average_petrol_consumption)),
   
   
   

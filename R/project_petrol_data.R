@@ -24,5 +24,7 @@ project_petrol_data <- function(petrol_data, end_year) {
   interpolated_data
 }
 
-#project_petrol_data(petrol_data, 2030)
+# project_petrol_data(petrol_data, 2050) %>% 
+#   ggplot(aes(x = year, y = c_litre)) +
+#   geom_line()
   

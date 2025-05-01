@@ -17,9 +17,9 @@ calc_gas_consumption_per_connection <- function(connection_data_aer_file, connec
     rowwise() %>%
     mutate(gas_customers = mean(c_across(-state)),
            year = 2023,
-           category = 'residential') %>%
+           customer_type = 'Residential') %>%
     ungroup() %>% 
-    select(year, state, gas_customers)
+    select(year, state, customer_type, gas_customers)
   
   sml_com_connect <- read_excel(connection_data_aer_file,
                                 sheet = 'SmlBiz Gas Cust#s & Mkt Contr',
@@ -34,14 +34,15 @@ calc_gas_consumption_per_connection <- function(connection_data_aer_file, connec
     rowwise() %>%
     mutate(gas_customers = mean(c_across(-state)),
            year = 2023,
-           category = 'small business') %>%
+           customer_type = 'Small business') %>%
     ungroup() %>% 
-    select(year, state, gas_customers)
+    select(year, state, customer_type, gas_customers)
+  
+  
   
   customers <- bind_rows(res_connect, sml_com_connect) %>% 
-    group_by(year, state) %>% 
-    summarise(gas_customers = sum(gas_customers)) %>% 
-    ungroup()
+    group_by(year,state, customer_type) %>%
+    summarise(gas_customers = sum(gas_customers)) 
   
   #residential and small business connections data for vic
   vic_customers <- read_excel(connection_data_vic_file,
@@ -56,11 +57,14 @@ calc_gas_consumption_per_connection <- function(connection_data_aer_file, connec
            meter_or_consumer == "Gas Customers") %>% 
     group_by(year, state, customer_type, retailer_common_name) %>% 
     summarise(gas_customers = mean(value)) %>% 
-    group_by(year, state) %>% 
+    group_by(year, state, customer_type) %>% 
     summarise(gas_customers = sum(gas_customers)) 
   
   #add victorian data
-  customers <- bind_rows(customers, vic_customers)
+  customers <- bind_rows(customers, vic_customers) %>% 
+    pivot_wider(names_from = customer_type, values_from = gas_customers) %>%
+    mutate(total_customers = (Residential + `Small business`),
+           pct_residential = Residential / total_customers)
   
     
   #gas consumption data from GSOO for residential and small business  
@@ -69,8 +73,9 @@ calc_gas_consumption_per_connection <- function(connection_data_aer_file, connec
   
   #use 2023 data to set consumption per customer. This does not change over time.
   consumption_per_customer <- left_join(customers, gas_consumption_23, by = c('year', 'state')) %>% 
-    mutate(gas_consumption_per_customer_gj = annual_consumption_gj / gas_customers) %>% 
-    select(state, gas_consumption_per_customer_gj)
+    mutate(gas_consumption_per_customer_gj = annual_consumption_gj / total_customers) %>% 
+    clean_names() %>% 
+    select(state, residential, small_business, total_customers, gas_consumption_per_customer_gj)
   
   consumption_per_customer
 }

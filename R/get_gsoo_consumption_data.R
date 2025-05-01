@@ -11,8 +11,7 @@ get_gsoo_consumption_data <- function(gsoo_consumption_data_file){
            version == '2024-03-21',
            scenario %in% c('Actual', 'Step Change'),
            subcategory == "Residential and Commercial",
-           !is.na(state),
-           year >= 2023) %>% 
+           !is.na(state)) %>% 
     select(year, state, annual_consumption_gj)
 }
 

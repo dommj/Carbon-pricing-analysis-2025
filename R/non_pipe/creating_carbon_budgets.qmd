@@ -33,7 +33,7 @@ Load demand forecast:
 nem_esoo_2024_operational_file <- 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'
 
 #west coast electricity demand
-wem_esoo_2024_operational_file <- 'Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx'
+# wem_esoo_2024_operational_file <- 'Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx'
 
 
 esoo_demand <- read_excel(nem_esoo_2024_operational_file) %>% 
@@ -63,9 +63,48 @@ esoo_demand <- read_excel(nem_esoo_2024_operational_file) %>%
 Load progressive change emissions intensity:
 
 ```{r}
+#| echo: false
+#| output: false
+prog_change_ems <- read_excel('Data/2024 ISP generation and storage outlook/Core/2024 ISP - Progressive Change - Core.xlsx', 
+                           sheet = 'Summary',
+                           range = "H210:AK211") %>% 
+  clean_names() %>% 
+  pivot_longer(cols = contains('20'), 
+               names_to = 'year',
+               values_to = 'mt_co2e') %>% 
+  rename(scenario = 1) %>% 
+  mutate(scenario = '2024 ISP - Progressive Change',
+         year = as.numeric(sub(".*_(\\d{2})", "20\\1", year))) %>% 
+  select(- total)
 
 
+prog_change_gen <- read_excel('Data/2024 ISP generation and storage outlook/Core/2024 ISP - Progressive Change - Core.xlsx', 
+                           sheet = 'Summary',
+                           range = "H57:AJ72") %>% 
+  clean_names() %>% 
+  pivot_longer(cols = contains('20'), 
+               names_to = 'year',
+               values_to = 'twh_gen') %>% 
+  rename(technology = 1) %>% 
+  mutate(year = as.numeric(sub(".*_(\\d{2})", "20\\1", year)),
+         type = case_when(str_detect(technology, 'coal')|
+                            str_detect(technology, 'gas') ~ 'non-renewable',
+                          str_detect(technology, '[w|W]ind')|
+                            str_detect(technology, 'solar')|
+                            str_detect(technology, 'PV')|
+                            str_detect(technology, 'renewable')|
+                            str_detect(technology, 'Hydro')|
+                            str_detect(technology, 'DSP') ~ 'renewable',
+                          .default = 'storage'))
 
+prog_change_intensity <- prog_change_gen %>% 
+  filter(type != "storage") %>% 
+  group_by(year) %>% 
+  summarise(twh_gen = sum(twh_gen)) %>% 
+  full_join(prog_change_ems) %>% 
+  mutate(mt_co2e_twh = mt_co2e / twh_gen) %>% 
+  select(year, scenario, mt_co2e_twh)
+  
 ```
 
 Load emissions intensities for CCA:
@@ -79,7 +118,7 @@ cca_intensities <- read_excel(cca_path,
                               sheet = "Fig 13",
                               skip = 6) %>% 
   rename(scenario = 1) %>% 
-  pivot_longer(cols = contains("20"), names_to = "year", values_to = "mt_c02e_twh") %>% 
+  pivot_longer(cols = contains("20"), names_to = "year", values_to = "mt_co2e_twh") %>% 
   mutate(year = as.numeric(year))
 
 
@@ -91,8 +130,8 @@ cca_intensities_interpolated <- cca_intensities %>%
     group_by(scenario) %>%
     # Use approx to linearly interpolate missing values
     arrange(year) %>%
-    mutate(mt_c02e_twh = approx(x = year[!is.na(mt_c02e_twh)], 
-                                y = mt_c02e_twh[!is.na(mt_c02e_twh)], 
+    mutate(mt_co2e_twh = approx(x = year[!is.na(mt_co2e_twh)], 
+                                y = mt_co2e_twh[!is.na(mt_co2e_twh)], 
                                 xout = year)$y) %>%
     ungroup()
 
@@ -106,33 +145,238 @@ Calculate emissions budget:
 ```{r}
 #| echo: false
 
-nem_emissions <- full_join(cca_intensities_interpolated, esoo_demand) %>% 
-  mutate(emissions = annual_consumption_t_wh * mt_c02e_twh)
+nem_emissions_cca <- full_join(cca_intensities_interpolated, esoo_demand, by = join_by(year)) %>% 
+  mutate(mt_co2e = annual_consumption_t_wh * mt_co2e_twh)
 
 
-emissions_budget <- nem_emissions %>% 
+emissions_budget_cca <- nem_emissions_cca %>% 
   filter(!is.na(scenario)) %>% 
   group_by(scenario) %>% 
-  summarise(budget = sum(emissions))
+  summarise(budget = sum(mt_co2e))
 
-emissions_budget
+emissions_budget_cca
+
+emissions_budget_cca_A40_G1.5 <- emissions_budget_cca %>% 
+  filter(scenario == "A40/G1.5") %>% 
+  pull(budget) 
+
+```
+
+Calculate emissions in hypothetical scenario where we get 2024 ESOO central demand and ISP Progressive Change emissions intensity:
+
+```{r}
+hypothetical_2030 <- esoo_demand %>% 
+  full_join(prog_change_intensity, by = join_by(year)) %>% 
+  mutate(mt_co2e = annual_consumption_t_wh * mt_co2e_twh,
+         scenario = "Progressive change to 2030")
+
+```
+
+Create a post-2030 trajectory for our hypothetical scenario which matches the overall CCA A40/G1.5 2025-50 budget exactly and the trajectory as closely as possible.
+
+```{r}
+
+create_post_2030_traj <- function(emissions_budget, scenario_emissions, nem_emissions_cca){
+  
+  remaining_budget <- emissions_budget - scenario_emissions %>%
+    filter(year <= 2029) %>%
+    pull(mt_co2e) %>%
+    sum()
+  
+  #create a reasonable value for 2030 based on 2025-29 decline rate
+  current_decline_rate <- (1 - scenario_emissions %>% 
+  filter(year == 2029) %>% 
+  pull(mt_co2e) /
+  scenario_emissions %>% 
+  filter(year == 2025) %>% 
+  pull(mt_co2e)) / 4
+  
+  
+  ems_2030 <- scenario_emissions %>%  
+    filter(year == 2030) %>% 
+    pull(mt_co2e) 
+  
+  ems_2050 <- nem_emissions_cca %>%  
+    filter(year == 2050,
+           scenario == "A40/G1.5") %>% 
+    pull(mt_co2e) 
+  
+  
+  area_under_curve <- function(ems_2030, ems_2050, x) {
+  
+   area_2030_x <- (x - 2029) * (ems_2030 + ems_2050)/2
+  
+   area_x_2050 <- (2050 - x) * (ems_2050)
+  
+   area <- area_2030_x + area_x_2050
+  
+   return(area)
+ }
+
+ # Create a function that returns the difference between area and C
+ diff_from_target <- function(x){abs(area_under_curve(ems_2030, ems_2050, x) - remaining_budget)}
+
+
+ min_year <- optimize(f = diff_from_target, interval = c(2031, 2050))
+
+ 
+ trajectory <- tibble(year = c(2030, round(min_year$minimum), 2050),
+                      mt_co2e = c(ems_2030, ems_2050, ems_2050)) %>% 
+   complete(year = seq(2025, 2050, by = 1)) %>%
+   #interpolate
+   arrange(year) %>%
+   mutate(mt_co2e = approx(x = year[!is.na(mt_co2e)], 
+                                y = mt_co2e[!is.na(mt_co2e)], 
+                                xout = year)$y,
+          scenario = "Emissions constraint trajectory")
+  
+ return(list(trajectory = trajectory, min_year = min_year))
+}
+
+
+result <- create_post_2030_traj(emissions_budget_cca_A40_G1.5, hypothetical_2030, nem_emissions_cca)
+
+post_2030_trajectory <-  result$trajectory
+
+min_year <- result$min_year$minimum
 
 ```
 
 ```{r}
 
-nem_emissions %>% 
-  filter(!is.na(scenario)) %>% 
-  ggplot(aes(x = year, y = mt_c02e_twh, fill = scenario, colour = scenario)) +
-  geom_line() +
+joined_data <- nem_emissions_cca %>% 
+  bind_rows(hypothetical_2030 %>% 
+              filter(year <= 2030), 
+            post_2030_trajectory) %>% 
+  filter(scenario != "A50/G2") %>% 
+  select(- c(mt_co2e_twh, annual_consumption_t_wh)) %>% 
+  left_join(esoo_demand) %>% 
+  mutate(mt_co2e_twh = mt_co2e / annual_consumption_t_wh)
+
+emissions_plot <- joined_data %>% 
+  ggplot(aes(x = year, y = mt_co2e, fill = scenario, colour = scenario)) +
+  geom_line(size = 1) +
+  theme_grattan() +
+  geom_richlegend(aes(label = scenario)) +
+  labs(title = "Emissions over time",
+       subtitle = "Mt co2-e",
+       x = "")
+
+grattan_save_pptx("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/hypothetical_emissions_plot_progressive.pptx",
+            p = emissions_plot,
+            type = "normal")
+
+intensity_plot <- joined_data %>% 
+  ggplot(aes(x = year, y = mt_co2e_twh, fill = scenario, colour = scenario)) +
+  geom_line(size = 1) +
   theme_grattan() +
   geom_richlegend(aes(label = scenario)) +
   labs(title = "Emissions intensity over time",
-       subtitle = "Mt C02-e per TWh")
+       subtitle = "Mt co2-e per TWh",
+       x = "")
+
+# grattan_save_pptx("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/hypothetical_intensity_plot_progressive.pptx",
+#             p = intensity_plot,
+#             type = "normal")
+
+# grattan_save_all("Output/Atlas/hypothetical_intensity_plot_progressive.pdf",
+#              object = intensity_plot)
+
+
+joined_data %>% 
+  filter(scenario == "A40/G1.5") %>% 
+  pull(mt_co2e) %>% 
+  sum()
+
+joined_data %>% 
+  filter(scenario != "A40/G1.5",
+         !(scenario == 'Progressive change to 2030' & year == 2030),
+         !is.na(mt_co2e)) %>% 
+  pull(mt_co2e) %>% 
+  sum()
 
 ```
 
-**No QC needed below here**
+**No QC needed below here\
+**
+
+Alternative way where we do straightline decline from 2029 (ignorance of 2030 value):
+
+```{r}
+
+create_post_2030_traj <- function(emissions_budget, scenario_emissions, nem_emissions_cca){
+  
+  remaining_budget <- emissions_budget - scenario_emissions %>%
+    filter(year <= 2029) %>%
+    pull(mt_co2e) %>%
+    sum()
+  
+  # #create a reasonable value for 2030 based on 2025-29 decline rate
+  # current_decline_rate <- (1 - scenario_emissions %>% 
+  # filter(year == 2029) %>% 
+  # pull(mt_co2e) /
+  # scenario_emissions %>% 
+  # filter(year == 2025) %>% 
+  # pull(mt_co2e)) / 4
+  # 
+  
+  ems_2029 <- scenario_emissions %>%  
+    filter(year == 2029) %>% 
+    pull(mt_co2e) 
+  
+  ems_2050 <- nem_emissions_cca %>%  
+    filter(year == 2050,
+           scenario == "A40/G1.5") %>% 
+    pull(mt_co2e) 
+  
+  
+  area_under_curve <- function(ems_2029, ems_2050, x) {
+  
+   area_2030_x <- (x - 2028) * (ems_2029 + ems_2050)/2
+  
+   area_x_2050 <- (2050 - x) * (ems_2050)
+  
+   area <- area_2030_x + area_x_2050 - ems_2029
+  
+   return(area)
+ }
+
+ # Create a function that returns the difference between area and C
+ diff_from_target <- function(x){abs(area_under_curve(ems_2029, ems_2050, x) - remaining_budget)}
+
+
+ min_year <- optimize(f = diff_from_target, interval = c(2031, 2050))
+
+ straight_line <- function(x, min_year){
+   
+   m <- (ems_2050 - ems_2029) / (min_year$minimum - 2029)
+   
+   return(ems_2029 + m*(x - 2029))
+ }
+ 
+ 
+ trajectory <- tibble(year = c(2030, round(min_year$minimum), 2050),
+                      mt_co2e = c(straight_line(2030, min_year), ems_2050, ems_2050)) %>% 
+   complete(year = seq(2025, 2050, by = 1)) %>%
+   #interpolate
+   arrange(year) %>%
+   mutate(mt_co2e = approx(x = year[!is.na(mt_co2e)], 
+                                y = mt_co2e[!is.na(mt_co2e)], 
+                                xout = year)$y,
+          scenario = "Emissions constraint trajectory")
+  
+ return(list(trajectory = trajectory, min_year = min_year))
+}
+
+
+result <- create_post_2030_traj(emissions_budget_cca_A40_G1.5, hypothetical_2030, nem_emissions_cca)
+
+post_2030_trajectory <-  result$trajectory
+
+min_year <- result$min_year$minimum
+
+
+```
 
 Load emissions intensities according to CW government projections:
 
@@ -167,7 +411,7 @@ bsline_electricity_demand <- read_excel(cw_projections_file,
   summarise(annual_consumption_t_wh = sum(annual_consumption_t_wh))
 
 bsline_intensity <- full_join(bsline_electricity_ems, bsline_electricity_demand) %>% 
-  mutate(mt_c02e_twh = emissions / annual_consumption_t_wh,
+  mutate(mt_co2e_twh = emissions / annual_consumption_t_wh,
          scenario = "Projected") %>% 
   select(-c(sector, emissions, annual_consumption_t_wh))
 ```
@@ -181,8 +425,8 @@ climworks_intensities <- read_excel(climworks_intensities_file,
                                 sheet = 'Sheet1',
                                 skip = 1) %>% 
   clean_names() %>% 
-  mutate(mt_c02e_twh = mt_co2e / consumption_twh) %>% 
-  select(year, scenario, mt_c02e_twh) 
+  mutate(mt_co2e_twh = mt_co2e / consumption_twh) %>% 
+  select(year, scenario, mt_co2e_twh) 
 
 
 ```
@@ -199,20 +443,20 @@ national_intensities_interpolated <- national_intensities %>%
     group_by(scenario) %>%
     # Use approx to linearly interpolate missing values
     arrange(year) %>%
-    mutate(mt_c02e_twh = approx(x = year[!is.na(mt_c02e_twh)], 
-                                y = mt_c02e_twh[!is.na(mt_c02e_twh)], 
+    mutate(mt_co2e_twh = approx(x = year[!is.na(mt_co2e_twh)], 
+                                y = mt_co2e_twh[!is.na(mt_co2e_twh)], 
                                 xout = year)$y) %>%
     ungroup()
 
 national_intensities_interpolated %>% 
   mutate(scenario = factor(scenario, levels = c("CW 1.5", "CW < 2", "A40/G1.5", "A50/G2", "Projected")) %>% fct_rev()) %>% 
-  ggplot(aes(x = year, y = mt_c02e_twh, fill = scenario, colour = scenario)) +
+  ggplot(aes(x = year, y = mt_co2e_twh, fill = scenario, colour = scenario)) +
   geom_line() +
   theme_grattan() +
   geom_richlegend(aes(label = scenario)) +
   geom_linepoint() +
   labs(title = "Climateworks has a much steeper trajectory than projected emissions",
-       subtitle = "Mt C02-e per TWh")
+       subtitle = "Mt co2-e per TWh")
 
 
 
@@ -222,7 +466,7 @@ national_intensities_interpolated %>%
 
 ```{r}
 nem_emissions <- full_join(national_intensities_interpolated, esoo_demand) %>% 
-  mutate(emissions = annual_consumption_t_wh * mt_c02e_twh)
+  mutate(emissions = annual_consumption_t_wh * mt_co2e_twh)
 
 
 emissions_budget_25_30 <- nem_emissions %>% 
