@@ -22,7 +22,7 @@ get_petrol_data <- function(petrol_file) {
   #load data and inflate to get 2024 dollars
   data <- read_csv(petrol_file) %>% 
     clean_names() %>% 
-    mutate(category = "petrol",
+    mutate(category = "Petrol",
            c_litre = c_litre*inflator)
   data
   

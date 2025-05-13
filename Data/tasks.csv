@@ -1,0 +1,48 @@
+erson,Task,Start_Date,End_Date,Duration_Days,Type
+Alison,Drafting - Chapter 2 (part 1),22/04/2025,9/05/2025,18,Task
+Alison,Drafting - Chapter 3 part 1 (with Dom),13/05/2025,23/05/2025,11,Task
+Alison,Drafting: Appendix A,13/05/2025,23/05/2025,11,Task
+Dom,Integrate modelling results into retail price model,29/05/2025,20/06/2025,23,Task
+Alison,Drafting - Chapter 2 part 2,7/07/2025,18/07/2025,12,Task
+Alison,Drafting - Chapter 3 part 2,7/07/2025,18/07/2025,12,Task
+Alison,Out of Office (reconciliation day),5/06/2025,5/06/2025,1,Time Off
+Alison,Tank time,31/07/2025,31/07/2025,1,Meeting
+Dom,Drafting: Appendix C description of energy wallet model and assumptions,22/04/2025,9/05/2025,18,Task
+Dom,Drafting - Chapter 3 part 1 (with Alison),13/05/2025,23/05/2025,11,Task
+Dom,Drafting - Chapter 4,7/07/2025,25/07/2025,19,Task
+Tony,Review,21/07/2025,1/08/2025,12,Task
+Paul,Project preview 2,24/07/2025,24/07/2025,1,Meeting
+Paul,First edit,4/08/2025,15/08/2025,12,Task
+Paul,Second edit,28/08/2025,4/09/2025,8,Task
+Paul,Edit opinion pieces,9/09/2025,9/09/2025,1,Task
+Aruna,Project preview 2,25/07/2025,25/07/2025,1,Meeting
+Aruna,Review,28/08/2025,4/09/2025,8,Task
+Jacobs,QC and review,4/08/2025,14/08/2025,11,Task
+Unassigned,Drafting - Chapter 5,1/07/2025,18/07/2025,18,Task
+Unassigned,Compare scenario results and implications for recommendations,20/06/2025,4/07/2025,15,Task
+Unassigned,Put together presentation for stakeholder consultation,1/07/2025,4/07/2025,4,Task
+Unassigned,Stakeholder consultation on draft results,7/07/2025,18/07/2025,12,Task
+Unassigned,Book in stakeholders for consultation chats,23/06/2025,27/06/2025,5,Task
+Unassigned,Internal QC - R code,21/07/2025,25/07/2025,5,Task
+Unassigned,External review,15/08/2025,22/08/2025,8,Task
+Unassigned,Incorporate external comments,25/08/2025,29/08/2025,5,Task
+Unassigned,Decide and pitch opinion pieces,1/09/2025,5/09/2025,5,Task
+Unassigned,Draft opinion pieces,1/09/2025,5/09/2025,5,Task
+Unassigned,Chart pack and briefing pack,8/09/2025,12/09/2025,5,Task
+Unassigned,Podcast,8/09/2025,12/09/2025,5,Task
+Milestone,First draft of all parts NOT dependent on modelling complete,23/05/2025,23/05/2025,1,Milestone
+Milestone,Reference case delivered,29/05/2025,29/05/2025,1,Milestone
+Milestone,Option 1 results delivered,6/06/2025,6/06/2025,1,Milestone
+Milestone,Option 2 results delivered,13/06/2025,13/06/2025,1,Milestone
+Milestone,Decide on sensitivities vs option 3,13/06/2025,13/06/2025,1,Milestone
+Milestone,Option 3 results or sensitivity scenarios delivered,19/06/2025,19/06/2025,1,Milestone
+Milestone,Decide on report recommendations,4/07/2025,4/07/2025,1,Milestone
+Milestone,Report to Paul for first edit,1/08/2025,1/08/2025,1,Milestone
+Milestone,Jacobs review completed,14/08/2025,14/08/2025,1,Milestone
+Milestone,Paul edit complete,15/08/2025,15/08/2025,1,Milestone
+Milestone,Report to external reviewers,15/08/2025,15/08/2025,1,Milestone
+Milestone,All comments back from external reviewers,22/08/2025,22/08/2025,1,Milestone
+Milestone,Incorporate final changes,5/09/2025,5/09/2025,1,Milestone
+Milestone,Embargoed copy to journos,11/09/2025,11/09/2025,1,Milestone
+Milestone,All materials in folder for upload and release,12/09/2025,12/09/2025,1,Milestone
+Milestone,Release date,15/09/2025,15/09/2025,1,Milestone

@@ -25,6 +25,7 @@ library(tidyxl)
 library(grattantheme)
 library(forcats)
 library(scales)
+library(ggarchery)
 
 
 # Set target options:
@@ -47,7 +48,6 @@ tar_source('R/get_rbs_fuel_end_use.R')
 tar_source('R/get_gsoo_consumption_data.R')
 tar_source('R/get_gas_connections_data.R')
 tar_source('R/get_benchmark_gas_consumption.R')
-tar_source('R/project_average_residential_gas_consumption.R')
 tar_source('R/project_residential_gas_consumption.R')
 tar_source('R/get_gas_standing_offers.R')
 tar_source('R/calculate_gas_bill.R')
@@ -71,6 +71,15 @@ tar_source("R/calculate_average_petrol_consumption.R")
 
 #calculate average household costs
 tar_source("R/calculate_average_household_costs.R")
+
+#create cameo usage profiles
+tar_source("R/load_and_deflate_rbs_households.R")
+tar_source("R/get_fuel_conversion_coefficients.R")
+tar_source("R/calculate_fuel_use_conversions.R")
+tar_source("R/create_rbs_fuel_consumption_profiles.R")
+tar_source("R/get_rbs_electricity_consumption_data.R")
+tar_source("R/get_pv_profiles.R")
+tar_source("R/get_ev_consumption_profiles.R")
 
 #create charts
 tar_source("R/create_esoo_demand_chart.R")
@@ -127,8 +136,14 @@ tar_plan(
   #rbs connections estimates and fuel use data
   tar_file(rbs_outputs_data_file, 'Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx'),
   
+  #electric to gas conversion coefficients file
+  tar_file(electric_to_gas_coefficients_file, "Data/elec_to_gas_coefficients.xlsx"),
+  
   #AER retail markets 2024 file
   tar_file(aer_retail_markets_file, 'Data/Data - State of the energy market 2024 - Chapter 6 - Retail energy markets.xlsx'),
+  
+  #PVWatts data folder
+  tar_file(pv_data_path, 'Data/Pv'),
   
   ####################################################################
   #load and clean price data
@@ -151,7 +166,6 @@ tar_plan(
   
   #get gas connections data
   tar_target(gas_connections_data, get_gas_connections_data(connection_data_aer_file, connection_data_vic_file)),
-  
   
   #get gas standing offers
   tar_target(gas_standing_offers, get_gas_standing_offers(gas_standing_offers_file)),
@@ -191,9 +205,6 @@ tar_plan(
   ####################################################################
   #Calculate average consumer energy use over time
   ####################################################################
-  
-  #residential baseline fuel use data
-  tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
   
   #number of connections
   tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file)),
@@ -235,7 +246,10 @@ tar_plan(
   
   ####################################################################
   #Calculate average consumer energy costs over time
-  #################################################################### 
+  ####################################################################
+  
+  #add average PV revenue?
+  
   tar_target(average_household_costs, calculate_average_household_costs(retail_price_data, 
                                                                         gas_retail_volumetric_price_projections,
                                                                         gas_network_charge_revenue,
@@ -246,6 +260,61 @@ tar_plan(
                                                                         average_petrol_consumption)),
   
   
+  
+  ####################################################################
+  #Calculate cameo consumer energy usage
+  #################################################################### 
+  
+  #load RBS household numbers and deflate to represent 10% vacancy rate.
+  tar_target(rbs_households, load_and_deflate_rbs_households(rbs_outputs_data_file)),
+  
+  #residential baseline fuel use data
+  tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
+  
+  #load in fuel efficiency coefficients
+  #TO DO!! estimate efficiency now and over time, using stock... "Stock.EndUse.Cat.Grp-State"
+  #also building coefficients? look at ESOO / ISP methodology for breakdown?
+  tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)),
+  
+  tar_target(integrated_fuel_use, calculate_fuel_use_conversions(fuel_conversion_coefficients,
+                                                                 rbs_outputs_data_file,
+                                                                 rbs_fuel_end_use_by_state)),
+  
+  tar_target(rbs_fuel_consumption_profiles, create_rbs_fuel_consumption_profiles(integrated_fuel_use,
+                                                                                        rbs_households)),
+  
+  #TO DO !! apply energy efficiency to profiles
+  
+  #Next: convert electricity use to ToU profiles.
+  
+  #get rbs electricity consumption curves
+  tar_target(rbs_tou_consumption_data, get_rbs_electricity_consumption_data(rbs_electricity_consumption_data_file)),
+  
+  #Next: Load EV consumption profiles
+  tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
+                                                                  ev_fleet_data)),
+  
+  #Next: calculate PV generation for each state
+  tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households)),
+  
+  
+  #apply fuel profiles to generate loads for all customer classes, add in pv and evs
+  tar_target(tou_consumer_profiles, calculate_tou_consumer_profiles(rbs_fuel_consumption_profiles,
+                                                                    rbs_fuel_end_use_by_state,
+                                                                    rbs_tou_consumption_data,
+                                                                    ev_consumption_profiles,
+                                                                    pv_profiles,
+                                                                    rbs_households)),
+  
+  
+
+  
+  #calculate petrol costs
+  
+  #Next: simulate battery behaviour 
+  
+  
+  #
   
   ####################################################################
   #Create charts

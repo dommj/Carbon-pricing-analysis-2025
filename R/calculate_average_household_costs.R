@@ -35,7 +35,7 @@ calculate_average_household_costs <- function(retail_price_data,
 
 function(){
 
-household_costs_1 <- calculate_household_costs(retail_price_data, 
+household_costs_1 <- calculate_average_household_costs(retail_price_data, 
                           gas_retail_volumetric_price_projections,
                           gas_network_charge_revenue,
                           petrol_price_projections,
@@ -47,7 +47,7 @@ household_costs_1 <- calculate_household_costs(retail_price_data,
 plot_data <- household_costs_1 %>%
   filter(year >= 2025,
          year <= 2034, 
-         category != "petrol",
+         #category != "petrol",
          state == "Vic") 
 
 levels <- plot_data %>% 
@@ -87,8 +87,58 @@ plot_data %>%
 grattan_save_all("Output/Atlas/test_houshold_costs_no_petrol.pdf",
                  object = ggplot2::last_plot())
 
-household_costs_1 %>% 
-  filter(year == 2025 | year == 2034)
+
+  
+
+#make a chart that shows avoided gas and petrol costs... (a la price trends)
+
+
+#Make dumbell chart
+
+# pivot so that each category has one row with two cost columns
+
+# reorder categories by, say, 2025 cost (optional)
+  
+  household_costs_1 %>% 
+    filter(year %in% c(2025, 2034),
+           state == "Vic") %>% 
+    mutate(category = case_when())
+    # Convert to wide format to calculate differences
+    pivot_wider(
+      names_from = year,
+      values_from = average_cost_dollars
+    ) %>%
+    # Ensure column names are character strings
+    rename("y2025" = `2025`, "y2034" = `2034`) %>%
+    ggplot(aes(x = reorder(category, y2025))) +
+    # Add segments with arrows
+    
+    geom_arrowsegment(aes(xend = category, y = y2025, yend = y2034),
+                      arrows = grattan_arrow(length = unit(0.3, "cm"), type = "closed"), 
+                      position = position_attractsegment(start_shave = 0, 
+                                                         end_shave = 50, 
+                                                         type_shave = "distance"),
+                      colour = grattan_darkgrey3,
+                      fill = grattan_darkgrey3,
+                      size = 1) +
+
+    # Add points for 2025 and 2034
+    geom_point(aes(y = y2025), color = grattan_orange, size = 4) +
+    geom_point(aes(y = y2034), color = grattan_red, size = 4) +
+
+    scale_y_continuous_grattan(
+      labels = scales::dollar_format(),
+    ) +
+    coord_flip() +
+    labs(
+      x = "",
+      y = "",
+      title = "Petrol gas and electricity costs all decline",
+      subtitle = "Average household costs by category, Victoria, 2025 and 2034"
+    ) +
+    theme_grattan(flipped = TRUE) 
+
+  
 
 #alignment between gas use decline and residential elecrtification? timing doesn' add up? is our way of allocating gas demand to residential to rough (e.g are commercial actually switching over faster...?
 #Note !! that some of the decline in average gas use is associated with new connections that don't use gas, rather than switches from gas to electric, hence some discrepancy is to be expected.

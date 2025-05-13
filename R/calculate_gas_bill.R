@@ -11,7 +11,7 @@ calculate_gas_bill <- function(offers,
              customer_class == customer_class_name)
     
     # Calculate daily average consumption
-    daily_consumption <- seasonal_consumption / (365 / 4)
+    daily_consumption <- seasonal_consumption / (365.25 / 4)
     
     # Extract usage tiers
     usage_tiers <- plan_tariffs %>%
@@ -54,7 +54,7 @@ calculate_gas_bill <- function(offers,
     
     # seasonal costs
     
-    seasonal_usage_cost <- usage_cost * (365 / 4)   #multiply by days in a season
+    seasonal_usage_cost <- usage_cost * (365.25 / 4)   #multiply by days in a season
     
     return(seasonal_usage_cost / 100) #(convert to dollars)
   }
@@ -75,7 +75,7 @@ calculate_gas_bill <- function(offers,
       first()
     
     # seasonal supply costs
-    seasonal_supply_cost <- (supply_charge ) * (365 / 4)  #multiply by days in a season
+    seasonal_supply_cost <- (supply_charge ) * (365.25 / 4)  #multiply by days in a season
 
     seasonal_supply_cost / 100 #(convert to dollars)
   }

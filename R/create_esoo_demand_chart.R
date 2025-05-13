@@ -49,6 +49,8 @@ plot <- operational_sent_out %>%
          x = '',
          y = '')
   
+plot
+
 grattan_save("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/evs_electrification_demand_esoo24.pdf",
             object = plot,
             no_new_folder = TRUE)

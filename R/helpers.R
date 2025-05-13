@@ -15,6 +15,7 @@ convert_states <- function(state){
             state == 'NT'| state == "NORTHERN TERRITORY" ~ 'NT',
             state == 'WA'| state == "WESTERN AUSTRALIA" ~ 'WA',
             state == 'ACT'| state == "AUSTRALIAN CAPITAL TERRITORY" ~ 'ACT',
+            state == 'Aus' | state == 'AUSTRALIA' ~ "Aus",
             .default = NA)
   
 }
