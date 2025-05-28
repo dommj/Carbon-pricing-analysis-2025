@@ -2,6 +2,8 @@
 
 Thanks for QC-ing this work for me. The two scripts to QC sit within a larger model I am making, but operate in a stand alone way. You don't need to worry about any of the other scripts.
 
+To get started, clone this repository, dowload it locally, and drag the (unzipped) Data folder into the main directory.
+
 ## Scripts to QC
 R/load_jacobs_demand_data.R and R/non_pipe/calculate_emissions_budget.R
 
