@@ -1,11 +1,47 @@
 # script to run the model
+
+#install all necessary packages
+required_packages <- required_packages <- c(
+  "targets",
+  "tarchetypes", 
+  "dplyr",
+  "tidyr",
+  "readr",
+  "janitor",
+  "ggplot2",
+  "readabs",
+  "fy",
+  "fnmate",
+  "lubridate",
+  "readxl",
+  "stringr",
+  "purrr",
+  "unpivotr",
+  "tidyxl",
+  "grattantheme",
+  "forcats",
+  "scales",
+  "ggarchery"
+)
+
+missing_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
+
+if (length(missing_packages) > 0) {
+  cat("Installing missing packages:", paste(missing_packages, collapse = ", "), "\n")
+  install.packages(missing_packages, dependencies = TRUE)
+} else {
+  cat("All required packages are already installed.\n")
+}
+
+#run model
+
 library(targets)
 library(tarchetypes)
 
 tar_make()
 
-tar_visnetwork()
-tar_read(standing_offer_bills)
+# tar_visnetwork()
+# tar_read(standing_offer_bills)
 
 # average_household_costs
 # household_connections

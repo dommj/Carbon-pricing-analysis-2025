@@ -3,7 +3,6 @@
 # Then follow the manual to check and run the pipeline:
 #   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline
 
-
 ##Libraries##
 
 library(targets)
