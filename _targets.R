@@ -27,7 +27,6 @@ library(forcats)
 library(scales)
 library(ggarchery)
 
-
 # Set target options:
 tar_option_set(
 )
@@ -43,6 +42,9 @@ tar_source('R/get_gas_prices_data.R')
 
 #load residential baseline study data
 tar_source('R/get_rbs_fuel_end_use.R')
+
+#load jacobs demand data
+tar_source('R/load_jacobs_demand_data.R')
 
 #project gas prices and use
 tar_source('R/get_gsoo_consumption_data.R')
@@ -80,6 +82,7 @@ tar_source("R/create_rbs_fuel_consumption_profiles.R")
 tar_source("R/get_rbs_electricity_consumption_data.R")
 tar_source("R/get_pv_profiles.R")
 tar_source("R/get_ev_consumption_profiles.R")
+tar_source("R/calculate_tou_consumer_profiles.R")
 
 #create charts
 tar_source("R/create_esoo_demand_chart.R")
@@ -127,6 +130,9 @@ tar_plan(
   #esoo 2024 operational demand file
   tar_file(esoo_2024_operational_file, 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'),
   
+  #jacobs demand file
+  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts (002).xlsx'),
+  
   #2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
   
@@ -138,6 +144,11 @@ tar_plan(
   
   #electric to gas conversion coefficients file
   tar_file(electric_to_gas_coefficients_file, "Data/elec_to_gas_coefficients.xlsx"),
+  
+  #appliance efficiency file
+  
+  #temperature data folder
+  tar_file(temp_data_folder, 'Data/temp_data/TMYWeatherFilesEpw_20240821'),
   
   #AER retail markets 2024 file
   tar_file(aer_retail_markets_file, 'Data/Data - State of the energy market 2024 - Chapter 6 - Retail energy markets.xlsx'),
@@ -215,6 +226,9 @@ tar_plan(
   #Electricity use
   tar_target(average_residential_operational_demand, get_average_residential_operational_demand(esoo_2024_operational_file, residential_ev_econsumption, household_connections)),
   
+  #jacobs electricity demand
+  tar_target(jacobs_electricity_demand, load_jacobs_demand_data(jacobs_demand_data_file)),
+
   
   # Gas use - average over all households with an electricity connection
   tar_target(average_gas_consumption, calculate_average_residential_gas_consumption(household_connections,
@@ -272,7 +286,8 @@ tar_plan(
   tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
   
   #load in fuel efficiency coefficients
-  #TO DO!! estimate efficiency now and over time, using stock... "Stock.EndUse.Cat.Grp-State"
+  #TO DO!! estimate efficiency now and over time, using stock... "Stock.EndUse.Cat.Grp-State" - Done. dead end, no substantial changes in stock distribution
+  
   #also building coefficients? look at ESOO / ISP methodology for breakdown?
   tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)),
   
@@ -298,6 +313,8 @@ tar_plan(
   tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households)),
   
   
+  #gas cooling is not really a thing. Currently, additional gas / electricity use isn't apportioned throughout seasons. this means summer will be too high (too much gas heating applied to the summer profile) and winter too low in e.g victoria
+  
   #apply fuel profiles to generate loads for all customer classes, add in pv and evs
   tar_target(tou_consumer_profiles, calculate_tou_consumer_profiles(rbs_fuel_consumption_profiles,
                                                                     rbs_fuel_end_use_by_state,
@@ -307,9 +324,12 @@ tar_plan(
                                                                     rbs_households)),
   
   
+  #time of use tariffs
 
   
   #calculate petrol costs
+  
+  
   
   #Next: simulate battery behaviour 
   

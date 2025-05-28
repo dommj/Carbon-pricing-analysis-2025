@@ -6,13 +6,15 @@ get_pv_profiles <- function(pv_data_path, rbs_households){
   
   read_pv_data <- function(pv_file){
     
-    state_name <- str_extract(pv_file, "(?<=hourly_)\\D*(?=.csv)") 
+    state_name <- str_extract(pv_file, "(?<=hourly_)\\D*(?=_\\d*kw)")
+    system_size <- str_extract(pv_file, "\\d*(?=kw)") 
     
     data <- read_csv(paste0(pv_data_path, "/", pv_file),
                        skip = 31) %>% 
       clean_names() %>% 
       select(month, day, hour, ac_system_output_w) %>% 
-      mutate(state = convert_states(state_name))
+      mutate(state = convert_states(state_name),
+             size_kw = system_size)
   }
   
   pv_data_list <- map(pv_files, read_pv_data)
@@ -22,7 +24,7 @@ get_pv_profiles <- function(pv_data_path, rbs_households){
                               month %in% c(3,4,5) ~ "Autumn",
                               month %in% c(6,7,8) ~ "Winter",
                               month %in% c(9,10,11) ~ "Spring")) %>% 
-    group_by(state, season, hour) %>% 
+    group_by(state, size_kw, season, hour) %>% 
     summarise(power_kwh = -mean(ac_system_output_w) / 1000) %>% 
     mutate(end_use = "PV")
   
@@ -58,6 +60,11 @@ get_pv_profiles <- function(pv_data_path, rbs_households){
   )
   
   return(bind_rows(no_pv_profile, pv_profile) %>% 
-           full_join(cust_types, relationship = "many-to-many"))
+           ungroup() %>% 
+           full_join(cust_types, relationship = "many-to-many") %>% 
+           
+           #we're just gonna use 7kw systems for simplicity
+           filter(size_kw == 7) %>% 
+           select(-size_kw))
 }
 

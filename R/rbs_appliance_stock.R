@@ -25,9 +25,63 @@ rbs_stock_by_state <- rbs_output_cells %>%
   mutate(stock = as.numeric(stock))
 
 aggregates_hw <- rbs_stock_by_state %>% 
-  filter(year == 2020,
+  filter(year == 2040,
          end_use %in% c("Water heating")) %>% 
   group_by(appliance) %>% 
   summarise(stock = sum(stock)) %>% 
   ungroup() %>% 
-  mutate(pct = stock / sum(stock))
+  mutate(pct = stock / sum(stock),
+         appliance_cat = case_when(str_detect(appliance,"Electric")~ "Electric storage",
+                                   str_detect(appliance,"Gas instant")~ "Gas instant",
+                                   str_detect(appliance,"Gas storage")~ "Gas storage",
+                                   str_detect(appliance,"Heat pump")~ "Heat pump",
+                                   .default = "other")
+         ) %>% 
+  group_by(appliance_cat) %>% 
+  summarise(pct = sum(pct))
+
+
+
+#assume space conditioning is converted between RCAC and ducted gas.
+
+aggregates_sc <- rbs_stock_by_state %>%
+  filter(year == 2040,
+         end_use %in% c("Space conditioning")) %>%
+  group_by(appliance) %>%
+  summarise(stock = sum(stock)) %>%
+  ungroup() %>%
+  mutate(pct = stock / sum(stock),
+         appliance_cat = case_when(str_detect(appliance,"AC")~ "AC",
+                                   str_detect(appliance,"Gas instant")~ "Gas instant",
+                                   str_detect(appliance,"Gas storage")~ "Gas storage",
+                                   str_detect(appliance,"Heat pump")~ "Heat pump",
+                                   .default = "other")
+  ) %>%
+  group_by(appliance_cat) %>%
+  summarise(pct = sum(pct))
+
+
+#look at number of gas heaters in each state
+
+
+aggregates_cookin <- rbs_stock_by_state %>%
+  filter(year == 2040,
+         end_use %in% c("Cooking")) %>%
+  group_by(appliance) %>%
+  summarise(stock = sum(stock)) %>%
+  ungroup() %>%
+  mutate(pct = stock / sum(stock),
+         appliance_cat = case_when(str_detect(appliance,"AC")~ "AC",
+                                   str_detect(appliance,"Gas instant")~ "Gas instant",
+                                   str_detect(appliance,"Gas storage")~ "Gas storage",
+                                   str_detect(appliance,"Heat pump")~ "Heat pump",
+                                   .default = "other")
+  ) %>%
+  group_by(appliance_cat) %>%
+  summarise(pct = sum(pct))
+
+
+
+
+
+

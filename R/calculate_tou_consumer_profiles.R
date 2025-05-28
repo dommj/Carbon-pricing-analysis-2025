@@ -67,7 +67,7 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
 }
 
 function(){
-chart_data <- consumer_tou_profiles_all %>% 
+chart_data <- tou_consumer_profiles %>% 
   mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, sep = "_")) %>% 
   group_by(consumer_type, state, season, day_type, hour) %>% 
   summarise(power_kwh = sum(power_kwh)) 
@@ -90,23 +90,33 @@ chart_data_final <- chart_data %>%
   filter(!is.na(power_smoothed))
 
 chart_data_final %>% 
-  filter(season == "Winter",
+  filter(season == "Summer",
          day_type == "WD",
          #state == "NSW",
          consumer_type %in% c("electric_electric_electric_1_FALSE")) %>% 
   ggplot(aes(x = hour, y = power_smoothed, colour = state)) +
   geom_line()
 
-consumer_tou_profiles_all %>% 
+tou_consumer_profiles %>% 
   mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, sep = "_")) %>% 
   filter(season == "Winter",
          day_type == "WD",
          state == "NSW and ACT",
-         consumer_type %in% c("electric_electric_electric_1_TRUE")) %>% 
+         consumer_type %in% c("electric_electric_electric_1_FALSE")) %>% 
   ggplot(aes(x = hour, y = power_kwh, colour = end_use)) +
   geom_line()
 
-total_usage <- consumer_tou_profiles_all %>% 
+
+tou_consumer_profiles %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, sep = "_")) %>% 
+  filter(day_type == "WD",
+         end_use == "Space conditioning",
+         state == "Vic",
+         consumer_type %in% c("electric_electric_electric_1_FALSE")) %>% 
+  ggplot(aes(x = hour, y = power_kwh, colour = season)) +
+  geom_line()
+
+total_usage <- tou_consumer_profiles %>% 
   mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, sep = "_")) %>% 
   group_by(consumer_type, state, season, day_type) %>% 
   summarise(power_kwh = sum(power_kwh)) 
