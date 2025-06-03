@@ -5,7 +5,7 @@ load_jacobs_demand_data <- function(jacobs_demand_data_file){
   # Load demand forecast:
   
   nem_underlying <- read_excel(jacobs_demand_data_file,
-                               range = "A7:AJ17") %>% 
+                               range = "A7:AJ19") %>% 
     rename(source = 1) %>% 
     select(-2) %>% 
     pivot_longer(cols = -source, names_to = "year", values_to = "underlying_demand_gwh") %>% 
@@ -14,7 +14,7 @@ load_jacobs_demand_data <- function(jacobs_demand_data_file){
            underlying_demand_gwh = as.numeric(underlying_demand_gwh))
   
   wem_underlying <- read_excel(jacobs_demand_data_file,
-                               range = "A23:AJ33") %>% 
+                               range = "A25:AJ36") %>% 
     rename(source = 1) %>% 
     select(-2) %>% 
     pivot_longer(cols = -source, names_to = "year", values_to = "underlying_demand_gwh") %>% 
@@ -23,7 +23,7 @@ load_jacobs_demand_data <- function(jacobs_demand_data_file){
            underlying_demand_gwh = as.numeric(underlying_demand_gwh))
   
   nwis_underlying <- read_excel(jacobs_demand_data_file,
-                                range = "A40:AJ41") %>% 
+                                range = "A43:AJ44") %>% 
     rename(source = 1) %>% 
     select(-2) %>% 
     pivot_longer(cols = -source, names_to = "year", values_to = "underlying_demand_gwh") %>% 
@@ -32,7 +32,7 @@ load_jacobs_demand_data <- function(jacobs_demand_data_file){
            underlying_demand_gwh = as.numeric(underlying_demand_gwh))
   
   dkis_and_alice_underlying <- read_excel(jacobs_demand_data_file,
-                                range = "A48:AJ67")[19, ] %>% 
+                                range = "A51:AJ70")[19, ] %>% 
     rename(source = 1) %>% 
     select(-2) %>% 
     mutate(across(-source, as.character)) %>%  # Convert all non-source columns to character
@@ -43,7 +43,7 @@ load_jacobs_demand_data <- function(jacobs_demand_data_file){
   
   
   mtisa_underlying <- read_excel(jacobs_demand_data_file,
-                                                    range = "A61:AJ71")[10, ] %>% 
+                                                    range = "A64:AJ74")[10, ] %>% 
     rename(source = 1) %>% 
     select(-2) %>% 
     mutate(across(-source, as.character)) %>%  # Convert all non-source columns to character

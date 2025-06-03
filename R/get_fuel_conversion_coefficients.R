@@ -2,7 +2,7 @@
 
 get_fuel_conversion_coefficients <- function(electric_to_gas_coefficients_file){
   
-  conversion_factors <- read_excel("Data/elec_to_gas_coefficients.xlsx", 
+  conversion_factors <- read_excel(electric_to_gas_coefficients_file, 
                                    sheet = "coefficients") %>% 
     select(-3)
   

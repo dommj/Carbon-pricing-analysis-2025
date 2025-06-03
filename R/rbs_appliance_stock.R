@@ -24,6 +24,8 @@ rbs_stock_by_state <- rbs_output_cells %>%
   filter(!is.na(appliance)) %>% 
   mutate(stock = as.numeric(stock))
 
+
+#Assume water is between gas instant and electric storage there arent that many heat pumps even in 2040, electric storage stays dominant
 aggregates_hw <- rbs_stock_by_state %>% 
   filter(year == 2040,
          end_use %in% c("Water heating")) %>% 
@@ -42,7 +44,7 @@ aggregates_hw <- rbs_stock_by_state %>%
 
 
 
-#assume space conditioning is converted between RCAC and ducted gas.
+#assume space conditioning is converted between RCAC and ducted gas. Need to write up justification but its chill
 
 aggregates_sc <- rbs_stock_by_state %>%
   filter(year == 2040,
@@ -61,8 +63,7 @@ aggregates_sc <- rbs_stock_by_state %>%
   summarise(pct = sum(pct))
 
 
-#look at number of gas heaters in each state
-
+#look at hot water
 
 aggregates_cookin <- rbs_stock_by_state %>%
   filter(year == 2040,

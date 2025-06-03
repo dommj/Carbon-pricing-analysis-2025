@@ -55,8 +55,7 @@ get_pv_profiles <- function(pv_data_path, rbs_households){
     cooking = c("gas", "electric"),
     water_heating = c("gas", "electric"),
     space_heating = c("gas", "electric"),
-    ev = c(0, 1, 2),
-    day_type = c("WD", "WE")
+    ev = c(0, 1, 2)
   )
   
   return(bind_rows(no_pv_profile, pv_profile) %>% 

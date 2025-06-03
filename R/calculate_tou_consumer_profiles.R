@@ -1,25 +1,43 @@
 #generate time of use electricity demand profiles for cameo consumers
 
 calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
-                                            rbs_fuel_end_use_by_state,
+                                            integrated_fuel_use,
                                             rbs_tou_consumption_data,
                                             ev_consumption_profiles,
                                             pv_profiles,
-                                            rbs_households){
+                                            rbs_households,
+                                            heating_cooling_profiles){
   
-  #group appliance end uses together
+  #group appliance end uses together split space conditioning into heating and cooling profiles
   rbs_tou_consumption_data <- rbs_tou_consumption_data %>% 
     mutate(end_use = if_else(end_use_category %in% c("IT&HE", "White goods", "Other Equipment"), "Appliances", end_use_category)) %>% 
     group_by(state, season, day_type, end_use, year, hour) %>% 
     summarise(power = sum(power)) %>% 
+    ungroup() %>% 
+    #split space conditioning into heating and cooling profiles
+    filter(end_use != "Space conditioning") %>% 
+    bind_rows(heating_cooling_profiles %>%  rename(end_use = end_use_category)) %>% 
+    #take weighted average of WD and WE to average day profile
+    pivot_wider(names_from = day_type, values_from = power) %>% 
+    mutate(power = (5* WD + 2 * WE)/7) %>% 
+    select(-c(WD, WE))
+  
+  
+  #aggregate microwave back into cooking for integrated fuel use data
+  
+  integrated_fuel_use <- integrated_fuel_use %>% 
+    mutate(end_use = if_else(end_use == "Microwave", "Cooking", end_use)) %>% 
+    group_by(year, state, fuel, end_use, conversion) %>% 
+    summarise(pj = sum(pj)) %>% 
     ungroup()
   
   #get annual consumption figures and convert to MWH
   
-  annual_consumption_end_use <- rbs_fuel_end_use_by_state %>% 
+  annual_consumption_end_use <- integrated_fuel_use %>% 
     filter(year == 2020,
+           conversion  == "unconverted",
            fuel == "Electricity") %>%
-    mutate(annual_consumption_mwh = pj * 277778,
+    mutate(annual_consumption_mwh = pj * (1/3.6e-6),
            state = convert_states(state)) %>% 
     select(-c(fuel, pj))
   
@@ -28,7 +46,7 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
   normalised_tou_curves <- rbs_tou_consumption_data %>% 
     left_join(annual_consumption_end_use) %>%
     mutate(power_normalised = power / annual_consumption_mwh) %>% 
-    select(state, season, day_type, end_use, year, hour, power_normalised)
+    select(state, season, end_use, year, hour, power_normalised)
   
   #create tou profiles for all customer classes
   
@@ -38,11 +56,11 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
         unnest(cols = output) %>% 
         filter(fuel == "Electricity") %>% 
         #convert to mwh
-        mutate(annual_consumption_kwh = annual_consumption_gj * 277.778),
+        mutate(annual_consumption_kwh = annual_consumption_gj * (1/3.6e-3)),
       relationship = "many-to-many"
         ) %>% 
     mutate(power_kwh = power_normalised * annual_consumption_kwh) %>% 
-    select(cooking, water_heating, space_heating, ev, pv, state, season, day_type, end_use, hour, power_kwh)
+    select(cooking, water_heating, space_heating, ev, pv, state, season, end_use, hour, power_kwh)
   
   #aggregate nsw and act together
   nsw_act_agg <- consumer_tou_profiles %>% 
@@ -65,6 +83,14 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
   
   consumer_tou_profiles_all
 }
+
+
+
+
+
+
+
+
 
 function(){
 chart_data <- tou_consumer_profiles %>% 
@@ -110,8 +136,8 @@ tou_consumer_profiles %>%
 tou_consumer_profiles %>% 
   mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, sep = "_")) %>% 
   filter(day_type == "WD",
-         end_use == "Space conditioning",
-         state == "Vic",
+         end_use == "Space conditioning - cooling",
+         state == "NSW and ACT",
          consumer_type %in% c("electric_electric_electric_1_FALSE")) %>% 
   ggplot(aes(x = hour, y = power_kwh, colour = season)) +
   geom_line()
@@ -124,14 +150,14 @@ total_usage <- tou_consumer_profiles %>%
 }
 
 
-# all_electric_profile <- rbs_fuel_consumption_profiles %>% 
+# all_electric_profile <- rbs_fuel_consumption_profiles %>%
 #   filter(cooking == "electric",
 #          water_heating == "electric",
-#          space_heating == "electric") %>% 
-#   select(output) %>% 
+#          space_heating == "electric") %>%
+#   select(output) %>%
 #   unnest(cols = c(output))
 
-#compare annualised tou values to totals in "Energy.Elec.EndUse-State"
+#compare annualised tou values (of end uses that haven't been converted) to totals in "Energy.Elec.EndUse-State"
 #
 # Very close alignment, some have ~ 0.1% error presumably from rounding differences
 

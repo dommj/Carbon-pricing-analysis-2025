@@ -65,7 +65,7 @@ create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
     if (space_heating == "electric"){
       
       space_heating_fuel_use <- integrated_fuel_use %>% 
-        filter(end_use == "Space conditioning",
+        filter(end_use == "Space conditioning - heating",
                fuel == "Electricity",
                conversion %in% c("unconverted",
                                  "gas_to_electric_converted")) %>% 
@@ -77,7 +77,7 @@ create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
     if (space_heating == "gas"){
       
       space_heating_fuel_use <- integrated_fuel_use %>% 
-        filter(end_use == "Space conditioning",
+        filter(end_use == "Space conditioning - heating",
                fuel == "Natural Gas",
                conversion %in% c("unconverted",
                                  "electric_to_gas_converted")) %>% 
@@ -85,11 +85,13 @@ create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
         summarise(pj = sum(pj))
       
     }
+    
+    #space_conditioning - cooling is constant and not converted
   
     fuel_use <-  integrated_fuel_use %>% 
       filter(end_use %nin% c("Cooking",
                              "Water heating",
-                             "Space conditioning")) %>% 
+                             "Space conditioning - heating")) %>% 
       select(-conversion) %>% 
       bind_rows(cooking_fuel_use,
                 water_heating_fuel_use,

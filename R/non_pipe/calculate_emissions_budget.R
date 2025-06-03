@@ -8,7 +8,6 @@ library(janitor)
 library(ggplot2)
 library(readabs)
 library(fy)
-library(fnmate)
 library(lubridate)
 library(readxl)
 library(stringr)
@@ -26,12 +25,12 @@ source("R/helpers.R")
 tar_load(jacobs_electricity_demand)
 
 total_demand_nem <- jacobs_electricity_demand %>% 
-  filter(source == "Underlying Demand - Gross",
+  filter(source == "Underlying Demand - Operational Sent out + Rooftop PV",
          network == "NEM") %>% 
   select(-source)
 
 total_demand_wem <- jacobs_electricity_demand %>% 
-  filter(source == "Underlying Demand - Gross",
+  filter(source == "Underlying Demand - Operational Sent out + Rooftop PV",
          network == "WEM") %>% 
   select(-source)
 
@@ -140,23 +139,15 @@ intensities %>%
   theme_grattan(legend = "bottom") 
 
 
-#calculate emissions budget with stepchange intensity
-national_emissions_step_change <- full_join(nem_intensity, aggregate_national_demand, by = join_by(year)) %>% 
-  mutate(mt_co2e = underlying_demand_twh * mt_co2e_twh,
-         scenario = "Model intensity") %>% 
-  filter(year <= 2050)
 
 
-emissions_budget_step_change <- national_emissions_step_change %>% 
-  filter(!is.na(scenario)) %>% 
-  group_by(scenario) %>% 
-  summarise(budget = sum(mt_co2e))
+
 
 #################################
 #load NGER data
 #################################
 
-nger_23_24 <- read_excel("Data/greenhouse-and-energy-information-designated-generation-facility-2022-23.xlsx",
+nger_23_24 <- read_excel("Data/greenhouse-and-energy-information-designated-generation-facility-2023-24.xlsx",
                          skip = 3) %>% 
   clean_names() %>% 
   select(facility_name, state, electricity_production_m_wh, total_scope_1_emissions_t_co2_e, grid_connected, grid)
@@ -169,7 +160,8 @@ nger_23_24_grid_agg <- nger_23_24 %>%
 
 
 
-
+off_grid <- nger_23_24 %>% 
+  filter(grid_connected != "On")
 
 
 

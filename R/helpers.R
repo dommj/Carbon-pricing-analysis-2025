@@ -84,3 +84,6 @@ write_numbers_in_text <- function(number, type = c("percent", "number")) {
   return(output)
 }
 
+
+
+

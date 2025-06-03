@@ -14,7 +14,7 @@ library(janitor)
 library(ggplot2)
 library(readabs)
 library(fy)
-library(fnmate)
+#library(fnmate)
 library(lubridate)
 library(readxl)
 library(stringr)
@@ -25,6 +25,7 @@ library(grattantheme)
 library(forcats)
 library(scales)
 library(ggarchery)
+library(ggtext)
 
 # Set target options:
 tar_option_set(
@@ -77,11 +78,17 @@ tar_source("R/calculate_average_household_costs.R")
 tar_source("R/load_and_deflate_rbs_households.R")
 tar_source("R/get_fuel_conversion_coefficients.R")
 tar_source("R/calculate_fuel_use_conversions.R")
+tar_source("R/load_temperature_data.R")
 tar_source("R/create_rbs_fuel_consumption_profiles.R")
+tar_source("R/calculate_space_heating_tou.R")
 tar_source("R/get_rbs_electricity_consumption_data.R")
 tar_source("R/get_pv_profiles.R")
 tar_source("R/get_ev_consumption_profiles.R")
 tar_source("R/calculate_tou_consumer_profiles.R")
+tar_source("R/calculate_household_energy_efficiency.R")
+
+#calculate cameo costs
+tar_source("R/calculate_cameo_petrol_costs.R")
 
 #create charts
 tar_source("R/create_esoo_demand_chart.R")
@@ -129,8 +136,11 @@ tar_plan(
   #esoo 2024 operational demand file
   tar_file(esoo_2024_operational_file, 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'),
   
+  #2023 IASR assumptions file - essentially same as 2024 for efficiency
+  tar_file(iasr_2023_file, 'Data/2024 ISP chart data.xlsx'),
+  
   #jacobs demand file
-  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts (002).xlsx'),
+  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts Final - DJ.xlsx'),
   
   #2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
@@ -142,9 +152,8 @@ tar_plan(
   tar_file(rbs_outputs_data_file, 'Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx'),
   
   #electric to gas conversion coefficients file
-  tar_file(electric_to_gas_coefficients_file, "Data/elec_to_gas_coefficients.xlsx"),
+  tar_file(electric_to_gas_coefficients_file, "Data/appliance_efficiencies.xlsx"),
   
-  #appliance efficiency file
   
   #temperature data folder
   tar_file(temp_data_folder, 'Data/temp_data/TMYWeatherFilesEpw_20240821'),
@@ -261,7 +270,7 @@ tar_plan(
   #Calculate average consumer energy costs over time
   ####################################################################
   
-  #add average PV revenue?
+  #add average PV feed in revenue
   
   tar_target(average_household_costs, calculate_average_household_costs(retail_price_data, 
                                                                         gas_retail_volumetric_price_projections,
@@ -285,24 +294,33 @@ tar_plan(
   tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
   
   #load in fuel efficiency coefficients
-  #TO DO!! estimate efficiency now and over time, using stock... "Stock.EndUse.Cat.Grp-State" - Done. dead end, no substantial changes in stock distribution
-  
-  #also building coefficients? look at ESOO / ISP methodology for breakdown?
+  #TO DO: CHECK fuel conversion coefficients and write up justification based on stock etc
   tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)),
+  
+  
+  #get rbs electricity consumption curves
+  tar_target(rbs_tou_consumption_data, get_rbs_electricity_consumption_data(rbs_electricity_consumption_data_file)),
+  
+  #load temperature data
+  tar_target(temperature_data, load_temperature_data(temp_data_folder)),
+  
+  #generate space heating tou profiles for heating and cooling
+  tar_target(heating_cooling_profiles, calculate_space_heating_tou(rbs_tou_consumption_data, temperature_data, 
+                                                                   comfort_temp_heating = 18, comfort_temp_cooling = 18)),
+  
+  
   
   tar_target(integrated_fuel_use, calculate_fuel_use_conversions(fuel_conversion_coefficients,
                                                                  rbs_outputs_data_file,
-                                                                 rbs_fuel_end_use_by_state)),
+                                                                 rbs_fuel_end_use_by_state,
+                                                                 heating_cooling_profiles)),
   
+  #create fuel consumption totals for each profile
   tar_target(rbs_fuel_consumption_profiles, create_rbs_fuel_consumption_profiles(integrated_fuel_use,
                                                                                         rbs_households)),
   
   #TO DO !! apply energy efficiency to profiles
   
-  #Next: convert electricity use to ToU profiles.
-  
-  #get rbs electricity consumption curves
-  tar_target(rbs_tou_consumption_data, get_rbs_electricity_consumption_data(rbs_electricity_consumption_data_file)),
   
   #Next: Load EV consumption profiles
   tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
@@ -312,21 +330,34 @@ tar_plan(
   tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households)),
   
   
-  #gas cooling is not really a thing. Currently, additional gas / electricity use isn't apportioned throughout seasons. this means summer will be too high (too much gas heating applied to the summer profile) and winter too low in e.g victoria
-  
   #apply fuel profiles to generate loads for all customer classes, add in pv and evs
   tar_target(tou_consumer_profiles, calculate_tou_consumer_profiles(rbs_fuel_consumption_profiles,
-                                                                    rbs_fuel_end_use_by_state,
+                                                                    integrated_fuel_use,
                                                                     rbs_tou_consumption_data,
                                                                     ev_consumption_profiles,
                                                                     pv_profiles,
-                                                                    rbs_households)),
+                                                                    rbs_households,
+                                                                    heating_cooling_profiles)),
+  
+  #Apply energy efficiency to get time series
+  
+  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(iasr_2023_file)),
   
   
-  #time of use tariffs
+  ####################################################################
+  #Calculate cameo consumer energy costs - flat rate
+  #################################################################### 
 
+  #calculate gas costs
   
+  
+    
   #calculate petrol costs
+  tar_target(cameo_petrol_costs, calculate_cameo_petrol_costs(average_petrol_use_per_km, 
+                                                              average_km_per_vehicle,
+                                                              petrol_price_projections)),
+  
+  
   
   
   
@@ -338,7 +369,17 @@ tar_plan(
   ####################################################################
   #Create charts
   ####################################################################
+  
+  #need to comment out overleaf paths before sending for QC
+  
+  #create esoo demand chart
   tar_target(esoo_demand_chart, create_esoo_demand_chart(esoo_2024_operational_file))
+  
+  
+  #create victorian consumption charts to compare to AEMO
+  #making_prelim_vic_charts_aemo_compare.R
+  
+  
   
 )
 

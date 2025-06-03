@@ -64,7 +64,11 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
   weighted_ev_profiles <- unweighted_ev_profiles %>% 
     left_join(vehicle_type_weights) %>% 
     group_by(state, day_type, hour) %>% 
-    summarise(power_kwh = weighted.mean(power_kwh, vehicles_count))
+    summarise(power_kwh = weighted.mean(power_kwh, vehicles_count)) %>% 
+    #take weighted average of WD and WE to average day profile
+    pivot_wider(names_from = day_type, values_from = power_kwh) %>% 
+    mutate(power_kwh = (5* WD + 2 * WE)/7) %>% 
+    select(-c(WD, WE))
   
   
   no_ev_profile <- weighted_ev_profiles %>% 

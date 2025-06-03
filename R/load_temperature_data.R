@@ -1,5 +1,5 @@
 #load typical year temperature data
-function(temp_data_folder, comfort_temp = 20){
+load_temperature_data <- function(temp_data_folder, comfort_temp_heating = 18, comfort_temp_cooling = 20){
   
   temp_files <- list.files(path = temp_data_folder)
   
@@ -65,7 +65,7 @@ function(temp_data_folder, comfort_temp = 20){
   state_list <- c("NSW", "Vic", "NT", "WA", "Qld", "Tas", "ACT", "SA")
   
   temp_data <- bind_rows(temp_data_list) %>% 
-    mutate(location = case_when(str_detect(location, "Sydney") ~ "NSW",
+    mutate(state = case_when(str_detect(location, "Sydney") ~ "NSW",
                                 str_detect(location, "Melbourne") ~ "Vic",
                                 str_detect(location, "Darwin") ~ "NT",
                                 str_detect(location, "Brisbane") ~ "Qld",
@@ -74,20 +74,8 @@ function(temp_data_folder, comfort_temp = 20){
                                 str_detect(location, "Adelaide") ~ "SA",
                                 str_detect(location, "Perth") ~ "WA",
                                 ),
-           average = (max_c + min_c)/2,
-           cooling_deg_days = if_else(average > comfort_temp, average - comfort_temp, 0),
-           heating_deg_days = if_else(average < comfort_temp, comfort_temp - average, 0),
-           month = as.numeric(month),
-           season = fct_case_when(month %in% c(12,1,2) ~ "Summer",
-                                  month %in% c(3,4,5) ~ "Autumn",
-                                  month %in% c(6,7,8) ~ "Winter",
-                                  month %in% c(9,10,11) ~ "Spring")) %>% 
-    filter(location %in% state_list) %>% 
-    group_by(location, season) %>% 
-    summarise(cooling_deg_days = sum(cooling_deg_days),
-              heating_deg_days = sum(heating_deg_days)) %>% 
-    ungroup() %>% 
-    mutate(pct_load_heating = heating_deg_days /(heating_deg_days + cooling_deg_days))
+           average = (max_c + min_c)/2) %>% 
+    filter(state %in% state_list)
   
-  
+  temp_data
 }

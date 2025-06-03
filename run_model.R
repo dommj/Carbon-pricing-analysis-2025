@@ -11,7 +11,7 @@ required_packages <- required_packages <- c(
   "ggplot2",
   "readabs",
   "fy",
-  "fnmate",
+  #"fnmate",
   "lubridate",
   "readxl",
   "stringr",
