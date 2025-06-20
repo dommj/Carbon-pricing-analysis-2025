@@ -100,7 +100,7 @@ create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
     household_fuel_use <- fuel_use %>% 
       left_join(rbs_households) %>% 
       mutate(annual_consumption_gj = (pj / occupied_households) * 1e6,
-             consumer_type = paste0(cooking, " cooking, ", water_heating, " water heating, and ", space_heating, " heating and cooling")) %>% 
+             consumer_type = paste0(cooking, " cooking, ", water_heating, " water heating, and ", space_heating, " heating")) %>% 
       select(-c(pj, occupied_households)) %>% 
       #add microwave to cooking
       mutate(end_use = if_else(end_use == "Microwave", "Cooking", end_use)) %>% 

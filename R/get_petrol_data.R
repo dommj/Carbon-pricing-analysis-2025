@@ -23,7 +23,10 @@ get_petrol_data <- function(petrol_file) {
   data <- read_csv(petrol_file) %>% 
     clean_names() %>% 
     mutate(category = "Petrol",
-           c_litre = c_litre*inflator)
+           c_litre = c_litre*inflator) %>% 
+    select(year, c_litre, category)
+  
+  
   data
   
 }

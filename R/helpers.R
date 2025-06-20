@@ -21,7 +21,7 @@ convert_states <- function(state){
 }
 
 
-convert_to_2024_dollars <- function(dollars, current_year, financial = F){
+convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar year"){
   
   cpi_fy <- read_cpi() %>%
     filter(year(date)>2000) %>%
@@ -30,6 +30,9 @@ convert_to_2024_dollars <- function(dollars, current_year, financial = F){
     summarise(cpi=mean(cpi)) %>%
     ungroup() 
   
+  cpi_qtr<- read_cpi() %>%
+    filter(year(date)>2000)
+  
   cpi_calendar <- read_cpi() %>%
     filter(year(date)>2000) %>%
     mutate(year = year(date)) %>%
@@ -37,7 +40,7 @@ convert_to_2024_dollars <- function(dollars, current_year, financial = F){
     summarise(cpi=mean(cpi)) %>%
     ungroup()
   
-  if (financial == F){
+  if (unit_type == "calendar year"){
     
     dollars_24 <- dollars_24 <- dollars * 
       (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
@@ -45,11 +48,19 @@ convert_to_2024_dollars <- function(dollars, current_year, financial = F){
     
   }
   
-  if (financial == T){
+  if (unit_type == "fy"){
     
     dollars_24 <- dollars_24 <- dollars * 
       (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
       (cpi_fy %>% filter(fy == current_year) %>% pull(cpi))
+    
+  }
+  
+  if (unit_type == "qtr"){
+    
+    dollars_24 <- dollars_24 <- dollars * 
+      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+      (cpi_qtr %>% filter(qtr == current_year) %>% pull(cpi))
     
   }
  

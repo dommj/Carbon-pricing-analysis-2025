@@ -45,8 +45,10 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
   
   normalised_tou_curves <- rbs_tou_consumption_data %>% 
     left_join(annual_consumption_end_use) %>%
-    mutate(power_normalised = power / annual_consumption_mwh) %>% 
-    select(state, season, end_use, year, hour, power_normalised)
+    mutate(power_normalised = power / annual_consumption_mwh,
+           #there is 0 total space conditioning - heating consumption in NT, giving us infinity. Set to zero
+           power_normalised = if_else(state == "NT" & end_use == "Space conditioning - heating", 0, power_normalised)) %>% 
+    select(state, season, end_use, year, hour, power_normalised) 
   
   #create tou profiles for all customer classes
   

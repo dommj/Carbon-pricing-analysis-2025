@@ -15,6 +15,7 @@ get_benchmark_gas_consumption <- function(aer_gas_benchmarks_file,
               by = "state") 
 
   
+  #aggregate NSW and ACT
   gas_benchmarks_weighted <- gas_benchmarks %>% 
     bind_rows(
       gas_benchmarks %>%

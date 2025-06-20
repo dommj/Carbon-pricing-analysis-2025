@@ -87,8 +87,12 @@ tar_source("R/get_ev_consumption_profiles.R")
 tar_source("R/calculate_tou_consumer_profiles.R")
 tar_source("R/calculate_household_energy_efficiency.R")
 
+tar_source("R/calculate_annual_electricity_consumption_profiles.R")
+
 #calculate cameo costs
 tar_source("R/calculate_cameo_petrol_costs.R")
+tar_source("R/calculate_cameo_gas_costs.R")
+tar_source("R/calculate_cameo_electricity_costs.R")
 
 #create charts
 tar_source("R/create_esoo_demand_chart.R")
@@ -97,17 +101,26 @@ tar_source("R/create_esoo_demand_chart.R")
 tar_plan(
   
   start_year = 2025,
-  end_year = 2040,
+  end_year = 2050,
   
   ####################################################################
   #data files
   ####################################################################
+  #jacobs files
+  
+  #jacobs demand file
+  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0604.xlsx'),
+  
+  #jacobs retail model file
+  tar_file(jacobs_retail_model_file, "Data/Jacobs/RetailPriceProjections_Base.xlsx"),
+  
+  #other data files
   
   #retail electricity prices
   tar_file(retail_file, 'Data/AEMC price trends/nsw_25.csv'),
   
   #petrol prices
-  tar_file(petrol_file, 'Data/accc_retail_fuel_04_24.csv'),
+  tar_file(petrol_file, 'Data/accc_retail_fuel_04_24_report.csv'),
   
   #gas prices
   tar_file(gas_prices_file, 'Data/Gas/ACIL Allen Natural Gas Price Forecast.xlsx'),
@@ -138,9 +151,6 @@ tar_plan(
   
   #2023 IASR assumptions file - essentially same as 2024 for efficiency
   tar_file(iasr_2023_file, 'Data/2024 ISP chart data.xlsx'),
-  
-  #jacobs demand file
-  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts Final - DJ.xlsx'),
   
   #2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
@@ -339,9 +349,17 @@ tar_plan(
                                                                     rbs_households,
                                                                     heating_cooling_profiles)),
   
-  #Apply energy efficiency to get time series
+  #calculate energy efficiency multiplier for underlying demand - NEED TO ADD IN ESTIMATED CHANGE FROM 2020-2024 USING PREVIOUS ESOO/ISP IF POSS
+  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(iasr_2023_file,
+                                                                                tou_consumer_profiles)),
   
-  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(iasr_2023_file)),
+  #calculate annual electricity consumption and exports for each year by aggregating ToU profiles and applying efficiency estimates
+  tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(tou_consumer_profiles,
+                                                                                                        rbs_fuel_consumption_profiles,
+                                                                                                        household_energy_efficiency,
+                                                                                                        rbs_households)),
+  
+  #calculate aggregate gas consumption
   
   
   ####################################################################
@@ -349,14 +367,22 @@ tar_plan(
   #################################################################### 
 
   #calculate gas costs
+  tar_target(cameo_gas_costs, calculate_cameo_gas_costs(gas_retail_volumetric_price_projections,
+                                                        gas_connection_charge_projections,
+                                                        rbs_fuel_consumption_profiles,
+                                                        rbs_households)),
   
+  #calculate electricity costs
+  tar_target(cameo_electricity_costs, calculate_cameo_electricity_costs(annual_electricity_consumption_profiles,
+                                                                        retail_price_data,
+                                                                        jacobs_retail_model_file)),
   
     
   #calculate petrol costs
   tar_target(cameo_petrol_costs, calculate_cameo_petrol_costs(average_petrol_use_per_km, 
                                                               average_km_per_vehicle,
                                                               petrol_price_projections)),
-  
+  #join all costs data
   
   
   
@@ -380,6 +406,7 @@ tar_plan(
   #making_prelim_vic_charts_aemo_compare.R
   
   
+  #early_charts_for_savings.R
   
 )
 

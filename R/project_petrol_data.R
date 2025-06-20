@@ -1,27 +1,23 @@
-#project petrol data using linear fit from 2004 to 2024
+#project real petrol prices data linear fit from 2004 to 2024
 
-project_petrol_data <- function(petrol_data, end_year) {
+project_petrol_data <- function(petrol_price_data, end_year) {
   
-  # Calculate the linear interpolation parameters
-  year_1 <- min(petrol_data$year)
-  year_n <- max(petrol_data$year)
-  c_litre_1 <- petrol_data$c_litre[petrol_data$year == year_1]
-  c_litre_n <- petrol_data$c_litre[petrol_data$year == year_n]
+  #calculate linear fit for petrol price data
+  model <- lm(c_litre ~ year, data = petrol_price_data)
   
-  # Calculate slope
-  slope <- (c_litre_n - c_litre_1) / (year_n - year_1)
-  
-  # Create a sequence of all years
-  all_years <- tibble(
-    year = seq(year_1, end_year)
+  # Create extended year sequence for projection
+  projection_years <- tibble(
+    year = (max(petrol_price_data$year) + 1):end_year
   )
   
-  # Calculate interpolated values using the linear formula: y = y1 + slope * (x - x1)
-  interpolated_data <- all_years %>%
-    mutate(c_litre = c_litre_1 + slope * (year - year_1),
-           category = "petrol")
+  #predict
+  projected_petrol_price <- projection_years %>%
+    mutate(
+      c_litre = predict(model, newdata = .)
+    )
   
-  interpolated_data
+
+  return(bind_rows(petrol_price_data, projected_petrol_price))
 }
 
 # project_petrol_data(petrol_data, 2050) %>% 

@@ -9,7 +9,7 @@ get_retail_data <- function(retail_file) {
   read_csv(retail_file, col_types = cols()) %>% 
     clean_names() %>% 
     mutate(across(c_kwh, 
-                  ~convert_to_2024_dollars(., "2024-25", financial = TRUE)))
+                  ~convert_to_2024_dollars(., "2024-25", unit_type = "fy")))
 }
 
 

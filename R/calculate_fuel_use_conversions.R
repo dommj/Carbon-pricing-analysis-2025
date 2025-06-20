@@ -67,6 +67,7 @@ calculate_fuel_use_conversions <- function(fuel_conversion_coefficients,
     mutate(end_use = if_else(fuel == "Natural Gas" & end_use == "Space conditioning", "Space conditioning - heating", end_use))
                    
   
+  #note that there is a tiny amount of space-conditioning - heating associated with NT despite zero estimated heating days. this is due to the 0.0018 PJ that is capturesd as LPG space conditioning in the RBS vs 0.86 PJ for electricity (LPG = 0.2% of electricity) and is negligible.
   
   #complete conversions
   

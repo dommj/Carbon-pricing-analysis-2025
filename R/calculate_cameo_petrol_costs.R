@@ -20,9 +20,21 @@ calculate_cameo_petrol_costs <- function(average_petrol_use_per_km,
     mutate(`0` = 0 * petrol_cost / 100,
            `1` = 1 * petrol_cost / 100,
            `2` = 2 * petrol_cost / 100) %>% 
-    pivot_longer(cols = c(`0`, `1`, `2`), names_to = "ice", values_to = "average_cost_dollars") %>% 
-    select(year, state, category, ice, average_cost_dollars)
+    pivot_longer(cols = c(`0`, `1`, `2`), names_to = "ice", values_to = "annual_cost_dollars") %>% 
+    select(year, state, category, ice, annual_cost_dollars)
    
+  params <- expand_grid(
+    cooking = c("gas", "electric"),
+    water_heating = c("gas", "electric"),
+    space_heating = c("gas", "electric"),
+    pv = c(TRUE, FALSE),
+    ev = c(0, 1, 2)
+  )
+  
+  average_fuel_cost_per_vehicle <- average_fuel_cost_per_vehicle %>% 
+    cross_join(params) %>% 
+    mutate(ice = as.numeric(ice))
+  
   
   average_fuel_cost_per_vehicle
 }
