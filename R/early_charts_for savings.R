@@ -103,8 +103,8 @@ plot_data %>%
   
   grattan_y_continuous(labels = dollar) + 
   scale_x_discrete(expand = c(0,0,0,2)) +
-  labs(title = 'Overall consumer energy costs will decline as prices ease and electrification increases',
-       subtitle = 'Projected energy costs to residential consumers, Victoria',
+  labs(title = '10 year annualised savings',
+       subtitle = 'savings....',
        x = '',
        y = '')
 

@@ -22,7 +22,7 @@ get_gas_prices_data <- function(gas_prices_file){
                              state == 'darwin' ~ 'NT'),
            #need to convert to 2024 dollars
            across(dollars_per_gj, 
-                  ~convert_to_2024_dollars(., 2023, financial = F)))
+                  ~convert_to_2024_dollars(., 2023,  unit_type = "calendar year")))
   
 }
 

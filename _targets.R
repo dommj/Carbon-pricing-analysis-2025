@@ -68,11 +68,17 @@ tar_source('R/get_residential_ev_consumption.R')
 
 tar_source('R/get_average_residential_operational_demand.R')
 tar_source('R/calculate_average_residential_gas_consumption.R')
-tar_source("R/calculate_average_petrol_consumption.R")
+#tar_source("R/calculate_average_petrol_consumption.R")
 
+#average consumption - update
+#tar_source('R/get_esoo_electrification_per_household.R')
+tar_source('R/get_rbs_baseline_consumption.R')
+tar_source('R/calculate_displaced_gas_consumption.R')
+tar_source("R/calculate_additional_electricty_consumption.R")
+tar_source("R/calculate_gas_n_efficiency_adj_tou_consumption.R")
 
 #calculate average household costs
-tar_source("R/calculate_average_household_costs.R")
+#tar_source("R/calculate_average_household_costs.R")
 
 #create cameo usage profiles
 tar_source("R/load_and_deflate_rbs_households.R")
@@ -146,8 +152,14 @@ tar_plan(
   #esoo_2024_assumptions_workbook_file
   tar_file(esoo_2024_assumptions_workbook_file, 'Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx'),
   
+  #abs dwelling completions file: https://dataexplorer.abs.gov.au/vis?tm=building%20activity&pg=0&df[ds]=ABS_ABS_TOPICS&df[id]=BUILDING_ACTIVITY&df[ag]=ABS&df[vs]=1.0.0&pd=2019-Q1%2C&dq=M7...TOT.9.100.10.Q&ly[cl]=TIME_PERIOD&ly[rw]=REGION&to[TIME_PERIOD]=false
+  tar_file(abs_dwelling_completions_file, "Data/dwelling_completions_abs.xlsx"),
+  
   #esoo 2024 operational demand file
   tar_file(esoo_2024_operational_file, 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'),
+  
+  #esoo 2020 operational demand file - used for energy efficiency to 2024
+  tar_file(esoo_2020_operational_file, 'Data/2020 ESOO.xlsx'),
   
   #2023 IASR assumptions file - essentially same as 2024 for efficiency
   tar_file(iasr_2023_file, 'Data/2024 ISP chart data.xlsx'),
@@ -189,6 +201,10 @@ tar_plan(
   
   #get gas volume prices
   tar_target(gas_volume_price_data, get_gas_prices_data(gas_prices_file)),
+  
+  ####################################################################
+  #calculate gas bill data
+  ####################################################################
   
   #load gas consumption data
   tar_target(gsoo_consumption_data, get_gsoo_consumption_data(gsoo_consumption_data_file)),
@@ -236,22 +252,15 @@ tar_plan(
   ####################################################################
   
   #number of connections
-  tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file)),
+  tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file,
+                                                                   abs_dwelling_completions_file)),
   
   #Residential EV use
   tar_target(residential_ev_econsumption, get_residential_ev_consumption_data(electric_vehicle_workbook_file)),
-  
-  #Electricity use
-  tar_target(average_residential_operational_demand, get_average_residential_operational_demand(esoo_2024_operational_file, residential_ev_econsumption, household_connections)),
-  
-  #jacobs electricity demand
-  tar_target(jacobs_electricity_demand, load_jacobs_demand_data(jacobs_demand_data_file)),
 
-  
   # Gas use - average over all households with an electricity connection
   tar_target(average_gas_consumption, calculate_average_residential_gas_consumption(household_connections,
                                                                                     residential_gas_consumption_projections)),
-
   
   #Petrol use - per km
   tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)),
@@ -270,31 +279,15 @@ tar_plan(
   tar_target(vehicles_per_household, get_vehicles_per_household(ev_fleet_data, household_connections)),
   
   #average_petrol_consumption per household
-  tar_target(average_petrol_consumption, calculate_average_petrol_consumption(ev_fleet_data, 
-                                                                              average_petrol_use_per_km, 
-                                                                              average_km_per_vehicle, 
-                                                                              vehicles_per_household)),
+  # tar_target(average_petrol_consumption, calculate_average_petrol_consumption(ev_fleet_data, 
+  #                                                                             average_petrol_use_per_km, 
+  #                                                                             average_km_per_vehicle, 
+  #                                                                             vehicles_per_household)),
  
+
   
   ####################################################################
-  #Calculate average consumer energy costs over time
-  ####################################################################
-  
-  #add average PV feed in revenue
-  
-  tar_target(average_household_costs, calculate_average_household_costs(retail_price_data, 
-                                                                        gas_retail_volumetric_price_projections,
-                                                                        gas_network_charge_revenue,
-                                                                        petrol_price_projections,
-                                                                        household_connections,
-                                                                        average_residential_operational_demand,
-                                                                        average_gas_consumption,
-                                                                        average_petrol_consumption)),
-  
-  
-  
-  ####################################################################
-  #Calculate cameo consumer energy usage
+  #Calculate consumer energy usage from residential baseline study
   #################################################################### 
   
   #load RBS household numbers and deflate to represent 10% vacancy rate.
@@ -325,6 +318,57 @@ tar_plan(
                                                                  rbs_fuel_end_use_by_state,
                                                                  heating_cooling_profiles)),
   
+  ##############################################
+  #calculate average consumption profile
+  ##############################################
+  
+  #Plan:
+  #see if GSOO estimates for residential gas consumption per household (average gas consumption) in 2020 (need to get 2020 GSOO for this) roughly match RBS estimates (they mostly will I think)
+  
+  #calculate proportional decline in gas use per household from GSOO
+  
+  #scale down gas use in RBS proportionally to decline in GSOO
+  
+  #convert the usage that has been removed into electricity consumption
+  
+  #boom - check with alison if this logic sounds right.
+  
+  #define baseline rbs gas consumption per household
+  tar_target(rbs_baseline_consumption, get_rbs_baseline_consumption(integrated_fuel_use, 
+                                                                      rbs_households)),
+  
+  tar_target(rbs_displaced_gas_consumption, calculate_displaced_gas_consumption(average_gas_consumption,
+                                                                                rbs_baseline_consumption,
+                                                                                rbs_households)),
+  
+  tar_target(additional_electricty_consumption, calculate_additional_electricty_consumption(fuel_conversion_coefficients, 
+                                                                                            rbs_displaced_gas_consumption, 
+                                                                                            rbs_baseline_consumption)),
+  
+  # tar_target(esoo_electrification_per_household, get_esoo_electrification_per_household(esoo_2024_operational_file, 
+  #                                                                                       household_connections)),
+  
+  #convert additonal electricity consumption from displaced gas into tou additional electricity consumption and scale total consumption by assumed efficiency gains
+  tar_target(gas_n_efficiency_adj_tou_consumption, calculate_gas_n_efficiency_adj_tou_consumption(rbs_baseline_consumption,
+                                               additional_electricty_consumption,
+                                               rbs_tou_consumption_data,
+                                               heating_cooling_profiles,
+                                               rbs_households)),
+  
+  
+  
+  
+  #add average PV feed in revenue
+  
+  
+  #we're going to want to calculate costs without degassification and without changes in solar potentially, to show relevant savings  three scenarios, no-degassification-no solar increase, degassification but no solar increase, solar increase but no degasification, solar increase and degassification - ONLY IF TIME
+  
+  
+  ##############################################
+  #create cameo consumption profiles
+  ##############################################
+  
+  
   #create fuel consumption totals for each profile
   tar_target(rbs_fuel_consumption_profiles, create_rbs_fuel_consumption_profiles(integrated_fuel_use,
                                                                                         rbs_households)),
@@ -349,8 +393,10 @@ tar_plan(
                                                                     rbs_households,
                                                                     heating_cooling_profiles)),
   
-  #calculate energy efficiency multiplier for underlying demand - NEED TO ADD IN ESTIMATED CHANGE FROM 2020-2024 USING PREVIOUS ESOO/ISP IF POSS
-  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(iasr_2023_file,
+  #calculate energy efficiency multiplier for underlying demand 
+  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file, 
+                                                                                household_connections,
+                                                                                esoo_2020_operational_file,
                                                                                 tou_consumer_profiles)),
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles and applying efficiency estimates

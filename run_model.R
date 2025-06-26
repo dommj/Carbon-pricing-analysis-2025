@@ -40,7 +40,7 @@ library(tarchetypes)
 
 tar_make()
 
-# tar_visnetwork()
+tar_visnetwork()
 # tar_read(standing_offer_bills)
 
 # average_household_costs

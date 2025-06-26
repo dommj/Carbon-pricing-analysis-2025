@@ -8,6 +8,10 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
                                             rbs_households,
                                             heating_cooling_profiles){
   
+  rbs_households <- rbs_households %>% 
+    filter(year == 2020) %>% 
+    select(-year)
+  
   #group appliance end uses together split space conditioning into heating and cooling profiles
   rbs_tou_consumption_data <- rbs_tou_consumption_data %>% 
     mutate(end_use = if_else(end_use_category %in% c("IT&HE", "White goods", "Other Equipment"), "Appliances", end_use_category)) %>% 

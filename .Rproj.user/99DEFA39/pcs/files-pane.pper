@@ -1,12 +1,12 @@
 {
     "sortOrder": [
         {
-            "columnIndex": 2,
+            "columnIndex": 4,
             "ascending": true
         },
         {
-            "columnIndex": 4,
-            "ascending": false
+            "columnIndex": 2,
+            "ascending": true
         }
     ],
     "path": "C:/Users/domijones/OneDrive - The University of Melbourne/Energy/Analysis/analysis_cp_dj_2025/R"

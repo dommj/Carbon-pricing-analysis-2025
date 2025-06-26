@@ -5,6 +5,9 @@ calculate_cameo_gas_costs <- function(gas_retail_volumetric_price_projections,
          rbs_fuel_consumption_profiles,
          rbs_households){
   
+  rbs_households <- rbs_households %>% 
+    filter(year == 2020) %>% 
+    select(-year)
   
   #aggregate nsw and act together
   nsw_act_agg <- rbs_fuel_consumption_profiles %>% 

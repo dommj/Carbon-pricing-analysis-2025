@@ -27,15 +27,15 @@ load_and_deflate_rbs_households <- function(rbs_outputs_data_file){
     behead("left", "state") %>% 
     select(year, state, content) %>% 
     rename(households = content) %>% 
-    filter(year == 2020) %>% 
+    #filter(year == 2020) %>% 
     mutate(households = as.numeric(households),
            year = as.numeric(year),
            state = convert_states(state)) %>% 
-    filter(year == 2020) %>% 
+    #filter(year == 2020) %>% 
     left_join(occupancy_rates_16) %>% 
     #deflate by 10% to account for vacancy
     mutate(occupied_households = households * occupancy_rate) %>% 
-    select(state, occupied_households)
+    select(year, state, occupied_households)
   
   rbs_households
   

@@ -5,10 +5,14 @@ calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profi
                                                             household_energy_efficiency,
                                                             rbs_households){
   
+  rbs_households <- rbs_households %>% 
+    filter(year == 2020) %>% 
+    select(-year)
+  
   #calculate annual electricity consumption and exports from tou_profiles
   annual_consumption_exports <- tou_consumer_profiles %>% 
     
-    #adjust electricity consumption energy efficiency coefficients **THIS IS TO BE UPDATED ONCE WE HEAR BACK FROM ESOO**
+    #adjust electricity consumption energy efficiency coefficients 
     left_join(household_energy_efficiency, relationship = "many-to-many") %>%
     mutate(power_kwh = power_kwh * efficiency_multiplier) %>%
     select(-efficiency_multiplier) %>%

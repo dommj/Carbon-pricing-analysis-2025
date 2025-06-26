@@ -2,6 +2,10 @@
 
 get_pv_profiles <- function(pv_data_path, rbs_households){
   
+  rbs_households <- rbs_households %>% 
+    filter(year == 2020) %>% 
+    select(-year)
+  
   pv_files <- list.files(path = pv_data_path)
   
   read_pv_data <- function(pv_file){

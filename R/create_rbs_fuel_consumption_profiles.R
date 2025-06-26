@@ -3,6 +3,10 @@
 create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
                                                  rbs_households){
 
+  rbs_households <- rbs_households %>% 
+    filter(year == 2020) %>% 
+    select(-year)
+  
   #write function to generate a profile for a particular set of our parameters
   generate_fuel_consumption_profile <- function(integrated_fuel_use,
                                                    rbs_households,
