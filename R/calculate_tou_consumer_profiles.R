@@ -6,7 +6,8 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
                                             ev_consumption_profiles,
                                             pv_profiles,
                                             rbs_households,
-                                            heating_cooling_profiles){
+                                            heating_cooling_profiles,
+                                            household_energy_efficiency){
   
   rbs_households <- rbs_households %>% 
     filter(year == 2020) %>% 
@@ -78,16 +79,74 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
     ungroup() %>% 
     mutate(state = "NSW and ACT")
   
+  #add NSW and ACT back in
   consumer_tou_profiles <- consumer_tou_profiles %>% 
     filter(state %nin% c("NSW", "ACT")) %>% 
-    bind_rows(nsw_act_agg)
+    bind_rows(nsw_act_agg) 
+  
+  #apply efficiency gains to each end_use (evs are assumed to have minimal efficiency gains, and data is sourced from 2040 so cant meaningfully adjust easily)
+  energy_efficiency_multipliers <- household_energy_efficiency %>% 
+    #actual rates of efficiency will vary by end_use, meaning time of use will be a bit off but average is good enough.
+    #there is limited vehicle efficiency improvements expected for EVs according to projections, can ignore or add in later.
+    cross_join(consumer_tou_profiles %>% 
+                 select(end_use) %>% 
+                 unique()) %>% 
+    ungroup() 
+  
+  
+  adj_consumer_tou_profiles <- consumer_tou_profiles %>% 
+    #adjust electricity consumption by energy efficiency coefficients 
+    right_join(energy_efficiency_multipliers, relationship = "many-to-many") %>%
+    mutate(power_kwh = power_kwh * efficiency_multiplier) %>%
+    select(-efficiency_multiplier)
+  
+  
+  ##############################################################################
+  #give an EV electricity consumption profile to each customer type (0,1,2 EVs)
+  ##############################################################################
+  no_ev_profile <- ev_consumption_profiles %>% 
+    mutate(ev = 0,
+           end_use = "Electric vehicle",
+           power_kwh = 0)
+  
+  one_ev_profile <- ev_consumption_profiles %>% 
+    mutate(ev = 1,
+           end_use = "Electric vehicle")
+  
+  two_ev_profile <- ev_consumption_profiles %>% 
+    mutate(ev = 2,
+           end_use = "Electric vehicle",
+           power_kwh = 2 * power_kwh)
+  
+  
+  #assign same daily profile across all seasons and all consumer types
+  seasons_n_cust_types <- expand_grid(
+    season = c("Summer", "Autumn", "Winter", "Spring"),
+    cooking = c("gas", "electric"),
+    water_heating = c("gas", "electric"),
+    space_heating = c("gas", "electric"),
+    pv = c(TRUE, FALSE)
+  )
+  
+  ev_consumption_profiles_all <- bind_rows(no_ev_profile, one_ev_profile, two_ev_profile) %>% 
+    filter(year <= 2050) %>% 
+    cross_join(seasons_n_cust_types)
+  
+  states_w_data <- adj_consumer_tou_profiles %>% 
+    filter(hour == 0) %>% 
+    select(state) %>% 
+    unique() %>% 
+    pull()
   
   #add in EVs and PV
-  consumer_tou_profiles_all <- consumer_tou_profiles %>% 
-    bind_rows(ev_consumption_profiles, pv_profiles)
-
+  adj_consumer_tou_profiles_all <- adj_consumer_tou_profiles %>% 
+    bind_rows(ev_consumption_profiles_all, pv_profiles) %>% 
+    #filter out states we have incomplete data for
+    filter(state %in% states_w_data)
+ 
   
-  consumer_tou_profiles_all
+  adj_consumer_tou_profiles_all
+  
 }
 
 

@@ -252,9 +252,10 @@ consumers <- bind_rows(elec_consumption_consumer_1, elec_consumption_consumer_2)
     filter(cooking == "electric", 
            water_heating == "electric", 
            space_heating == "electric", 
-           ev == 0,
+           ev == 1,
            pv == 0,
-           state == "Vic") %>% 
+           state == "Vic",
+           year == 2050) %>% 
     ggplot(aes(x = hour, y = power_kwh, fill = end_use)) +
     geom_area()+
     facet_wrap(~season) 

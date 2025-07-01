@@ -2,20 +2,15 @@
 
 calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profiles,
                                                             rbs_fuel_consumption_profiles,
-                                                            household_energy_efficiency,
                                                             rbs_households){
   
   rbs_households <- rbs_households %>% 
     filter(year == 2020) %>% 
     select(-year)
+
   
   #calculate annual electricity consumption and exports from tou_profiles
   annual_consumption_exports <- tou_consumer_profiles %>% 
-    
-    #adjust electricity consumption energy efficiency coefficients 
-    left_join(household_energy_efficiency, relationship = "many-to-many") %>%
-    mutate(power_kwh = power_kwh * efficiency_multiplier) %>%
-    select(-efficiency_multiplier) %>%
 
     group_by(cooking, water_heating, space_heating, ev, pv, 
              year, 
@@ -37,7 +32,7 @@ calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profi
     ungroup()
   
   
-  #next, apply expected increase in curtailment to exports...
+  #next, apply expected increase in curtailment to exports... probably don't need to do as price goes to zero...
   
   ############################################################
   #Sense Checking: confirm that summed tou matches aggregate inputs
@@ -91,5 +86,6 @@ calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profi
 #          ev == 0) %>% 
 #   ggplot(aes(x = year, y = annual_consumption_kwh)) +
 #   geom_area()
+
 
 

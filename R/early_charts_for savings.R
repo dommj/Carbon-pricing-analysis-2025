@@ -22,7 +22,9 @@ data %>%
          state == "NSW and ACT",
          year %in% seq(2025, 2034)) %>% 
   ggplot(aes(x = year, y = annual_cost_dollars, fill = category)) +
-  geom_col()
+  geom_col() + 
+  grattan_y_continuous() +
+  theme_grattan()
 
 
 ten_year_costs_data <- data %>% 
@@ -113,6 +115,6 @@ grattan_save_pptx("test_savings.pptx")
 
 ten_year_costs
 
-  
+
   
   

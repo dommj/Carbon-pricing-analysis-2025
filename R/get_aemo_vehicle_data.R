@@ -117,7 +117,8 @@ aemo_vehicle_data <- bind_rows(aemo_bev_nsw_act_data,
                values_to = "vehicles_count") %>%
   clean_names() %>% 
   mutate(year = fy2yr(year)) %>% 
-  filter(str_detect(vehicle_type, 'Residential')) 
+  filter(str_detect(vehicle_type, 'Residential')) %>% 
+  ungroup()
 
   # group_by(year, state, fuel_type) %>% 
   # summarise(vehicles_count = sum(vehicles_count)) %>% 

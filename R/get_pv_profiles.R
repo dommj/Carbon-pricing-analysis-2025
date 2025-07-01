@@ -53,21 +53,25 @@ get_pv_profiles <- function(pv_data_path, rbs_households){
   pv_profile <- pv_data %>% 
     mutate(pv = TRUE)
   
+  # we may want to scale up PV sizes over time, at this stage a PV cameo is just assumed to have a standard 7KW system throughout time.
+  
   #expand over all customer types and include day type for consistency (PV generation is the same regardless of day type)
   cust_types <- expand_grid(
-    season = c("Summer", "Autumn", "Winter", "Spring"),
+    year = seq(2020,2050),
     cooking = c("gas", "electric"),
     water_heating = c("gas", "electric"),
     space_heating = c("gas", "electric"),
     ev = c(0, 1, 2)
   )
   
-  return(bind_rows(no_pv_profile, pv_profile) %>% 
-           ungroup() %>% 
-           full_join(cust_types, relationship = "many-to-many") %>% 
-           
-           #we're just gonna use 7kw systems for simplicity
-           filter(size_kw == 7) %>% 
-           select(-size_kw))
+  pv_profiles_all <-bind_rows(no_pv_profile, pv_profile) %>% 
+    ungroup() %>% 
+    cross_join(cust_types) %>% 
+    
+    #we're just gonna use 7kw systems for simplicity
+    filter(size_kw == 7) %>% 
+    select(-size_kw)
+  
+  return(pv_profiles_all)
 }
 

@@ -56,53 +56,20 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
   
   
   vehicle_type_weights <- ev_fleet_data %>% 
-    filter(year == 2040,
-           fuel_type == "BEV") %>% # battery EVs dominate the charging profile
-    select(state, vehicle_type, vehicles_count)
+    filter(fuel_type == "BEV") %>% # battery EVs dominate the charging profile
+    select(year, state, vehicle_type, vehicles_count)
   
   #weight profile according to vehicle count
   weighted_ev_profiles <- unweighted_ev_profiles %>% 
-    left_join(vehicle_type_weights) %>% 
-    group_by(state, day_type, hour) %>% 
+    left_join(vehicle_type_weights, relationship = "many-to-many") %>% 
+    group_by(year, state, day_type, hour) %>% 
     summarise(power_kwh = weighted.mean(power_kwh, vehicles_count)) %>% 
     #take weighted average of WD and WE to average day profile
     pivot_wider(names_from = day_type, values_from = power_kwh) %>% 
     mutate(power_kwh = (5* WD + 2 * WE)/7) %>% 
     select(-c(WD, WE))
   
-  
-  no_ev_profile <- weighted_ev_profiles %>% 
-    mutate(ev = 0,
-           end_use = "Electric vehicle",
-           power_kwh = 0)
-  
-  one_ev_profile <- weighted_ev_profiles %>% 
-    mutate(ev = 1,
-           end_use = "Electric vehicle")
-  
-  two_ev_profile <- weighted_ev_profiles %>% 
-    mutate(ev = 2,
-           end_use = "Electric vehicle",
-           power_kwh = 2 * power_kwh)
-  
-  
-  #assign same daily profile across all seasons and all consumer types
-  seasons_n_cust_types <- expand_grid(
-    state = weighted_ev_profiles %>% 
-      select(state) %>% 
-      unique() %>% 
-      pull(),
-    season = c("Summer", "Autumn", "Winter", "Spring"),
-    cooking = c("gas", "electric"),
-    water_heating = c("gas", "electric"),
-    space_heating = c("gas", "electric"),
-    pv = c(TRUE, FALSE)
-  )
-  
-  ev_consumption_profiles <- bind_rows(no_ev_profile, one_ev_profile, two_ev_profile) %>% 
-    full_join(seasons_n_cust_types, relationship = "many-to-many")
-  
-  return(ev_consumption_profiles)
+  return(weighted_ev_profiles)
 }
 
 #totals are slightly lower than expected, due to lack of commercial vehicle inclusion? Or inclusion of PHEVs in the per vehile charging profiles? Numbers are reasonable however.

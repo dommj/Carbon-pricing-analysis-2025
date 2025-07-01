@@ -75,7 +75,7 @@ tar_source('R/calculate_average_residential_gas_consumption.R')
 tar_source('R/get_rbs_baseline_consumption.R')
 tar_source('R/calculate_displaced_gas_consumption.R')
 tar_source("R/calculate_additional_electricty_consumption.R")
-tar_source("R/calculate_gas_n_efficiency_adj_tou_consumption.R")
+tar_source("R/calculate_average_adj_tou_consumption.R")
 
 #calculate average household costs
 #tar_source("R/calculate_average_household_costs.R")
@@ -260,9 +260,12 @@ tar_plan(
 
   # Gas use - average over all households with an electricity connection
   tar_target(average_gas_consumption, calculate_average_residential_gas_consumption(household_connections,
-                                                                                    residential_gas_consumption_projections)),
+                                                                                residential_gas_consumption_projections)),
   
   #Petrol use - per km
+  
+  #ADAPT TO PHEV MEDIAN
+  
   tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)),
   
   #average km per vehicle
@@ -272,6 +275,10 @@ tar_plan(
   
   #AEMO vehicle fleet data
   tar_target(ev_fleet_data, get_aemo_vehicle_data(electric_vehicle_workbook_file)),
+  
+  # Load EV consumption profiles
+  tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
+                                                                  ev_fleet_data)),
   
   #vehicles per household
   #vehicles_per_household <- 1.8,
@@ -341,6 +348,8 @@ tar_plan(
                                                                                 rbs_baseline_consumption,
                                                                                 rbs_households)),
   
+  #LOOK BELOW !!!!!!!
+  #as a sensitivity, try just adding ESOO electrification instead of converting from GSOO
   tar_target(additional_electricty_consumption, calculate_additional_electricty_consumption(fuel_conversion_coefficients, 
                                                                                             rbs_displaced_gas_consumption, 
                                                                                             rbs_baseline_consumption)),
@@ -348,15 +357,36 @@ tar_plan(
   # tar_target(esoo_electrification_per_household, get_esoo_electrification_per_household(esoo_2024_operational_file, 
   #                                                                                       household_connections)),
   
-  #convert additonal electricity consumption from displaced gas into tou additional electricity consumption and scale total consumption by assumed efficiency gains
-  tar_target(gas_n_efficiency_adj_tou_consumption, calculate_gas_n_efficiency_adj_tou_consumption(rbs_baseline_consumption,
+  #calculate energy efficiency multiplier for underlying demand 
+  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file, 
+                                                                                         household_connections,
+                                                                                         esoo_2020_operational_file)),
+  
+  #convert additonal electricity consumption from displaced gas into tou additional electricity consumption and scale total consumption by assumed efficiency gains, then add in ev tou demand
+  tar_target(average_adj_tou_consumption, calculate_average_adj_tou_consumption(rbs_baseline_consumption,
                                                additional_electricty_consumption,
                                                rbs_tou_consumption_data,
                                                heating_cooling_profiles,
-                                               rbs_households)),
+                                               rbs_households,
+                                               household_energy_efficiency,
+                                               ev_consumption_profiles,
+                                               household_connections,
+                                               ev_fleet_data)),
+  
+  
+  #calculate number and proportion of households in each state with PV
   
   
   
+  
+  #calculate average PV system size per household with PV
+  
+  #create profiles with PV added in.
+  
+  
+  ###############################################
+  #Calculate average energy costs
+  ###############################################
   
   #add average PV feed in revenue
   
@@ -372,37 +402,26 @@ tar_plan(
   #create fuel consumption totals for each profile
   tar_target(rbs_fuel_consumption_profiles, create_rbs_fuel_consumption_profiles(integrated_fuel_use,
                                                                                         rbs_households)),
+
   
-  #TO DO !! apply energy efficiency to profiles
-  
-  
-  #Next: Load EV consumption profiles
-  tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
-                                                                  ev_fleet_data)),
-  
-  #Next: calculate PV generation for each state
+  # Calculate PV generation for each state
   tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households)),
   
   
-  #apply fuel profiles to generate loads for all customer classes, add in pv and evs
+  #apply fuel profiles to generate loads for all customer classes, add in pv and evs, apply efficiency gains
   tar_target(tou_consumer_profiles, calculate_tou_consumer_profiles(rbs_fuel_consumption_profiles,
                                                                     integrated_fuel_use,
                                                                     rbs_tou_consumption_data,
                                                                     ev_consumption_profiles,
                                                                     pv_profiles,
                                                                     rbs_households,
-                                                                    heating_cooling_profiles)),
+                                                                    heating_cooling_profiles,
+                                                                    household_energy_efficiency)),
   
-  #calculate energy efficiency multiplier for underlying demand 
-  tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file, 
-                                                                                household_connections,
-                                                                                esoo_2020_operational_file,
-                                                                                tou_consumer_profiles)),
   
-  #calculate annual electricity consumption and exports for each year by aggregating ToU profiles and applying efficiency estimates
+  #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(tou_consumer_profiles,
                                                                                                         rbs_fuel_consumption_profiles,
-                                                                                                        household_energy_efficiency,
                                                                                                         rbs_households)),
   
   #calculate aggregate gas consumption

@@ -39,7 +39,6 @@ gas_retail_volumetric_price_projections|stem|43a8d75f8319ba83|9fe48c42f6473063|4
 gas_connection_charge_projections|stem|e537f21be8fc1030|71d388595b9fc896|20a9d808d629c7aa|-1628302150||t20213.2503262583s|s1495b|1495|rds|local|vector|||0.13||
 rbs_outputs_data_file|stem|1c1aff531eade0d8|c9d52d89cf42759c|2c530c1562a7fbd1|1913406562|Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx|t20213.258587963s|s864873b|864873|file|local|vector|||0||
 rbs_fuel_end_use_by_state|stem|8bf814bcd12a02a4|cf0d2456f0984342|956f776ebf0f98b2|-1167025647||t20213.2952410899s|s34559b|34559|rds|local|vector|||4.55||
-ev_fleet_data|stem|927f7df7c0707989|8bc6bfe9cb6a3f3c|6e747d19ab2ae39a|756614376||t20214.2299105214s|s5839b|5839|rds|local|vector|||1.43||
 esoo_demand_chart|stem|d410297d01803070|9ef392d7290be649|7733dd053dc46e87|-1683620317||t20217.2579345633s|s208926b|208926|rds|local|vector|||40.58|Continuous limits supplied to discrete scale.ℹ Did you mean limits  factor... or scale__continuous. package gdtools was built under R version 4.4.3|
 pv_data_path|stem|7edbde51bf590b96|4612caefc2aa2c9c|2c530c1562a7fbd1|636807120|Data/Pv|t20221.1052351065s|s4096b|4096|file|local|vector|||0||
 gas_standing_offers_file|stem|a1e58bc6fdaecf14|a620cc30f6a2e198|2c530c1562a7fbd1|-300127396|Data/gas_standing_offers_20250331.xlsx|t20221.26860096s|s19874b|19874|file|local|vector|||0||
@@ -51,7 +50,6 @@ heating_cooling_profiles|stem|78a65b26c7acc425|f1da7a14532a7dc2|23bd3af03f2915b6
 electric_to_gas_coefficients_file|stem|5503ffcc63527f4c|c0bf6a2be6817b3a|2c530c1562a7fbd1|1625561168|Data/appliance_efficiencies.xlsx|t20237.0486342593s|s190212b|190212|file|local|vector|||0||
 fuel_conversion_coefficients|stem|5c542737e1adbec7|20b4eb34975d5d6b|3a920d5e4f759526|-1532444865||t20237.053268831s|s233b|233|rds|local|vector|||0.09||
 integrated_fuel_use|stem|1ee78538778b51f3|74e4094e547264c6|a70aba8a19ef1c98|2095528672||t20237.0768271218s|s1757b|1757|rds|local|vector|||2.88||
-ev_consumption_profiles|stem|5b67837205e8d6f3|3defbcbf10ce8e84|8314b4f7f118cc9f|-1993368242||t20237.3319811818s|s68163b|68163|rds|local|vector|||1.98||
 iasr_2023_file|stem|82fa04fa99ffee8d|b78d6530331a920a|2c530c1562a7fbd1|-1139846371|Data/2024 ISP chart data.xlsx|t20186.16778745s|s3520616b|3520616|file|local|vector|||0||
 jacobs_demand_data_file|stem|4c55134f37d027b1|b19ba605b1129ba9|2c530c1562a7fbd1|-374195423|Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0604.xlsx|t20243.1306944444s|s849151b|849151|file|local|vector|||0||
 jacobs_electricity_demand|stem|5e787710607168f0|81a4efc275b28255|e7533be6e020058a|-2078377070||t20245.1157586786s|s3680b|3680|rds|local|vector|||0.82|There was 1 warning in mutate.ℹ In argument year  str_removeyear, F  as.numeric.Caused by warning in str_removeyear, F  as.numeric NAs introduced by coercion|
@@ -65,15 +63,9 @@ end_year|stem|3fe99e32987148e6|07c654f6eeef8c18|2c530c1562a7fbd1|-434758542||t20
 rbs_households|stem|f97f596518a657f5|a17f30e6b5ea0c20|4c56041757bbd0e8|-1116537264||t20263.033199502s|s3251b|3251|rds|local|vector|||2.53|There were 3 warnings in mutate.The first warning wasℹ In argument occupancy_rate  as.numericoccupiedas.numericoccupied   as.numericunoccupied.Caused by warning NAs introduced by coercionℹ Run dplyrlast_dplyr_warnings to see the 2 remaining warnings.|
 retail_price_data|stem|72a0298d9b31ef84|31acfc8b6074540c|b38aa1f5856696af|-1715373475||t20263.0332427726s|s248b|248|rds|local|vector|||3.66||
 gas_volume_price_data|stem|d94fbe81d5e8fa79|ff8c362233d45af4|ea21224134a26b6e|-739027721||t20263.0344620231s|s1773b|1773|rds|local|vector|||3.42||
-petrol_price_projections|stem|d356d271f2c05eae|34b7ad8839a8cb45|34826b2942eb1e26|1848450527||t20263.0344626202s|s773b|773|rds|local|vector|||0.02||
-cameo_petrol_costs|stem|9b58c3e1fa26b6f4|21125bc544ed74c9|5d51d679cad60197|-807199104||t20263.0345320222s|s33761b|33761|rds|local|vector|||0.11||
 esoo_2020_operational_file|stem|a80f36b45d3eebc8|049ff7e2a008aae6|2c530c1562a7fbd1|-540731519|Data/2020 ESOO.xlsx|t20263.1098743437s|s232682b|232682|file|local|vector|||0||
-pv_profiles|stem|c3efd93e33d35332|bafeda57e02ead17|79dc5c7b3eb6f87d|1913122209||t20263.2537833828s|s19853b|19853|rds|local|vector|||7||
 rbs_fuel_consumption_profiles|stem|0fdd2905c7cffdba|f56e4147e52106bb|6342a5caf1ec5c7a|624766052||t20263.2540388625s|s6027b|6027|rds|local|vector|||21.99||
-tou_consumer_profiles|stem|88755ded04aae4b6|14da29c72c030ff8|de8d204bdd235b0d|-49958110||t20263.2541017839s|s168888b|168888|rds|local|vector|||4.2||
 cameo_gas_costs|stem|4eebcf7cf517944f|dcf55061318b0eed|fa6ffe4c509f1b2d|-412035658||t20263.2542053735s|s71273b|71273|rds|local|vector|||4.64||
-annual_electricity_consumption_profiles|stem|3ba3d02b006401c7|b9a0e839b54ce765|a60f2e1bed961911|-343668873||t20263.2544831292s|s104129b|104129|rds|local|vector|||23.91||
-cameo_electricity_costs|stem|13a66dc69bafa0d4|e6961590e39c650b|0754c28b3f17981a|-1040597584||t20263.254494572s|s55972b|55972|rds|local|vector|||0.89||
 calculate_average_petrol_consumption|function|8b334597a9d7fa81|||||||||||||||
 calculate_average_household_costs|function|c776ddc239498d24|||||||||||||||
 average_petrol_consumption|stem|086819d31862a275|d01b764e5e690cea|88528eb6ca89c99f|-1389792003||t20217.2579859757s||2065|rds|local|vector|||0.05||could not find function calculate_average_petrol_consumption
@@ -96,6 +88,17 @@ rbs_displaced_gas_consumption|stem|ee1d7c70782d4cc2|f2e71c842d6cbe4c|5d36b720bdf
 additional_electricty_consumption|stem|d6fd8aa0b2e420c8|589fb92b04f505e6|3114d28e8d002109|1137926142||t20265.0070688956s|s6315b|6315|rds|local|vector|||0.28||
 calculate_gas_adj_tou_consumption|function|92fffa4e684fd35c|||||||||||||||
 gas_adj_tou_consumption|stem|7339ebd955586b73|306e67388227853a|5afb83481b760ac9|-1249032653||t20265.1653373418s|s330820b|330820|rds|local|vector|||0.36||
+household_energy_efficiency|stem|de2f0f7ae18a73d9|48e289a47860bc6c|3bbaba7bdfa2a565|-1478083940||t20265.180536908s|s1678b|1678|rds|local|vector|||3.26||
+petrol_price_projections|stem|8b0b382bde33fb9c|34b7ad8839a8cb45|57f442ce73bc7154|1848450527||t20265.2203277066s|s771b|771|rds|local|vector|||0||
+cameo_petrol_costs|stem|904f268f0541f5a6|21125bc544ed74c9|75de892a4210cad1|-807199104||t20265.2203317101s|s34324b|34324|rds|local|vector|||0.11||
+gas_n_efficiency_adj_tou_consumption|stem|5493d5ca9eff4cae|c27eff5b0bf30184|ddefc5347c9adf7d|210989639||t20265.2402299383s|s838335b|838335|rds|local|vector|||0.48||
+calculate_gas_n_efficiency_adj_tou_consumption|function|e9afee7e0b548cdd|||||||||||||||
+ev_consumption_profiles|stem|913fdbd156df9dcb|3defbcbf10ce8e84|c9577fd27dda121a|-1993368242||t20266.0226339765s|s37118b|37118|rds|local|vector|||3.89||
+pv_profiles|stem|e5316db4ca22dbb3|bafeda57e02ead17|cdb3a55625e705c1|1913122209||t20266.1232217448s|s329684b|329684|rds|local|vector|||4.12||
+tou_consumer_profiles|stem|352f1099dd498972|ad5e766d76a6ae1b|8bfa6900f9bed468|-49958110||t20266.1325394596s|s8981390b|8981390|rds|local|vector|||10.35||
+annual_electricity_consumption_profiles|stem|ec13f2a1fbe777dd|0eebec7c6aed9336|bfdbd9fa1c0613b5|-343668873||t20266.132783968s|s85105b|85105|rds|local|vector|||21.03||
+cameo_electricity_costs|stem|cd405d88466222ee|e6961590e39c650b|398b6c9fe4215c69|-1040597584||t20266.1327947513s|s52138b|52138|rds|local|vector|||0.83||
+ev_fleet_data|stem|927f7df7c0707989|8bc6bfe9cb6a3f3c|d748d82d32145c6a|756614376||t20266.1363049706s|s5839b|5839|rds|local|vector|||1.16||
 get_residential_ev_consumption_data|function|07fec2c99ee45a18
 get_petrol_data|function|baf8af38e4bf648a
 convert_states|function|d3efd73b034cce2a
@@ -106,9 +109,9 @@ project_gas_connection_charges|function|884d7ec35b0d9e05
 calculate_additional_electricty_consumption|function|6cf6c8b0f509dc99
 create_esoo_demand_chart|function|cd9f2944450e15de
 load_jacobs_demand_data|function|b9cb9d4d6ca8b6d2
-project_petrol_data|function|33c18fd6e4257f64
+project_petrol_data|function|bdbb19117c823cce
 get_fuel_conversion_coefficients|function|3b91c9f5dc6fd461
-get_aemo_vehicle_data|function|239d93acdd4ee388
+get_aemo_vehicle_data|function|4ad15bbeb9e1d343
 calculate_cameo_petrol_costs|function|dd2f7adc6624c2c0
 convert_to_2024_dollars|function|f9cf673baaafb359
 get_average_petrol_use_per_km|function|71f904784a51bae4
@@ -132,15 +135,15 @@ get_gas_standing_offers|function|8d95b812f19472f0
 get_average_km_per_vehicle|function|f51893a31e0ab126
 calculate_fuel_use_conversions|function|77637c25ca5e100f
 load_and_deflate_rbs_households|function|adccb87306c93748
-get_ev_consumption_profiles|function|b6cbfd9263886d2d
+get_ev_consumption_profiles|function|483744c686b597cf
 get_rbs_baseline_consumption|function|e883910be5ea5080
-calculate_gas_n_efficiency_adj_tou_consumption|function|92fffa4e684fd35c
 get_rbs_electricity_consumption_data|function|da7e2b66ed36ed3b
 calculate_cameo_gas_costs|function|104eaffe9d205595
-get_pv_profiles|function|0e9764ebf47b4303
-calculate_tou_consumer_profiles|function|f5f4b90461646cd7
-calculate_annual_electricity_consumption_profiles|function|712c349ed3064080
+get_pv_profiles|function|486c74c9400621c2
+calculate_average_adj_tou_consumption|function|c4d2eb089f3f3492
+calculate_tou_consumer_profiles|function|a2b4a493852f8fcf
+calculate_annual_electricity_consumption_profiles|function|e0d0b4191027c05a
 create_rbs_fuel_consumption_profiles|function|7b8c3219731e7e5c
 get_gas_prices_data|function|0a8d3fe8e5415294
 get_retail_data|function|1c7350b71772339b
-household_energy_efficiency|stem|c985f6fc62da441e|9ea214a633aa49fd|1d4ace98c6a859ae|-1478083940||t20264.0782615393s||2888|rds|local|vector|||0.02||unused argument tou_consumer_profiles
+average_adj_tou_consumption|stem|8f76e043d392ad98|c8c64d77e8c03f7c|a3d2f11a326623be|-307517718||t20266.1565769345s|s875531b|875531|rds|local|vector|||0.72||

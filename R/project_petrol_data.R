@@ -12,9 +12,8 @@ project_petrol_data <- function(petrol_price_data, end_year) {
   
   #predict
   projected_petrol_price <- projection_years %>%
-    mutate(
-      c_litre = predict(model, newdata = .)
-    )
+    mutate(c_litre = predict(model, newdata = .),
+           category = "Petrol")
   
 
   return(bind_rows(petrol_price_data, projected_petrol_price))
