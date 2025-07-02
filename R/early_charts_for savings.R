@@ -116,5 +116,20 @@ grattan_save_pptx("test_savings.pptx")
 ten_year_costs
 
 
+#####################################################
+#Average costs charts
+#####################################################
+
+bind_rows(average_electricity_costs, average_gas_costs, average_petrol_costs) %>% 
+  left_join(household_connections) %>% 
+  group_by(year, electrification, category) %>% 
+  filter(year >= 2025,
+         year <= 2034) %>% 
+  summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
+  ggplot(aes(x = year, y = average_cost_dollars, fill = category)) +
+    geom_col() +
+    facet_wrap(~electrification)
+
+
   
   

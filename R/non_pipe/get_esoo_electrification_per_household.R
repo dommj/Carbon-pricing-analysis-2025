@@ -1,5 +1,5 @@
 
-get_esoo_electrification_per_household <- function(esoo_2024_operational_file, household_connections){
+get_esoo_electrification_per_household <- function(esoo_2024_operational_file, household_connections, rbs_baseline_consumption){
 
 #esoo residential electrification per household
 esoo_electrification <- read_excel(esoo_2024_operational_file) %>% 
@@ -22,6 +22,21 @@ esoo_electrification <- read_excel(esoo_2024_operational_file) %>%
   mutate(average_annual_consumption_kwh = annual_consumption_t_wh / connections * 1e9) %>% 
   select(year, state, category, average_annual_consumption_kwh)
 
-esoo_electrification
+rbs_baseline_consumption %>% 
+  filter(end_use %in% c("Cooking", "Water heating", "Space conditioning - heating"),
+         fuel == "Natural Gas") %>% 
+  group_by(year, state) %>% 
+  mutate(prop = annual_consumption_gj / sum(annual_consumption_gj)) %>% 
+  ungroup() %>% 
+  select(- year) %>% 
+  left_join(esoo_electrification %>% select(-category)) %>% 
+  mutate(average_annual_consumption_kwh = if_else(is.na(average_annual_consumption_kwh), 0 , average_annual_consumption_kwh),
+         annual_consumption_kwh = prop * average_annual_consumption_kwh,
+         annual_consumption_gj = annual_consumption_kwh * 3.6 / 1e3,
+         source = "displaced_gas") %>% 
+  select(-c( prop, average_annual_consumption_kwh))
+
+
+
 }
 

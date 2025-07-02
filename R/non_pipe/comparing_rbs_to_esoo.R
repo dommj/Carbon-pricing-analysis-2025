@@ -44,7 +44,7 @@ bind_rows(esoo_underlying_non_ev, rbs_consumption) %>%
 ggplot(aes(x= year, y = power_kwh, colour = source)) +
   facet_wrap(~state) +
   geom_line() +
-  grattan_y_continuous(limits = c(0, 7000))
+  grattan_y_continuous(limits = c(0, 9000))
 
 
 rbs_consumption %>% 

@@ -17,3 +17,9 @@ tar_target(average_household_costs, calculate_average_household_costs(retail_pri
                                                                       average_residential_operational_demand,
                                                                       average_gas_consumption,
                                                                       average_petrol_consumption)),
+
+
+#!!!! Test
+tar_target(esoo_electrification_per_household, get_esoo_electrification_per_household(esoo_2024_operational_file,
+                                                                                      household_connections,
+                                                                                      rbs_baseline_consumption)),

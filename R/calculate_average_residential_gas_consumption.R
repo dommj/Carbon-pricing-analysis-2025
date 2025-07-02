@@ -2,12 +2,28 @@ calculate_average_residential_gas_consumption <- function(household_connections,
                                                           residential_gas_consumption_projections){
   
   #now calculate the average consumption if spread across all households.
-  full_join(household_connections, residential_gas_consumption_projections) %>%
+  average_gas_consumption <- full_join(household_connections, 
+                                       residential_gas_consumption_projections) %>%
     mutate(average_annual_consumption_gj = residential_consumption_gj / connections,
-           category = 'Gas') %>% 
-    select(year, state, category, average_annual_consumption_gj) %>% 
-    filter(!is.na(average_annual_consumption_gj))
- 
+           category = 'Gas',
+           electrification = T) %>% 
+    select(year, state, category, average_annual_consumption_gj, electrification) %>% 
+    filter(!is.na(average_annual_consumption_gj),
+           year >= 2025) 
+    
+
+  #and create a parallel dataset where average gas consumption stays the same as 2024
+  average_gas_consumption_no_electrification <- average_gas_consumption %>% 
+    filter(year == 2025) %>% 
+    select(-year) %>% 
+    cross_join(tibble(year = seq(2025, 2050))) %>% 
+    mutate(electrification = F)
+  
+
+  average_gas_consumption_all <- bind_rows(average_gas_consumption,
+                                           average_gas_consumption_no_electrification)
+  
+  return(average_gas_consumption_all)
 }
 
 #compare with RBS estimates:

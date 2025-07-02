@@ -1,7 +1,7 @@
 #check conversion rate from 1 GJ gas to KWH electricity
 
 
-x <- additional_electricty_consumption %>% 
+x <- additional_electricity_consumption %>% 
   group_by(year, state) %>%
   summarise(annual_consumption_kwh = sum(annual_consumption_kwh)) %>% 
   left_join(rbs_displaced_gas_consumption %>% 
