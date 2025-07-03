@@ -1,4 +1,8 @@
 
+# offers <- gas_standing_offers
+# 
+# gas_consumption <- benchmark_gas_consumption
+
 calculate_gas_bill <- function(offers,
                                gas_consumption){
   
@@ -84,7 +88,7 @@ calculate_gas_bill <- function(offers,
   seasonal_costs <- gas_consumption %>% 
     select(- benchmark_use_mj) %>% 
     pivot_longer(cols = -state, names_to = "season", values_to = "benchmark_consumption_mj") %>% 
-    full_join(offers %>% 
+    left_join(offers %>% 
                 select(state, company) %>% 
                 unique()) %>% 
     rowwise() %>% 

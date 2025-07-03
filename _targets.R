@@ -52,6 +52,7 @@ tar_source('R/get_gas_connections_data.R')
 tar_source('R/get_benchmark_gas_consumption.R')
 tar_source('R/project_residential_gas_consumption.R')
 tar_source('R/get_gas_standing_offers.R')
+tar_source('R/get_gas_best_offers.R')
 tar_source('R/calculate_gas_bill.R')
 tar_source('R/calculate_total_gas_network_revenue.R')
 tar_source('R/project_gas_retail_volumetric_price.R')
@@ -158,7 +159,7 @@ tar_plan(
   tar_file(gsoo_consumption_data_file, 'Data/Gas/Gas GSOO 2024.xlsx'),
   
   #AER gas benchmarks file
-  tar_file(aer_gas_benchmarks_file, 'Data/aer_residential_gas_consumption_benchmarks.xlsx'),
+  tar_file(aer_gas_benchmarks_file, 'Data/Simple electricity and gas benchmarks - published December 2020. Updated June 2021 for postcodes.xlsx'),
   
   #motorvehicle use survey data
   tar_file(mv_survey_data_file, 'Data/92080DO001_202006.xls'),
@@ -232,6 +233,9 @@ tar_plan(
   #get gas standing offers
   tar_target(gas_standing_offers, get_gas_standing_offers(gas_standing_offers_file)),
   
+  #get gas best offers
+  tar_target(gas_best_offers, get_gas_best_offers(gas_standing_offers_file)),
+  
   #get AER benchmark gas use
   tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,                                                                      gas_connections_data)),
   
@@ -242,14 +246,19 @@ tar_plan(
   #calculate gas bills from standing offers
   tar_target(standing_offer_bills, calculate_gas_bill(gas_standing_offers, benchmark_gas_consumption)),
   
+  #calculate gas bills from best offers
+  tar_target(best_offer_bills, calculate_gas_bill(gas_best_offers, benchmark_gas_consumption)),
+  
+  #CHANGED to BEST OFFER BELOW
+  
   #calculate total supply charge revenue (we assume this is held constant in real terms for now) (this is in 2024 dollars)
   tar_target(gas_network_charge_revenue, 
-             calculate_total_gas_network_revenue(standing_offer_bills, 
+             calculate_total_gas_network_revenue(best_offer_bills, #CHANGED
                                                  gas_standing_offers, 
                                                  gas_connections_data)),
   
   #average gas volumetric charge (indexed to our volumetric price series)
-  tar_target(gas_retail_volumetric_price_projections, project_gas_retail_volumetric_price(standing_offer_bills,
+  tar_target(gas_retail_volumetric_price_projections, project_gas_retail_volumetric_price(best_offer_bills, #CHANGED
                                                                                           benchmark_gas_consumption,
                                                                                           gas_volume_price_data)),
   

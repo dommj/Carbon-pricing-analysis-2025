@@ -131,5 +131,16 @@ bind_rows(average_electricity_costs, average_gas_costs, average_petrol_costs) %>
     facet_wrap(~electrification)
 
 
-  
-  
+bind_rows(average_electricity_costs, average_gas_costs, average_petrol_costs) %>% 
+  left_join(household_connections) %>% 
+  group_by(year, electrification, category) %>% 
+  filter(year >= 2025,
+         year <= 2034) %>% 
+  summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
+  filter(year == 2034) %>% 
+  group_by(year, electrification) %>% 
+  summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+  pivot_wider(names_from = electrification, values_from = average_cost_dollars) %>%
+  mutate(dif = `TRUE` - `FALSE`)
+
+802 / 5260
