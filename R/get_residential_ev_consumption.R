@@ -1,4 +1,5 @@
-get_residential_ev_consumption_data <- function(electric_vehicle_workbook_file){
+get_residential_ev_consumption_data <- function(electric_vehicle_workbook_file,
+                                                wem_esoo_2024_ev_projections_file){
   
   
   aemo_consumption_nsw_act_data <- read_excel(electric_vehicle_workbook_file,
@@ -27,13 +28,19 @@ get_residential_ev_consumption_data <- function(electric_vehicle_workbook_file){
     mutate(state = 'Vic')
   
   
+  aemo_consumption_wa_data <- read_excel(wem_esoo_2024_ev_projections_file,
+                                         sheet = "BEV_PHEV_Consumption (GWh)",
+                                         range = "B21:M31") %>% 
+    mutate(state = 'WA')
+  
   
   #combine data
   aemo_ev_consumption_data <- bind_rows(aemo_consumption_nsw_act_data,
                                         aemo_consumption_qld_data,
                                         aemo_consumption_sa_data,
                                         aemo_consumption_tas_data,
-                                        aemo_consumption_vic_data) %>% 
+                                        aemo_consumption_vic_data,
+                                        aemo_consumption_wa_data) %>% 
     pivot_longer(cols = contains("20"),
                  names_to = "year",
                  values_to = "bev_phev_gwh") %>%
@@ -45,8 +52,11 @@ get_residential_ev_consumption_data <- function(electric_vehicle_workbook_file){
     summarise(annual_consumption_t_wh = sum(bev_phev_gwh) / 1000) 
   
   
+  aemo_ev_consumption_data %>% 
+    ggplot(aes(x = year, y = annual_consumption_t_wh, colour = state)) +
+    geom_line()
   
-  aemo_ev_consumption_data
+  return(aemo_ev_consumption_data)
   
 }
 

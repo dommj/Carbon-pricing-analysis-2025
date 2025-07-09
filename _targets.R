@@ -35,7 +35,8 @@ tar_option_set(
 tar_source('R/helpers.R')
 
 #load price data
-tar_source('R/get_retail_data.R')
+tar_source('R/get_retail_data_aemc.R')
+tar_source('R/get_jacobs_retail_prices.R')
 tar_source('R/get_petrol_data.R')
 tar_source('R/project_petrol_data.R')
 tar_source('R/get_gas_prices_data.R')
@@ -130,10 +131,15 @@ tar_plan(
   #jacobs files
   
   #jacobs demand file
-  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0604.xlsx'),
+  tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0704.xlsx'),
   
-  #jacobs retail model file
-  tar_file(jacobs_retail_model_file, "Data/Jacobs/RetailPriceProjections_Base.xlsx"),
+  #jacobs retail model file base
+  tar_file(jacobs_retail_model_file_base, "Data/Jacobs/RetailPriceProjections_Base.xlsx"),
+  
+  #jacobs retail model file reference_case
+  #tar_file(jacobs_retail_model_reference_case, "Data/Jacobs/..."),
+  
+  
   
   #other data files
   
@@ -146,6 +152,9 @@ tar_plan(
   #gas prices
   tar_file(gas_prices_file, 'Data/Gas/ACIL Allen Natural Gas Price Forecast.xlsx'),
   
+  #wa_gas_prices_file 
+  tar_file(wa_gas_prices_file, "Data/Gas/2024 Natural Gas Price Forecasts workbook - Western Australia - Expected case.xlsx"),
+  
   #gas standing offers
   tar_file(gas_standing_offers_file, 'Data/gas_standing_offers_20250331.xlsx'),
   
@@ -155,8 +164,14 @@ tar_plan(
   #vic gas customer data
   tar_file(connection_data_vic_file, "Data/Gas/FY24-Annual-Overview-data.xlsx"),
   
+  #WA gas customer data
+  tar_file(connection_data_wa_file, "Data/Gas/energy-reports-retailer-data-2014-onwards.xlsx"),
+  
   #GSOO gas consumption data
   tar_file(gsoo_consumption_data_file, 'Data/Gas/Gas GSOO 2024.xlsx'),
+  
+  #WA gsoo gas consumption data
+  tar_file(wa_gsoo_consumption_data_file, 'Data/Gas/WA GSOO 2024.xlsx'),
   
   #AER gas benchmarks file
   tar_file(aer_gas_benchmarks_file, 'Data/Simple electricity and gas benchmarks - published December 2020. Updated June 2021 for postcodes.xlsx'),
@@ -164,23 +179,30 @@ tar_plan(
   #motorvehicle use survey data
   tar_file(mv_survey_data_file, 'Data/92080DO001_202006.xls'),
   
-  #esoo_2024_assumptions_workbook_file
-  tar_file(esoo_2024_assumptions_workbook_file, 'Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx'),
-  
   #abs dwelling completions file: https://dataexplorer.abs.gov.au/vis?tm=building%20activity&pg=0&df[ds]=ABS_ABS_TOPICS&df[id]=BUILDING_ACTIVITY&df[ag]=ABS&df[vs]=1.0.0&pd=2019-Q1%2C&dq=M7...TOT.9.100.10.Q&ly[cl]=TIME_PERIOD&ly[rw]=REGION&to[TIME_PERIOD]=false
   tar_file(abs_dwelling_completions_file, "Data/dwelling_completions_abs.xlsx"),
   
-  #esoo 2024 operational demand file
+  #NEM esoo 2024 operational demand file
   tar_file(esoo_2024_operational_file, 'Data/2024 ESOO/2024 ESOO operational (sent out).xlsx'),
   
-  #esoo 2020 operational demand file - used for energy efficiency to 2024
+  #NEM esoo 2020 operational demand file - used for energy efficiency to 2024
   tar_file(esoo_2020_operational_file, 'Data/2020 ESOO.xlsx'),
   
-  #2023 IASR assumptions file - essentially same as 2024 for efficiency
-  tar_file(iasr_2023_file, 'Data/2024 ISP chart data.xlsx'),
+  #esoo_2024_assumptions_workbook_file
+  tar_file(esoo_2024_assumptions_workbook_file, 'Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx'),
   
-  #2024 EV workbook
+  #NEM ESOO 2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
+  
+  #WEM ESOO 2024 operational demand file
+  tar_file(wem_esoo_2024_operational_file, "Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx"),
+  
+  #WEM ESOO 2024 Data Register
+  tar_file(wem_esoo_2024_data_register_file, "Data/2024 ESOO/2024 WEM ESOO Data Register.xlsx"),
+  
+  #WEM ESOO 2024 electric vehicle projections
+  tar_file(wem_esoo_2024_ev_projections_file, "Data/2024 ESOO/2024 WEM ESOO EV Projections.xlsx"),
+  
   
   #RBS electricity consumption data
   tar_file(rbs_electricity_consumption_data_file, 'Data/power_demand_by_time_of_use_data.xlsx'),
@@ -208,8 +230,13 @@ tar_plan(
   #load and clean price data
   ####################################################################
   
-  #get retail electricity data
-  tar_target(retail_price_data, get_retail_data(retail_file)),
+  #get retail electricity data from AEMC price trends
+  tar_target(retail_price_data_aemc, get_retail_data_aemc(retail_file)),
+  
+  #get retail prices from jacobs sheets
+  tar_target(jacobs_retail_prices, get_jacobs_retail_prices(jacobs_retail_model_file_base,
+                                                            household_connections)),
+  
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)),
@@ -218,17 +245,20 @@ tar_plan(
   tar_target(petrol_price_projections, project_petrol_data(petrol_price_data, end_year)),
   
   #get gas volume prices
-  tar_target(gas_volume_price_data, get_gas_prices_data(gas_prices_file)),
+  tar_target(gas_volume_price_data, get_gas_prices_data(gas_prices_file,
+                                                        wa_gas_prices_file)),
   
   ####################################################################
   #calculate gas bill data
   ####################################################################
   
   #load gas consumption data
-  tar_target(gsoo_consumption_data, get_gsoo_consumption_data(gsoo_consumption_data_file)),
+  tar_target(gsoo_consumption_data, get_gsoo_consumption_data(gsoo_consumption_data_file,
+                                                              wa_gsoo_consumption_data_file)),
   
   #get gas connections data
-  tar_target(gas_connections_data, get_gas_connections_data(connection_data_aer_file, connection_data_vic_file)),
+  tar_target(gas_connections_data, get_gas_connections_data(connection_data_aer_file, connection_data_vic_file,
+                                                            connection_data_wa_file)),
   
   #get gas standing offers
   tar_target(gas_standing_offers, get_gas_standing_offers(gas_standing_offers_file)),
@@ -243,15 +273,15 @@ tar_plan(
   tar_target(residential_gas_consumption_projections, project_residential_gas_consumption(gas_connections_data,
                                                                                           benchmark_gas_consumption,
                                                                                           gsoo_consumption_data)),
-  #calculate gas bills from standing offers
-  tar_target(standing_offer_bills, calculate_gas_bill(gas_standing_offers, benchmark_gas_consumption)),
+  # #calculate gas bills from standing offers
+  # tar_target(standing_offer_bills, calculate_gas_bill(gas_standing_offers, benchmark_gas_consumption)),
   
   #calculate gas bills from best offers
   tar_target(best_offer_bills, calculate_gas_bill(gas_best_offers, benchmark_gas_consumption)),
   
   #CHANGED to BEST OFFER BELOW
   
-  #calculate total supply charge revenue (we assume this is held constant in real terms for now) (this is in 2024 dollars)
+  #calculate total supply charge revenue (we assume this is held constant in real terms for now) (this is in 2025 dollars)
   tar_target(gas_network_charge_revenue, 
              calculate_total_gas_network_revenue(best_offer_bills, #CHANGED
                                                  gas_standing_offers, 
@@ -279,10 +309,12 @@ tar_plan(
   
   #number of connections
   tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file,
+                                                                   wem_esoo_2024_data_register_file,
                                                                    abs_dwelling_completions_file)),
   
   #Residential EV use
-  tar_target(residential_ev_econsumption, get_residential_ev_consumption_data(electric_vehicle_workbook_file)),
+  tar_target(residential_ev_econsumption, get_residential_ev_consumption_data(electric_vehicle_workbook_file,
+                                                                              wem_esoo_2024_ev_projections_file)),
 
   
   #Petrol use - per km
@@ -295,10 +327,12 @@ tar_plan(
   #fuel efficiency over time?
   
   #AEMO vehicle fleet data
-  tar_target(ev_fleet_data, get_aemo_vehicle_data(electric_vehicle_workbook_file)),
+  tar_target(ev_fleet_data, get_aemo_vehicle_data(electric_vehicle_workbook_file,
+                                                  wem_esoo_2024_ev_projections_file)),
   
   # Load EV consumption profiles
   tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
+                                                                  wem_esoo_2024_ev_projections_file,
                                                                   ev_fleet_data)),
   
   #vehicles per household
@@ -345,70 +379,9 @@ tar_plan(
   #calculate energy efficiency multiplier for underlying demand
   tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file,
                                                                                 household_connections,
-                                                                                esoo_2020_operational_file)),
+                                                                                esoo_2020_operational_file,
+                                                                                wem_esoo_2024_operational_file)),
   
-  ##############################################
-  #calculate average consumption profile - ARCHIVE
-  ##############################################
-  
-  #Plan:
-  #see if GSOO estimates for residential gas consumption per household (average gas consumption) in 2020 (need to get 2020 GSOO for this) roughly match RBS estimates (they mostly will I think)
-  
-  #calculate proportional decline in gas use per household from GSOO
-  
-  #scale down gas use in RBS proportionally to decline in GSOO
-  
-  #convert the usage that has been removed into electricity consumption
-  
-  #boom - check with alison if this logic sounds right.
-  
-  #define baseline rbs gas consumption per household
-  # tar_target(rbs_baseline_consumption, get_rbs_baseline_consumption(integrated_fuel_use, 
-  #                                                                   rbs_households)),
-  # 
-  # tar_target(rbs_displaced_gas_consumption, calculate_displaced_gas_consumption(average_gas_consumption,
-  #                                                                               rbs_baseline_consumption,
-  #                                                                               rbs_households)),
-  # 
-  # 
-  # tar_target(additional_electricity_consumption, calculate_additional_electricity_consumption(fuel_conversion_coefficients,
-  #                                                                                             rbs_displaced_gas_consumption,
-  #                                                                                             rbs_baseline_consumption)),
-  # 
-  # 
-
-  
-  
-  # #convert additonal electricity consumption from displaced gas into tou additional electricity consumption and scale total consumption by assumed efficiency gains, then add in ev tou demand
-  # tar_target(average_adj_tou_consumption, calculate_average_adj_tou_consumption(rbs_baseline_consumption,
-  #                                              additional_electricity_consumption,
-  #                                              rbs_tou_consumption_data,
-  #                                              heating_cooling_profiles,
-  #                                              rbs_households,
-  #                                              household_energy_efficiency,
-  #                                              ev_consumption_profiles,
-  #                                              household_connections,
-  #                                              ev_fleet_data)),
-  
-  
-  #calculate number and proportion of households in each state with PV
-  
-  
-  
-  
-  #calculate average PV system size per household with PV
-  
-  #create profiles with PV added in.
-  
-  
-  ###############################################
-  #Calculate average energy costs
-  ###############################################
-  
-  #add average PV feed in revenue
-  
-  
-  #we're going to want to calculate costs without degassification and without changes in solar potentially, to show relevant savings  three scenarios, no-degassification-no solar increase, degassification but no solar increase, solar increase but no degasification, solar increase and degassification - ONLY IF TIME
   
   
   ##############################################
@@ -456,8 +429,7 @@ tar_plan(
   
   #calculate electricity costs
   tar_target(cameo_electricity_costs, calculate_cameo_electricity_costs(annual_electricity_consumption_profiles,
-                                                                        retail_price_data,
-                                                                        jacobs_retail_model_file)),
+                                                                        jacobs_retail_prices)),
   
     
   #calculate petrol costs
@@ -473,7 +445,8 @@ tar_plan(
   
   #get the underlying electricity demand for consumers
   tar_target(esoo_average_underlying_demand, get_esoo_average_underlying_demand(esoo_2024_operational_file, 
-                                                household_connections)),
+                                                                                wem_esoo_2024_operational_file,
+                                                                                household_connections)),
   
   #calculate the load shape for baseline demand and electrified demand
   tar_target(average_load_shapes, calculate_average_load_shapes(rbs_tou_consumption_data,
@@ -493,6 +466,7 @@ tar_plan(
   
   tar_target(average_pv_profile, calculate_average_pv_profile(pv_profiles,
                                                               esoo_2024_operational_file,
+                                                              wem_esoo_2024_operational_file,
                                                               pv_system_stock)),
   
   
@@ -531,8 +505,7 @@ tar_plan(
   
   #calculate electricity costs
   tar_target(average_electricity_costs, calculate_average_electricity_costs(annual_electricity_consumption_averages,
-                                                                        retail_price_data,
-                                                                        jacobs_retail_model_file,
+                                                                            jacobs_retail_prices,
                                                                         pv_system_stock)),
   
   tar_target(average_petrol_costs, calculate_average_petrol_costs(petrol_price_projections,

@@ -1,9 +1,10 @@
 
 calculate_average_pv_profile <- function(pv_profiles,
                                          esoo_2024_operational_file,
+                                         wem_esoo_2024_operational_file,
                                          pv_system_stock){
   
-  pv_generation_per_system <-  read_excel(esoo_2024_operational_file) %>% 
+  pv_generation_per_system_nem <-  read_excel(esoo_2024_operational_file) %>% 
     clean_names() %>% 
     filter(scenario %in% c('Actual', 'Central'),
            parent_category == 'Operational (Sent Out)',
@@ -20,6 +21,21 @@ calculate_average_pv_profile <- function(pv_profiles,
     left_join(pv_system_stock) %>% 
     mutate(power_kwh = annual_consumption_t_wh / pv_stock * 1e9)
   
+  
+  pv_generation_per_system_wem <- read_excel(wem_esoo_2024_operational_file) %>% 
+    clean_names() %>% 
+    filter(scenario %in% c('Actual', 'Expected (Step Change)'),
+           parent_category == 'Operational (Sent Out)',
+           category %in% c('Rooftop PV'),
+           #only include residential PV
+           sub_category != 'Business') %>% 
+    select(year, category, annual_consumption_t_wh) %>% 
+    mutate(state = "WA") %>% 
+    left_join(pv_system_stock) %>% 
+    mutate(power_kwh = annual_consumption_t_wh / pv_stock * 1e9)
+  
+  
+  pv_generation_per_system <- bind_rows(pv_generation_per_system_nem, pv_generation_per_system_wem)
   
   ##############################
   #calculate implied system size

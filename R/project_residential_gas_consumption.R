@@ -21,7 +21,7 @@ project_residential_gas_consumption <- function(gas_connections_data,
     mutate(model = map(data, ~lm(annual_consumption_gj ~ year, data = .x))) %>% 
     select(state, model)
   
-  #complete data to 2050
+  #complete data to 2050 - but remove WA for beyond 2034
   gas_consumption_projections_complete <- gsoo_consumption_data %>% 
     complete(year = 2023:2050, state) %>%
     left_join(models_by_state, by = "state") %>%
@@ -31,12 +31,13 @@ project_residential_gas_consumption <- function(gas_connections_data,
     mutate(annual_consumption_gj = if_else(year == 2050 & state == "Vic",
                                            annual_consumption_gj[year == 2049 & state == "Vic"],
                                            annual_consumption_gj)) %>% 
+    filter(!(year > 2034 & state == "WA")) %>% 
     select(year, state, annual_consumption_gj)
   
   #plot trajectory
-  # gas_consumption_projections_complete %>%
-  #   ggplot(aes(x= year, y = annual_consumption_gj, colour = state)) +
-  #   geom_line()
+  gas_consumption_projections_complete %>%
+    ggplot(aes(x= year, y = annual_consumption_gj, colour = state)) +
+    geom_line()
   
   #aggregate nsw and act connections
   gas_connections_data <- gas_connections_data %>% 
@@ -58,7 +59,11 @@ project_residential_gas_consumption <- function(gas_connections_data,
                                        benchmark_gas_consumption) %>% 
     mutate(residential_consumption = residential * benchmark_use_mj) %>% 
     select(year, state, residential_consumption) %>% 
-    left_join(gsoo_consumption_data, by = join_by(year, state)) %>% 
+    #we don't have 2023 data for WA but we can assume the residential consumption is essentially constant (as we're only looking at the decline trend here)
+    left_join(gsoo_consumption_data %>% 
+                #change 2024 data to 2023 to match with consumption data
+                mutate(year = if_else(year == 2024 & state == "WA", 2023, year)), 
+              by = join_by(year, state)) %>% 
     mutate(pct_residential_consumption = (residential_consumption / 1000) / annual_consumption_gj) %>% 
     select(state, pct_residential_consumption)
 

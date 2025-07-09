@@ -42,10 +42,10 @@ calculate_space_heating_tou <- function(rbs_tou_consumption_data, temperature_da
   heating_cooling_profiles
 }
 
-# 
-# heating_cooling_profiles %>% 
-#   filter(state == "Tas",
-#          day_type == "WD") %>% 
+
+# heating_cooling_profiles %>%
+#   filter(state == "Vic",
+#          day_type == "WD") %>%
 #   ggplot(aes(x= hour, y = power, colour = end_use_category)) +
 #     facet_wrap(~season) +
-#   geom_line() 
+#   geom_line()

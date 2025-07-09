@@ -104,10 +104,11 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
 
 function(){
   
-  average_household_profiles %>% 
-  filter(state == "NSW and ACT",
+  average_profiles %>% 
+  filter(state == "Vic",
          season == "Winter",
-         pv == 1,
+         pv == 0,
+         electrification == T,
          year %in% c(2025, 2050)) %>% 
   ggplot(aes(x = hour, y = power_kwh, fill = source)) +
   geom_area() +

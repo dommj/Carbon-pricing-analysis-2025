@@ -1,7 +1,8 @@
 #get vehicle data
 #ignore fuel cell vehicles...
 
-get_aemo_vehicle_data <- function(electric_vehicle_workbook_file){
+get_aemo_vehicle_data <- function(electric_vehicle_workbook_file,
+                                  wem_esoo_2024_ev_projections_file){
 
 #BEV data
 aemo_bev_nsw_act_data <- read_excel(electric_vehicle_workbook_file,
@@ -32,6 +33,12 @@ aemo_bev_vic_data <- read_excel(electric_vehicle_workbook_file,
                                     sheet = "BEV_Numbers",
                                     range = "B117:AF127") %>% 
   mutate(state = 'Vic',
+         fuel_type = 'BEV')
+
+aemo_bev_wa_data <- read_excel(wem_esoo_2024_ev_projections_file,
+                                    sheet = "BEV_Numbers",
+                                    range = "B21:M31") %>% 
+  mutate(state = 'WA',
          fuel_type = 'BEV')
 
 #PHEV data
@@ -65,6 +72,12 @@ aemo_phev_vic_data <- read_excel(electric_vehicle_workbook_file,
   mutate(state = 'Vic',
          fuel_type = 'PHEV')
 
+aemo_phev_wa_data <- read_excel(wem_esoo_2024_ev_projections_file,
+                               sheet = "PHEV_Numbers",
+                               range = "B21:M31") %>% 
+  mutate(state = 'WA',
+         fuel_type = 'PHEV')
+
 #ICE data
 aemo_ice_nsw_act_data <- read_excel(electric_vehicle_workbook_file,
                                     sheet = "ICE_Numbers",
@@ -96,22 +109,34 @@ aemo_ice_vic_data <- read_excel(electric_vehicle_workbook_file,
   mutate(state = 'Vic',
          fuel_type = 'ICE')
 
+
+aemo_ice_wa_data <- read_excel(wem_esoo_2024_ev_projections_file,
+                               sheet = "ICE_Numbers",
+                               range = "B21:M31") %>% 
+  mutate(state = 'WA',
+         fuel_type = 'ICE')
+
+
+
 #combine data
 aemo_vehicle_data <- bind_rows(aemo_bev_nsw_act_data,
                                aemo_bev_qld_data,
                                aemo_bev_sa_data,
                                aemo_bev_tas_data,
                                aemo_bev_vic_data,
+                               aemo_bev_wa_data,
                                aemo_phev_nsw_act_data,
                                aemo_phev_qld_data,
                                aemo_phev_sa_data,
                                aemo_phev_tas_data,
                                aemo_phev_vic_data,
+                               aemo_phev_wa_data,
                                aemo_ice_nsw_act_data,
                                aemo_ice_qld_data,
                                aemo_ice_sa_data,
                                aemo_ice_tas_data,
-                               aemo_ice_vic_data) %>% 
+                               aemo_ice_vic_data,
+                               aemo_ice_wa_data,) %>% 
   pivot_longer(cols = contains("20"),
                names_to = "year",
                values_to = "vehicles_count") %>%

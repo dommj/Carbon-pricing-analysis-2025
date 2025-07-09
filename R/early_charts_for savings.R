@@ -20,7 +20,7 @@ data %>%
          pv == consumer_type_1["pv"],
          ice == consumer_type_1["ice"],
          state == "NSW and ACT",
-         year %in% seq(2025, 2034)) %>% 
+         year %in% seq(2025, 2041)) %>% 
   ggplot(aes(x = year, y = annual_cost_dollars, fill = category)) +
   geom_col() + 
   grattan_y_continuous() +
@@ -47,9 +47,9 @@ ten_year_costs_data %>%
     geom_col() +
   coord_flip()
  
-  
+ # we are waiting on jacobs feed in estimates to get the full gamut for these
 ten_year_costs_data %>% 
-  filter(state %in% c("Qld", "NSW and ACT", "Vic", "SA")) %>% 
+  filter(state %in% c("Qld", "NSW and ACT", "Vic", "SA", "WA", "Tas")) %>% 
   ggplot(aes(x = total_cost_dollars / 10, y = reorder(state, total_cost_dollars))) +
   geom_line(colour = grattan_darkgrey) +
   grattan_label(data = . %>% filter(state == "Vic"), aes(color = consumer_name,
@@ -117,6 +117,72 @@ ten_year_costs
 
 
 #####################################################
+#Gas bill for bill payers
+#####################################################
+
+gas_bills_c_mj <- benchmark_gas_consumption %>% 
+  select(state, benchmark_use_mj) %>% 
+  left_join(gas_retail_volumetric_price_projections) %>% 
+  left_join(gas_connection_charge_projections) %>% 
+  left_join(residential_gas_consumption_projections %>% 
+              select(-residential_consumption_gj)) %>% 
+  mutate(volume_cost = benchmark_use_mj/1000 * dollars_per_gj,
+        connection_cost = annual_connection_charge) %>% 
+  mutate(c_mj = ((volume_cost + connection_cost) * 100) / benchmark_use_mj)
+
+
+gas_bills_c_mj %>% 
+  filter(year <= 2045) %>% 
+  ggplot(aes(x= year, y= c_mj, colour = state)) +
+  geom_line()
+
+gas_bills <- benchmark_gas_consumption %>% 
+  select(state, benchmark_use_mj) %>% 
+  left_join(gas_retail_volumetric_price_projections) %>% 
+  left_join(gas_connection_charge_projections) %>% 
+  left_join(residential_gas_consumption_projections %>% 
+              select(-residential_consumption_gj)) %>% 
+  mutate(volume_cost = benchmark_use_mj/1000 * dollars_per_gj,
+         connection_cost = annual_connection_charge) %>% 
+  filter(state!= "WA") %>% 
+  group_by(year) %>% 
+  summarise(volume_cost = weighted.mean(volume_cost, residential_gas_connections),
+            connection_cost = weighted.mean(connection_cost, residential_gas_connections),
+            benchmark_use_mj = weighted.mean(benchmark_use_mj, residential_gas_connections)) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = c(volume_cost, connection_cost), names_to = 'source', values_to = "cost_dollars")
+
+gas_bills %>% 
+  filter(year <= 2045) %>% 
+  ggplot(aes(x = year, y = cost_dollars, fill = source)) +
+  geom_col() +
+  grattan_y_continuous(labels = scales::dollar_format()) +
+  theme_grattan() +
+  labs(title = 'Average connection costs are forecast to rise steeply',
+       subtitle = 'Average annual gas bills, 2024 dollars',
+       x = '',
+       y = '')
+
+
+gas_bills %>% 
+  filter(year %in% c(2025, 2030, 2035, 2040, 2045)) %>%
+  filter(source == "connection_cost") %>% 
+  ggplot(aes(x = year, y = cost_dollars)) +
+  geom_col() +
+  grattan_y_continuous(limits = c(0, 1400), breaks = seq(0, 1400, by = 200),
+                       labels = scales::dollar_format()) +
+  scale_x_continuous(breaks = seq(2025, 2045, by = 5)) +
+  geom_text(aes(label = scales::dollar(cost_dollars)), 
+            vjust = -0.5, 
+            size = 3.5) +
+  theme_grattan() +
+  labs(title = 'Average connection costs are forecast to rise steeply',
+       subtitle = 'Average annual gas connection charges, 2024 dollars',
+       x = '',
+       y = '')
+
+
+#####################################################
 #Average costs charts
 #####################################################
 
@@ -143,4 +209,3 @@ bind_rows(average_electricity_costs, average_gas_costs, average_petrol_costs) %>
   pivot_wider(names_from = electrification, values_from = average_cost_dollars) %>%
   mutate(dif = `TRUE` - `FALSE`)
 
-802 / 5260

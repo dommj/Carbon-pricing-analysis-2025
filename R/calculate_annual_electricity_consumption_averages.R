@@ -12,7 +12,9 @@ calculate_annual_electricity_consumption_averages <- function(average_profiles){
     mutate(season_total = power_kwh * (365 / 4)) %>% 
     group_by(year, state, pv, electrification, consumption_export) %>% 
     summarise(annual_consumption_kwh = sum(season_total)) %>%  
-    ungroup()
+    ungroup() %>% 
+    #remove WA data post 2034 becuase esoo only goes out til thenb
+    filter(!(state== "WA" & year > 2034))
   
   annual_consumption_exports
   

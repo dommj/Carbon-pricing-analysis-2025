@@ -142,7 +142,10 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
   adj_consumer_tou_profiles_all <- adj_consumer_tou_profiles %>% 
     bind_rows(ev_consumption_profiles_all, pv_profiles) %>% 
     #filter out states we have incomplete data for
-    filter(state %in% states_w_data)
+    filter(state %in% states_w_data,
+           #filter out WA data after 2034 (our data limit)
+           !(state == "WA" & year > 2034)
+           )
  
   
   adj_consumer_tou_profiles_all
