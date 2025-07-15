@@ -31,7 +31,7 @@ calculate_average_petrol_consumption <- function(ev_fleet_data,
   #and create a parallel dataset for ICE use staying the same from 2024
   
   petrol_use_no_electrification <- petrol_use %>% 
-    filter(year == 2025) %>% 
+    filter(year == 2024) %>% 
     select(-year) %>% 
     cross_join(tibble(year = seq(2025, 2050))) %>% 
     mutate(electrification = F)

@@ -194,6 +194,9 @@ tar_plan(
   #NEM ESOO 2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
   
+  #NEM IASR 2023 EV workbook (to get 2024 numbers)
+  tar_file(iasr_23_ev_workbook_file, 'Data/Detailed Electric Vehicle databook.xlsx'),
+  
   #WEM ESOO 2024 operational demand file
   tar_file(wem_esoo_2024_operational_file, "Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx"),
   
@@ -328,6 +331,7 @@ tar_plan(
   
   #AEMO vehicle fleet data
   tar_target(ev_fleet_data, get_aemo_vehicle_data(electric_vehicle_workbook_file,
+                                                  iasr_23_ev_workbook_file,
                                                   wem_esoo_2024_ev_projections_file)),
   
   # Load EV consumption profiles
@@ -502,6 +506,8 @@ tar_plan(
                                                             gas_network_charge_revenue,
                                                             household_connections,
                                                             average_gas_consumption)),
+  
+  #USE TAR_MAP TO CREATE RESULTS ACROSS INPUT RETAIL SPREADSHEETS
   
   #calculate electricity costs
   tar_target(average_electricity_costs, calculate_average_electricity_costs(annual_electricity_consumption_averages,

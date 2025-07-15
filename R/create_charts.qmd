@@ -14,6 +14,10 @@ library(targets)
 library(dplyr)
 library(tidyr) 
 library(ggplot2)
+library(patchwork)
+library(grattantheme)
+library(forcats)
+
 #library(waterfalls)
 
 ```
@@ -38,10 +42,19 @@ tar_load(average_gas_costs)
 tar_load(average_petrol_costs)
 tar_load(household_connections)
 
-chart_palette <- c(
+chart_fill_palette <- c(
   "Petrol" = grattan_red,
   "Gas" = grattan_orange, 
   "Electricity" = grattan_yellow,
+  "Electrification savings" = "transparent",
+  "Total costs without electrification" = grattan_black
+)
+
+chart_colour_palette <- c(
+  "Petrol" = grattan_red,
+  "Gas" = grattan_orange, 
+  "Electricity" = grattan_yellow,
+  "Electrification savings" = grattan_black,
   "Total costs without electrification" = grattan_black
 )
 
@@ -62,12 +75,12 @@ bind_rows(net_average_electricity_costs,
          state != "WA") %>% 
   summarise(average_cost_dollars = weighted.mean(average_cost_dollars, 
                                                  connections)) %>% 
-  ggplot(aes(reorder(x = category,average_cost_dollars), 
+  ggplot(aes(reorder(x = category, -average_cost_dollars), 
              y = average_cost_dollars, fill = category, colour = category)) +
   geom_col() +
   theme_grattan() +
-  scale_colour_manual(values = chart_palette) +
-  scale_fill_manual(values = chart_palette) +
+  scale_colour_manual(values = chart_fill_palette) +
+  scale_fill_manual(values = chart_fill_palette) +
   grattan_y_continuous(labels = scales::dollar_format()) +
     labs(title = "Electricity forms a small part of total household energy costs",
        subtitle = 'Average annual household energy costs, by fuel source, 2025',
@@ -153,16 +166,16 @@ ggplot(aes(x = year, y = average_cost_dollars)) +
     grattan_y_continuous(labels = scales::dollar_format(), expand_top = 0.1) +
     scale_x_continuous_grattan(expand_right = 0.2,
                                breaks = seq(2025,2040, by = 5)) +
-    scale_colour_manual(values = chart_palette) +
-    scale_fill_manual(values = chart_palette) +
+    scale_colour_manual(values = chart_fill_palette) +
+    scale_fill_manual(values = chart_fill_palette) +
     theme_grattan() +
-    labs(title = paste0("Electrification will save the average Australian household", " $", gap_by_2040, " a year by 2040"),
+    labs(title = paste0("On average, electrification will save Australian households", " $", gap_by_2040, " a year by 2040"),
        subtitle = 'Average annual household energy costs, by fuel source',
        x = '',
        y = '',
        caption = "Notes: \nSource: Grattan Institute analaysis see app X")
 
-
+plot
 ```
 
 save chart:
@@ -172,6 +185,194 @@ save chart:
 
 grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_bills_over_time.pdf",
              object = plot)
+```
+
+Average state bills over time, state
+
+```{r}
+
+line_chart_data <- bind_rows(net_average_electricity_costs, average_gas_costs, average_petrol_costs) %>% 
+  group_by(year, state, electrification) %>% 
+  filter(year >= 2025,
+         year <= 2043,
+         state != "WA") %>% 
+  summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+  ungroup()
+
+line_chart_data %>% 
+  ggplot(aes(x = year, y = average_cost_dollars, colour = state)) +
+  geom_line(data = . %>% filter(electrification == T)) +
+  # geom_line(data = . %>% filter(electrification == F),
+  #           linetype = "dashed") +
+  grattan_y_continuous(limits = c(2000, 8000),
+                       labels = scales::dollar_format()) +
+  grattan_x_continuous(expand_left = 0.1, expand_right = 0.1) +
+  grattan_label(data = chart_data %>% 
+                    filter(year == 2025,
+                           electrification == T), 
+                aes(x = year, 
+                    y = average_cost_dollars, 
+                    label = str_wrap(state, 13),
+                    colour = state),
+                hjust = 0,
+                #nudge_y = position_jitter(),
+                nudge_x = -0.5) +
+  theme_grattan() +
+  labs(title ="State average energy bills",
+       subtitle = 'Average annual household energy costs, by fuel source',
+       x = '',
+       y = '',
+       caption = "Notes: \nSource: Grattan Institute analaysis see app X")
+
+```
+
+```{r}
+plot_data <- bind_rows(net_average_electricity_costs, average_gas_costs, average_petrol_costs) %>% 
+  filter(year %in% c(2025,  2043),
+         electrification == T) %>% 
+  group_by(state, year) %>% 
+  summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+  filter(state != "WA") %>% 
+  mutate(state = if_else(state == "NSW and ACT", "NSW", state))
+
+state_levels <- plot_data %>% filter(year == 2025) %>% 
+  arrange(average_cost_dollars) %>% 
+  pull(state)
+
+plot_data <-  plot_data %>% 
+  mutate(state = fct(state, levels = state_levels))
+
+arrows_single_data <- plot_data %>%
+  group_by(state) %>%
+  summarise(
+    x_start = state[1],
+    y_start = average_cost_dollars[year == 2025],
+    x_end = state[1],
+    y_end = average_cost_dollars[year == max(year)],
+    .groups = "drop"
+  )
+
+plot_data %>% 
+  ggplot(aes(reorder(x = state, average_cost_dollars), y = average_cost_dollars)) +
+    geom_segment(data = arrows_single_data,
+               aes(x = x_start, y = y_start, xend = x_end, yend = y_end + 30),
+               arrow = grattan_arrow(),
+               colour = grattan_grey1,
+               size = 2) +
+  grattan_point_filled(aes(color = year), size = 3, 
+                       stroke = 2, fill = "white", shape = 21) +
+    grattan_label(data= . %>% filter(state == "Qld"),
+                aes(x = state,
+                    y = average_cost_dollars,
+                    label = year,
+                    colour = year),
+                hjust = 1,
+                nudge_x = -0.2
+                ) +
+  grattan_y_continuous(limits = c(0,8000), labels = scales::dollar_format()) +
+  scale_x_discrete(expand = expansion(add = c(0.9,0.5)))+
+  theme_grattan() +
+  labs(title ="Households across the country are set to save ",
+       subtitle = 'Average annual household energy costs, by fuel source',
+       x = '',
+       y = '',
+       caption = "Notes: \nSource: Grattan Institute analaysis see app X")
+  
+
+
+```
+
+Bar chart version:
+
+```{r}
+#| echo: false
+gap <- chart_data %>% 
+  filter(year %in% c(2025, 2030, 2035, 2040)) %>% 
+  group_by(year, electrification) %>% 
+  summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+  pivot_wider(names_from = electrification, values_from = average_cost_dollars) %>%
+  #create a row of costs for the counterfactual case
+  mutate(average_cost_dollars = `FALSE` - `TRUE`,
+         category = "Electrification savings",
+         electrification = T) %>% 
+  select(-c(`FALSE`, `TRUE`))
+
+
+col_chart_data <- chart_data %>% 
+  filter(year %in% c(2025, 2030, 2035, 2040),
+         electrification == T) %>% 
+  bind_rows(gap) %>% 
+  mutate(category = fct(category, levels = c("Petrol", 
+                                             "Electricity", 
+                                             "Gas", 
+                                             "Electrification savings"))) %>% 
+  ungroup()
+
+
+savings_box_data <- col_chart_data %>% 
+  group_by(year) %>% 
+  mutate(cumsum_top = cumsum(average_cost_dollars),
+         cumsum_bottom = cumsum_top - average_cost_dollars) %>% 
+  filter(category == "Electrification savings")
+
+
+label_data <- col_chart_data %>% 
+  # Calculate the y positions for the labels at the midpoints of each stack
+  group_by(year) %>% 
+  arrange(category) %>% 
+  mutate(y_position = cumsum(average_cost_dollars),
+         y_position = y_position - 0.5 * average_cost_dollars) %>% 
+  ungroup()
+
+plot <- col_chart_data %>% 
+  filter(category != "Electrification savings") %>% 
+ggplot(aes(x = year, y = average_cost_dollars)) +
+    geom_col(aes(x = year, y = average_cost_dollars, 
+               colour = fct_rev(category), fill = fct_rev(category))) +
+    grattan_label(data = label_data %>% 
+                    filter(year == 2040), 
+                aes(x = year, 
+                    y = y_position, 
+                    label = str_wrap(category, 13),
+                    colour = category),
+                hjust = 0,
+                nudge_x = 2.5) +
+  
+  
+      # Add dotted borders for Electrification savings (top and sides only)
+    geom_segment(data = savings_box_data,
+                 aes(x = year - 2.25, xend = year + 2.25,
+                     y = cumsum_top, yend = cumsum_top),  # top edge
+                 linetype = "dashed", color = "black", size = 1) +
+    geom_segment(data = savings_box_data,
+                 aes(x = year - 2.25, xend = year - 2.25,
+                     y = cumsum_bottom, yend = cumsum_top),  # left edge
+                 linetype = "dashed", color = "black", size = 1) +
+    geom_segment(data = savings_box_data,
+                 aes(x = year + 2.25, xend = year + 2.25,
+                     y = cumsum_bottom, yend = cumsum_top),  # right edge
+                 linetype = "dashed", color = "black", size = 1) +
+  
+    grattan_y_continuous(labels = scales::dollar_format(), expand_top = 0.1) +
+    scale_x_continuous_grattan(expand_right = 0.3,
+                               breaks = seq(2025,2040, by = 5)) +
+    scale_colour_manual(values = chart_colour_palette) +
+    scale_fill_manual(values = chart_fill_palette) +
+    theme_grattan() +
+    labs(title = paste0("On average, electrification will save Australian households", " $", gap_by_2040, " a year by 2040"),
+       subtitle = 'Average annual household energy costs, by fuel source',
+       x = '',
+       y = '',
+       caption = "Notes: \nSource: Grattan Institute analaysis see app X")
+
+plot
+```
+
+```{r}
+grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_bills_time_columns.pdf",
+             object = plot)
+
+writeLines(as.character(gap_by_2040), "C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_electrification_savings_2040.txt")
 ```
 
 \
@@ -275,7 +476,7 @@ fall_chart_data %>%
                     label = consumer_name),
                 hjust = 0,
                 nudge_x = -0.6) +
-  grattan_y_continuous() +
+  grattan_y_continuous(labels = scales::dollar_format()) +
   scale_x_discrete(breaks = c("Electrify gas","Switch to an EV"), labels = axis_labels) +
   labs(title = paste0("In NSW, households that electrify their homes can save", "more than ", saving_pct, " per cent on their bills"),
        subtitle = 'Annual household energy costs, by consumer type',
@@ -294,22 +495,170 @@ grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Ap
              object = ggplot2::last_plot())
 ```
 
-Version with no cars...
+Attempt to facet:
 
 ```{r}
 #| echo: false
 
-rm(list = ls())
 
-tar_load(cameo_electricity_costs)
-tar_load(cameo_gas_costs)
-tar_load(cameo_petrol_costs)
-tar_load(household_connections)
+electrification_data <- cameo_cost_data %>% 
+  filter(year == 2025) %>%
+  group_by(year, cooking, water_heating, space_heating, ev, pv, ice, state) %>% 
+  summarise(total_cost_dollars = sum(annual_cost_dollars)) %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_1", # all gas with an ICE vehicle
+                              "gas_gas_gas_1_FALSE_0",
+                              "gas_gas_gas_1_TRUE_0",
+                              "electric_electric_electric_1_TRUE_0")) %>% 
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_1" ~ "Fossil fuel home",
+                                       consumer_type == "gas_gas_gas_1_FALSE_0" ~ "Switch to an EV",
+                                       consumer_type == "gas_gas_gas_1_TRUE_0" ~ "Install solar",
+                                       consumer_type == "electric_electric_electric_1_TRUE_0" ~ "Electrify gas") %>% fct_rev()) %>% 
+  filter(state %nin% c("WA", "NT", "Aus")) %>% 
+  ungroup()
 
-cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs) %>% 
-  cross_join(tibble(ice = c(0,1,2))) %>% 
-  bind_rows(cameo_petrol_costs)
 
+# average_electrification_data <- electrification_data %>% 
+#   left_join(household_connections) %>% 
+#   filter(!is.na(connections)) %>% 
+#   group_by(consumer_name) %>% 
+#   summarise(total_cost_dollars = weighted.mean(total_cost_dollars, connections))
+
+
+fall_chart_data <- electrification_data %>% 
+  select(state, consumer_name, total_cost_dollars) %>% 
+  group_by(state) %>% 
+  arrange(consumer_name) %>% 
+  mutate(chart_value = if_else(consumer_name %in% c("Fossil fuel home"), total_cost_dollars, total_cost_dollars - lead(total_cost_dollars))) %>% 
+  ungroup() %>% 
+  select(state, consumer_name, chart_value) %>% 
+  arrange(fct_rev(consumer_name))
+  
+  
+  # Get the category names for axis labels
+axis_labels <- c("Fossil fuel home",  "Fully electrified home")
+chart_label_data <- fall_chart_data %>% 
+  group_by(state) %>% 
+  mutate(y_value = cumsum(chart_value),
+         y_value = y_value - chart_value /2,
+         x_value = row_number())
+
+# saving_pct <- fall_chart_data %>% 
+#   group_by(state) %>% 
+#   mutate(pct = (chart_value - sum(chart_value))/chart_value * 100) %>% 
+#   filter(consumer_name == "Fossil fuel home") %>% 
+#   pull(pct) %>% 
+#   signif(1)
+
+
+create_plot <- function(data, label){
+  
+  
+  bar_text <- data %>% 
+  mutate(chart_value = if_else(chart_value >=0, 
+                               paste0('$',signif(chart_value, 3)),
+                               paste0('-$',-signif(chart_value, 3)))) %>% 
+           pull(chart_value)
+
+  total_text <- paste0("$", data %>% 
+                       pull(chart_value) %>% 
+                       sum() %>% 
+                       signif(3))
+
+data %>% 
+    select(-state) %>% 
+  waterfall(calc_total= TRUE, 
+            rect_text_labels = bar_text,
+            total_rect_text = total_text,
+            total_rect_border_color = NA,
+            rect_text_size = 2,
+            rect_border = NA,
+            theme_text_family = "theme_grattan",
+            fill_colours = c(grattan_red,
+                             grattan_orange,
+                             grattan_orange,
+                             grattan_orange),
+            total_rect_color = grattan_yellow,
+            fill_by_sign = F,
+            total_axis_text = "Fully electrified home") +
+  theme_grattan() +
+  grattan_label(data = chart_label_data %>% 
+                  filter(state == label,
+                         consumer_name != "Fossil fuel home"),
+                aes(x = x_value + 1, y = y_value,
+                    label = consumer_name),
+                hjust = 0,
+                nudge_x = -0.6) +
+  grattan_y_continuous(limits = c(0, 6200), labels = scales::dollar_format()) +
+  scale_x_discrete(breaks = c("Electrify gas","Switch to an EV"), labels = axis_labels) +
+ggtitle(label) +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
+labs(x = "")
+  
+}
+
+
+ # Split data by faceting variable
+  split_data <- fall_chart_data %>% 
+    #filter chart for no Tas for now
+    filter(state!= "Tas") %>% 
+    group_split(!!sym("state"))
+  
+  # Get the unique values for titles
+  facet_labels <- fall_chart_data %>% 
+    filter(state!= "Tas") %>% 
+    distinct(!!sym("state")) %>% 
+    pull(!!sym("state"))
+  
+  ncol <- 2
+  
+   plots <- map2(split_data, facet_labels, ~{
+    base_plot <- create_plot( .x, .y)
+     
+     # Determine if this is a leftmost plot (first in each row)
+    plot_index <- which(facet_labels == .y)
+    is_leftmost <- (plot_index - 1) %% ncol == 0
+    is_bottom <- plot_index > length(facet_labels) - ncol 
+    
+    if (!is_leftmost) {
+      base_plot <- base_plot +
+        theme(axis.text.y = element_blank(),
+              axis.ticks.y = element_blank(),
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank())
+    }
+    
+    # if (!is_bottom) {
+    #   base_plot <- base_plot +
+    #     theme(axis.text.x = element_blank(),
+    #           axis.ticks.x = element_blank())
+    # }
+    # 
+    base_plot
+     
+  })
+  
+  # Combine plots
+  wrap_plots(plots, ncol = ncol) 
+    # plot_annotation(title = "Households in every state can access large savings from electrification",
+    #              subtitle = "Annual household energy costs, by consumer type",
+    #              caption = "Notes: \nSource: Grattan Institute analaysis see app X",
+    #              theme = theme_grattan())
+    
+```
+
+save chart:
+
+```{r}
+#| echo: false
+grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/all_states_waterfall.pdf",
+             object = ggplot2::last_plot())
+```
+
+Version with no cars...
+
+```{r}
+#| echo: false
 
 electrification_data <- cameo_cost_data %>% 
   filter(year == 2025) %>%
@@ -345,7 +694,7 @@ fall_chart_data <- electrification_data %>%
   
   
 # Get the category names for axis labels
-axis_labels <- c("Fossil fuel home", "", "", "Solar electric home")
+axis_labels <- c("Fossil fuel home",  "Solar electric home")
 chart_label_data <- fall_chart_data %>% 
   mutate(y_value = cumsum(chart_value),
          y_value = y_value - chart_value /2,
@@ -383,32 +732,20 @@ fall_chart_data %>%
                 hjust = 0,
                 nudge_x = -0.6) +
   grattan_y_continuous() +
-  scale_x_discrete(labels = axis_labels, breaks = c(1,4)) +
+  scale_x_discrete(labels = axis_labels, breaks = c("Electrify gas","Solar electric home")) +
   labs(title = "Households can decrease their energy bills",
        subtitle = 'Average annual household energy costs, by fuel source',
        x = '',
        y = '',
        caption = "Notes: \nSource: Grattan Institute analaysis see app X")
 
- 
 
 ```
 
 Try switching the order of change:
 
 ```{r}
-rm(list = ls())
-source("R/helpers.R")
-
-tar_load(cameo_electricity_costs)
-tar_load(cameo_gas_costs)
-tar_load(cameo_petrol_costs)
-tar_load(household_connections)
-
-cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs) %>% 
-  cross_join(tibble(ice = c(0,1,2))) %>% 
-  bind_rows(cameo_petrol_costs)
-
+#| echo: false
 
 electrification_data <- cameo_cost_data %>% 
   filter(year == 2025) %>%
@@ -500,5 +837,189 @@ fall_chart_data %>%
        caption = "Notes: \nSource: Grattan Institute analaysis see app X")
 
 
-grattan_save_pptx("test_reverse_elec.pptx", ggplot2::last_plot())
+#grattan_save_pptx("test_reverse_elec.pptx", ggplot2::last_plot())
+```
+
+```{r}
+#| echo: false 
+
+electrification_data <- cameo_cost_data %>% 
+  filter(year == 2025) %>%
+  group_by(year, cooking, water_heating, space_heating, ev, pv, ice, state) %>% 
+  summarise(total_cost_dollars = sum(annual_cost_dollars)) %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_1", # all gas with an ICE vehicle
+                              "electric_electric_electric_0_FALSE_1",
+                              "electric_electric_electric_1_FALSE_0",
+                              "electric_electric_electric_1_TRUE_0")) %>% 
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_1" ~ "Fossil fuel home",
+                                       consumer_type == "electric_electric_electric_0_FALSE_1" ~ "Electrify gas",
+                                       consumer_type == "electric_electric_electric_1_FALSE_0" ~ "Switch to an EV",
+                                       consumer_type == "electric_electric_electric_1_TRUE_0" ~ "Install solar") %>% fct_rev()) %>% 
+  filter(state %nin% c("WA", "NT", "Aus")) %>% 
+  ungroup()
+
+
+# average_electrification_data <- electrification_data %>% 
+#   left_join(household_connections) %>% 
+#   filter(!is.na(connections)) %>% 
+#   group_by(consumer_name) %>% 
+#   summarise(total_cost_dollars = weighted.mean(total_cost_dollars, connections))
+
+
+fall_chart_data <- electrification_data %>% 
+  select(state, consumer_name, total_cost_dollars) %>% 
+  group_by(state) %>% 
+  arrange(consumer_name) %>% 
+  mutate(chart_value = if_else(consumer_name %in% c("Fossil fuel home"), total_cost_dollars, total_cost_dollars - lead(total_cost_dollars))) %>% 
+  filter(state == "NSW and ACT") %>% 
+  ungroup() %>% 
+  select(consumer_name, chart_value) %>% 
+  arrange(fct_rev(consumer_name))
+  
+  
+  # Get the category names for axis labels
+axis_labels <- c("Fossil fuel home",  "Fully electrified home")
+chart_label_data <- fall_chart_data %>% 
+  mutate(y_value = cumsum(chart_value),
+         y_value = y_value - chart_value /2,
+         x_value = row_number())
+
+saving_pct <- fall_chart_data %>% 
+  mutate(pct = (chart_value - sum(chart_value))/chart_value * 100) %>% 
+  filter(consumer_name == "Fossil fuel home") %>% 
+  pull(pct) %>% 
+  signif(1)
+
+bar_text <- fall_chart_data %>% 
+  mutate(chart_value = if_else(chart_value >=0, 
+                               paste0('$',signif(chart_value, 3)),
+                               paste0('-$',-signif(chart_value, 3)))) %>% 
+           pull(chart_value)
+
+total_text <- paste0("$", fall_chart_data %>% 
+                       pull(chart_value) %>% 
+                       sum() %>% 
+                       signif(3))
+
+fall_chart_data %>% 
+  waterfall(calc_total= TRUE, 
+            rect_text_labels = bar_text,
+            total_rect_text = total_text,
+            total_rect_border_color = NA,
+            rect_text_size = 1.5,
+            rect_border = NA,
+            theme_text_family = "theme_grattan",
+            fill_colours = c(grattan_red,
+                             grattan_orange,
+                             grattan_orange,
+                             grattan_orange),
+            total_rect_color = grattan_yellow,
+            fill_by_sign = F,
+            total_axis_text = "Fully electrified home") +
+  theme_grattan() +
+  grattan_label(data = chart_label_data %>% 
+                  filter(consumer_name != "Fossil fuel home"),
+                aes(x = x_value + 1, y = y_value,
+                    label = consumer_name),
+                hjust = 0,
+                nudge_x = -0.6) +
+  grattan_y_continuous() +
+  scale_x_discrete(breaks = c("Electrify gas","Switch to an EV"), labels = axis_labels) +
+  labs(title = paste0("In NSW, households that electrify their homes can save", "more than ", saving_pct, " per cent on their bills"),
+       subtitle = 'Annual household energy costs, by consumer type',
+       x = '',
+       y = '',
+       caption = "Notes: \nSource: Grattan Institute analaysis see app X")
+
+```
+
+Different states have different opportunities to save:
+
+```{r}
+#| echo: false
+
+electrification_data <- cameo_cost_data %>% 
+  filter(year == 2025) %>%
+  group_by(year, cooking, water_heating, space_heating, ev, pv, ice, state) %>% 
+  summarise(total_cost_dollars = sum(annual_cost_dollars)) %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_1", # all gas with an ICE vehicle
+                              "electric_electric_electric_0_FALSE_1",
+                              "electric_electric_electric_0_TRUE_1",
+                              "electric_electric_electric_1_TRUE_0")) %>% 
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_1" ~ "Fossil fuel home",
+                                       consumer_type == "electric_electric_electric_0_FALSE_1" ~ "Electrify gas",
+                                       consumer_type == "electric_electric_electric_0_TRUE_1" ~ "Install solar",
+                                       consumer_type == "electric_electric_electric_1_TRUE_0" ~ "Switch to an EV") %>% fct_rev()) %>% 
+  filter(state %nin% c("WA", "NT", "Aus")) %>% 
+  ungroup()
+
+savings_state <- electrification_data %>% 
+  select(state, consumer_name, total_cost_dollars) %>% 
+  group_by(state) %>% 
+  arrange(consumer_name) %>% 
+  mutate(savings = if_else(consumer_name %in% c("Fossil fuel home"), 0, lead(total_cost_dollars) - total_cost_dollars)) %>% 
+filter(savings != 0)
+
+
+savings_state %>% 
+  ggplot(aes(x = state, y = savings, fill = consumer_name)) +
+  geom_col()
+```
+
+Consumer type costs over time
+
+```{r}
+cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs) %>% 
+  cross_join(tibble(ice = c(0,1,2))) %>% 
+  bind_rows(cameo_petrol_costs)
+
+
+electrification_data <- cameo_cost_data %>% 
+  filter(year %in% c(2025, 2030, 2035, 2040)) %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_0", # all gas
+                              "electric_electric_electric_0_FALSE_0")) %>%  #all electric
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_0" ~ "Gas cooking, water heating and space heating",
+                                       consumer_type == "electric_electric_electric_0_FALSE_0" ~ "All electric household") %>% fct_rev(),
+         category = case_when(category == "Electricity consumption" ~ "Electricity", 
+                              category == "Gas volumetric" ~ "Gas consumption",
+                              .default = category),
+         category = fct(category, 
+                        levels = c("Electricity", 
+                                   "Gas consumption", 
+                                   "Gas connection",
+                                   "Petrol")) %>% fct_rev()) %>% 
+  select(year, consumer_name, state, category, annual_cost_dollars) %>%
+  filter(state %in% c("Vic")) %>% 
+  ungroup()
+
+chart_fill_palette <- c(
+  "Petrol" = grattan_red,
+  "Gas consumption" = grattan_orange, 
+  "Gas connection" = grattan_darkorange,
+  "Electricity" = grattan_yellow
+)
+
+electrification_data %>% 
+  ggplot(aes(x = year, y = annual_cost_dollars, fill = category)) +
+  geom_col() +
+  facet_wrap(~consumer_name) +
+  grattan_y_continuous(limits = c(0, 4000),
+                       labels = scales::dollar_format()) +
+  theme_grattan() +
+  scale_fill_manual(values = chart_fill_palette) +
+  labs(title = "As connection charges grow, households that are stuck on gas will pay far more than they need to",
+       subtitle = "Annual gas and electricity costs by household type",
+       x = "",
+       y= "")
+```
+
+Save chart
+
+```{r}
+#| echo: false
+grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/gas_v_electric_vic.pdf",
+             object = ggplot2::last_plot())
 ```

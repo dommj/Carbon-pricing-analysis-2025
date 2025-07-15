@@ -9,19 +9,20 @@ calculate_average_residential_gas_consumption <- function(household_connections,
            electrification = T) %>% 
     select(year, state, category, average_annual_consumption_gj, electrification) %>% 
     filter(!is.na(average_annual_consumption_gj),
-           year >= 2025) 
+           year >= 2024) 
     
 
   #and create a parallel dataset where average gas consumption stays the same as 2024
   average_gas_consumption_no_electrification <- average_gas_consumption %>% 
-    filter(year == 2025) %>% 
+    filter(year == 2024) %>% 
     select(-year) %>% 
     cross_join(tibble(year = seq(2025, 2050))) %>% 
     mutate(electrification = F)
   
 
   average_gas_consumption_all <- bind_rows(average_gas_consumption,
-                                           average_gas_consumption_no_electrification)
+                                           average_gas_consumption_no_electrification) %>% 
+    filter(year >= 2025)
   
   return(average_gas_consumption_all)
 }

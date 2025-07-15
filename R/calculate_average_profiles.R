@@ -52,9 +52,9 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
     ungroup() %>% 
     filter(year <= 2050)
   
-  #create an ev consumption profile for all years in the counterfactual where there is no further ev uptake
+  #create an ev consumption profile for all years in the counterfactual where there is no further ev uptake after 2024
   ev_consumption_per_household_no_change <- ev_consumption_per_household %>% 
-    filter(year == 2025) %>% 
+    filter(year == 2024) %>% 
     select(- year) %>% 
     cross_join(tibble(year = 2025:2050))
   
