@@ -93,6 +93,7 @@ tar_source("R/get_pv_profiles.R")
 tar_source("R/get_ev_consumption_profiles.R")
 tar_source("R/calculate_tou_consumer_profiles.R")
 tar_source("R/calculate_household_energy_efficiency.R")
+tar_source("R/generate_battery_profiles.R")
 
 tar_source("R/calculate_annual_electricity_consumption_profiles.R")
 
@@ -412,6 +413,11 @@ tar_plan(
                                                                     heating_cooling_profiles,
                                                                     household_energy_efficiency)),
   
+  tar_target(tou_consumer_profiles_w_batteries, generate_battery_profiles(tou_consumer_profiles, 
+                                                                          #trace definining characteristics
+                                                                          c("cooking", "water_heating", "space_heating", "ev", "pv", "state", "year", "season"), 
+                                                                          battery_capacity = 11)),
+  
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(tou_consumer_profiles,
@@ -480,6 +486,11 @@ tar_plan(
                                                           average_pv_profile,
                                                           ev_consumption_profiles,
                                                           ev_fleet_data)),
+  
+  tar_target(average_profiles_w_batteries, generate_battery_profiles(average_profiles, 
+                                                                          #trace definining characteristics
+                                                                          c("pv", "electrification", "state", "year", "season"), 
+                                                                          battery_capacity = 11)),
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles

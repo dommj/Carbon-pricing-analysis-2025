@@ -26,7 +26,7 @@ library(forcats)
 
 ## 1.Retail prices will look like this for each of the options:
 
-## 2. But electricity is just one part of the household energy bill  
+## 2. But electricity is just one part of the household energy bill 
 
 Average consumer energy spending by source
 
