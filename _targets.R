@@ -37,6 +37,7 @@ tar_source('R/helpers.R')
 #load price data
 tar_source('R/get_retail_data_aemc.R')
 tar_source('R/get_jacobs_retail_prices.R')
+tar_source("R/get_electricity_tariffs.R")
 tar_source('R/get_petrol_data.R')
 tar_source('R/project_petrol_data.R')
 tar_source('R/get_gas_prices_data.R')
@@ -106,6 +107,7 @@ tar_source("R/calculate_cameo_electricity_costs.R")
 tar_source("R/get_esoo_average_underlying_demand.R")
 tar_source("R/calculate_average_load_shapes.R")
 tar_source("R/estimate_pv_system_stock.R")
+tar_source("R/estimate_battery_prevalence.R")
 tar_source("R/calculate_average_pv_profile.R")
 tar_source("R/calculate_average_profiles.R")
 tar_source("R/calculate_annual_electricity_consumption_averages.R")
@@ -146,6 +148,8 @@ tar_plan(
   
   #retail electricity prices
   tar_file(retail_file, 'Data/AEMC price trends/nsw_25.csv'),
+  
+  tar_file(electricity_tariffs_file, "Data/electricity_tariffs_july_25.xlsx"),
   
   #petrol prices
   tar_file(petrol_file, 'Data/accc_retail_fuel_04_24_report.csv'),
@@ -241,6 +245,8 @@ tar_plan(
   tar_target(jacobs_retail_prices, get_jacobs_retail_prices(jacobs_retail_model_file_base,
                                                             household_connections)),
   
+  tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
+                                                                 jacobs_retail_prices)),
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)),
@@ -360,7 +366,6 @@ tar_plan(
   tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
   
   #load in fuel efficiency coefficients
-  #TO DO: CHECK fuel conversion coefficients and write up justification based on stock etc
   tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)),
   
   
@@ -483,8 +488,9 @@ tar_plan(
                                                        household_connections,
                                                        csiro_pv_prevalance_file)),
   
-  #proportion of pv systems with batteries
-  
+  #proportion of connections with pv and batteries
+  tar_target(battery_n_pv_prop, estimate_battery_prevalence(pv_system_stock,
+                                                            csiro_pv_prevalance_file)),
   
   
   #calculate total PV generation per system by state (and sense check implied size of system)
@@ -502,15 +508,30 @@ tar_plan(
                                                           ev_consumption_profiles,
                                                           ev_fleet_data)),
   
+  
   tar_target(average_profiles_w_batteries, generate_battery_profiles(average_profiles, 
                                                                           #trace definining characteristics
                                                                           c("pv", "electrification", "state", "year", "season"), 
                                                                           battery_capacity = 11) %>% 
                rename(source = end_use)),
   
+  #add in average profiles with batteries 
+  tar_target(all_average_profiles, bind_rows(average_profiles %>% mutate(battery = F),
+                                                  
+                                                  #combine with profiles of consumers with PV and batteries
+                                                  bind_rows(average_profiles %>% 
+                                                              filter(pv == 1) %>% 
+                                                              mutate(battery = 1),
+                                                            
+                                                            #add in battery end_use
+                                                            average_profiles_w_batteries %>% 
+                                                              mutate(power_kwh = battery_action) %>% 
+                                                              select(-c(battery_action, battery_level, net_power))))),
+  
+  
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(average_profiles)),
+  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
   
   
   # Gas use - average over all households with an electricity connection
@@ -539,7 +560,14 @@ tar_plan(
   #calculate electricity costs
   tar_target(average_electricity_costs, calculate_average_electricity_costs(annual_electricity_consumption_averages,
                                                                             jacobs_retail_prices,
-                                                                        pv_system_stock)),
+                                                                            retail_electricity_tariffs,
+                                                                        pv_system_stock,
+                                                                        battery_n_pv_prop)),
+  #calculate the weighted average across consumer types
+  tar_target(weighted_average_electricity_costs, average_electricity_costs %>% 
+               mutate(average_cost_dollars = average_cost_dollars * prop) %>% 
+               group_by(year, state, electrification, category) %>% 
+               summarise(average_cost_dollars = sum(average_cost_dollars))),
   
   tar_target(average_petrol_costs, calculate_average_petrol_costs(petrol_price_projections,
                                                                   average_petrol_consumption)),

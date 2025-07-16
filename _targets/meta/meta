@@ -70,14 +70,11 @@ calculate_average_adj_tou_consumption|function|c4d2eb089f3f3492|||||||||||||||
 additional_electricity_consumption|stem|0fc5278ae674ca9f|2369200acbc914ad|ddd42ca9e7af62b1|-681193914||t20270.2103402823s|s7726b|7726|rds|local|vector|||1.57|Detected an unexpected manytomany relationship between x and y.ℹ Row 4 of x matches multiple rows in y.ℹ Row 2 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
 average_adj_tou_consumption|stem|be9ea8db7da4f7de|9635c7190938144d|9599f6a1c64465a9|-307517718||t20270.2103623815s|s732525b|732525|rds|local|vector|||1.3||
 esoo_2024_assumptions_workbook_file|stem|cf83fabee7fa3036|a698ca6e94e85300|2c530c1562a7fbd1|-1128587985|Data/2024 ESOO/2024 Forecasting Assumptions Update Workbook.xlsx|t20271.0457060185s|s11551134b|11551134|file|local|vector|||0||
-csiro_pv_prevalance_file|stem|d071491d51b1fe6b|d439a3eada1e9c13|2c530c1562a7fbd1|-113951789|Data/solar_prevalence_csiro_24.xlsx|t20271.0865218704s|s10571b|10571|file|local|vector|||0||
-pv_profiles|stem|431e8083bbedadcc|95510441fd357dce|6828b89226179761|1913122209||t20271.1057425916s|s329687b|329687|rds|local|vector|||12.31||
 get_average_residential_operational_demand|function|1b3d2d0982e0de23|||||||||||||||
 aer_gas_benchmarks_file|stem|5ce692f9e52f6f75|e159a1a4d21cd100|2c530c1562a7fbd1|1442108534|Data/Simple electricity and gas benchmarks - published December 2020. Updated June 2021 for postcodes.xlsx|t20272.2427807218s|s596126b|596126|file|local|vector|||0||
 wem_esoo_2024_operational_file|stem|50deb95151a13e54|a17b9f080b7e0e63|2c530c1562a7fbd1|900344768|Data/2024 ESOO/2024 WEM ESOO operational (sent out).xlsx|t20193.1272044188s|s36769b|36769|file|local|vector|||0||
 wem_esoo_2024_ev_projections_file|stem|aaf45bf8049829c0|b3b6b93a6fa79d5a|2c530c1562a7fbd1|-1750565898|Data/2024 ESOO/2024 WEM ESOO EV Projections.xlsx|t20273.074933727s|s135343b|135343|file|local|vector|||0||
 esoo_average_underlying_demand|stem|5cdae0ea996630de|87737f74ee70350d|29cead3c6d25496e|-840427016||t20273.2490654318s|s2460b|2460|rds|local|vector|||0.68||
-pv_system_stock|stem|1408b9b64e382ffb|05c7a1cf9cd529ca|af3ba050ed3e13b5|-385287104||t20273.249098278s|s3331b|3331|rds|local|vector|||2.78||
 residential_ev_econsumption|stem|c082ce3bfa84ee95|fcb180162342c79e|586ffd590073f22b|-574958609||t20273.2652851884s|s1867b|1867|rds|local|vector|||0.51||
 jacobs_demand_data_file|stem|1b708258f85a41a9|88edf46a072d534c|2c530c1562a7fbd1|-374195423|Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0704.xlsx|t20273.2666435185s|s853766b|853766|file|local|vector|||0||
 rbs_electricity_consumption_data_file|stem|67bd271e34c2d1e4|ff5c2fd9548ee1ec|2c530c1562a7fbd1|914013005|Data/power_demand_by_time_of_use_data.xlsx|t20276.1027314815s|s44889415b|44889415|file|local|vector|||0||
@@ -91,7 +88,6 @@ best_offer_bills|stem|67a0bef7c00e419d|916a18f8dce08ed3|a1fd2e02212124ae|8608552
 standing_offer_bills|stem|96f6e37255be0175|9a549171385886f4|3aeb0d55d65b3eaa|-1829188787||t20272.3398671636s||678|rds|local|vector|||0.64|Detected an unexpected manytomany relationship between x and y.ℹ Row 5 of x matches multiple rows in y.ℹ Row 3 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|ℹ In argument usage_cost  calculate_gas_seasonal_usage_costs....ℹ In row 1.Caused by error in if daily_consumption  tier_min ... missing value where TRUEFALSE needed
 get_retail_data|function|1c7350b71772339b|||||||||||||||
 gas_network_charge_revenue|stem|f07e99f82f8b1862|5470353d71a4ff2b|0239cbd879e7d3ff|164348950||t20277.0220074139s|s254b|254|rds|local|vector|||0.07||
-retail_price_data_aemc|stem|72a0298d9b31ef84|ebbdb2e0621ecc3c|d5ecb34925a3c486|-822477999||t20277.035925039s|s248b|248|rds|local|vector|||3.15||
 jacobs_retail_model_file_base|stem|08f3642ced1423b4|8ed5326ab609f658|2c530c1562a7fbd1|-1769544656|Data/Jacobs/RetailPriceProjections_Base.xlsx|t20277.044224537s|s11935625b|11935625|file|local|vector|||0||
 petrol_price_projections|stem|387f6dd7c32e96b5|34b7ad8839a8cb45|0070556d41fa0ba9|1848450527||t20277.0485793298s|s488b|488|rds|local|vector|||0.03||
 jacobs_retail_prices|stem|77a3f4f78d6bfdc8|79a6b9ba2c813e23|08221135fdce3853|-1898956932||t20277.0750524498s|s22205b|22205|rds|local|vector|||2.86||
@@ -120,13 +116,25 @@ average_load_shapes|stem|858e7592d08e3b8a|10325c048a514b52|00ab2463bb147579|-192
 rbs_fuel_consumption_profiles|stem|acb7cc40b4d90cb6|f56e4147e52106bb|49644af55f8c0e47|624766052||t20284.2259668914s|s6024b|6024|rds|local|vector|||17.03||
 average_profiles|stem|0847f73f6aa59145|6a52480ac57b1376|3d7d756f3e90e6a2|154589913||t20284.225973935s|s802454b|802454|rds|local|vector|||0.3||
 tou_consumer_profiles|stem|0e2046923d78ef74|ad5e766d76a6ae1b|dbab24bc45d7e6df|-49958110||t20284.2263139862s|s9280610b|9280610|rds|local|vector|||10.28||
-annual_electricity_consumption_averages|stem|473a06811f3b4245|262a5adc08fe1488|917b90800751ce40|1412026781||t20284.2263648827s|s7330b|7330|rds|local|vector|||1.32||
-average_electricity_costs|stem|1b21e76f11016a09|96e0ac4b90ff2ae5|dbe9c9a90c8cfe8d|-1713345144||t20284.2266081318s|s6136b|6136|rds|local|vector|||0.38||
 gas_standing_offers_file|stem|fb51769315e1bed1|a620cc30f6a2e198|2c530c1562a7fbd1|-300127396|Data/gas_standing_offers_20250331.xlsx|t20284.3082407407s|s24433b|24433|file|local|vector|||0||
 gas_standing_offers|stem|5f8679e5da035031|7205ca988584555e|a2da44cc0c4301fc|-1563974796||t20285.180903341s|s1258b|1258|rds|local|vector|||0.47||
 gas_best_offers|stem|eb473634c76a4e2c|3e2f1262bf519702|d73ab94cb8ae13e6|-1509723072||t20285.1809060493s|s590b|590|rds|local|vector|||0.19||
 cameo_petrol_costs|stem|b406e89c7371a8db|21125bc544ed74c9|df0d8e67a6e34a74|-807199104||t20285.2727199742s|s41906b|41906|rds|local|vector|||0.36||
 cameo_gas_costs|stem|593788552908dd51|dcf55061318b0eed|bc80d5976f4eed6d|-412035658||t20285.2727847086s|s112723b|112723|rds|local|vector|||5.23||
+average_profiles_w_batteries|stem|cf16db6fa44e26ca|74c840e2901222fc|3f9018ed94c652e8|1195634406||t20285.2884768397s|s661664b|661664|rds|local|vector|||18.97||
+tou_consumer_profiles_w_batteries|stem|f5d576126f0db619|a20a14a0553a7919|9b230fa5d4a91899|1492036783||t20285.2909518311s|s10206926b|10206926|rds|local|vector|||180.93||
+all_tou_consumer_profiles|stem|1f861f389728ea2c|8763966423cfada8|749a90f0e1bebd4c|1214139478||t20285.2912311732s|s16684618b|16684618|rds|local|vector|||3.08||
+annual_electricity_consumption_profiles|stem|e4cbe473591bc854|308effb6643fd695|ecceeec628e6acc9|-343668873||t20285.2914787579s|s163307b|163307|rds|local|vector|||21.3||
+cameo_electricity_costs|stem|686143e5a2207eaf|887d2456287300d4|c863b81239dabe58|-1040597584||t20285.2914810813s|s144771b|144771|rds|local|vector|||0.08||
+pv_profiles|stem|431e8083bbedadcc|95510441fd357dce|54f81ff81d8a4946|1913122209||t20285.32463862s|s329687b|329687|rds|local|vector|||5.44||
+pv_system_stock|stem|1408b9b64e382ffb|05c7a1cf9cd529ca|5e7cf8dd856bad2e|-385287104||t20285.324667225s|s3331b|3331|rds|local|vector|||2.43||
+csiro_pv_prevalance_file|stem|f2a6493cf356b89a|d439a3eada1e9c13|2c530c1562a7fbd1|-113951789|Data/solar_prevalence_csiro_24.xlsx|t20285.3242361111s|s11835b|11835|file|local|vector|||0||
+battery_n_pv_prop|stem|bddd800403e390eb|1550cd4f49b5cdda|25045e0f26e4cd6b|1902636607||t20285.3314806163s|s1548b|1548|rds|local|vector|||0.32||
+all_average_profiles|stem|a072c9d7710ec94e|9a29ed33b7a79cf8|03cb289f57832ffb|1061941665||t20285.3378771097s|s1410730b|1410730|rds|local|vector|||0.28||
+annual_electricity_consumption_averages|stem|6f06bedd40bff597|ee650bb8b35d03f6|c74b03e9fdda675c|1412026781||t20285.356097883s|s11764b|11764|rds|local|vector|||1.86||
+average_electricity_costs|stem|050028e90466cb17|cf54d4b4eff3d7fc|681ae44794809613|-1713345144||t20285.3663058391s|s26723b|26723|rds|local|vector|||0.37||
+electricity_tariffs_file|stem|86fdaec18acd838d|0592bb94c7dc735b|2c530c1562a7fbd1|-1622380561|Data/electricity_tariffs_july_25.xlsx|t20285.5174421296s|s11576b|11576|file|local|vector|||0.02||
+retail_price_data_aemc|stem|72a0298d9b31ef84|ebbdb2e0621ecc3c|d5ecb34925a3c486|-822477999||t20285.5310108636s|s248b|248|rds|local|vector|||3.39||
 calculate_total_gas_network_revenue|function|4774541bfacf99fb
 calculate_average_petrol_consumption|function|c1738fb23010ebaa
 %nin%|function|5c849418054c52ef
@@ -139,13 +147,15 @@ waterfall|function|9f6ed0051f3ef9e7
 calculate_space_heating_tou|function|d4849a5a9dc6428a
 convert_to_2024_dollars|function|f9cf673baaafb359
 load_temperature_data|function|8cc14cd1e4dc2499
+estimate_battery_prevalence|function|424ae6a7c5086cf7
 calculate_average_petrol_costs|function|d42cbfe2e943a51b
 write_numbers_in_text|function|6e4db2254ce212b9
 create_esoo_demand_chart|function|cd9f2944450e15de
 calculate_gas_bill|function|c158470acbf1dafa
+get_electricity_tariffs|function|0962996f35912862
 calculate_average_gas_costs|function|477ea8ec3cf05958
-calculate_average_electricity_costs|function|110efbac923b2697
-calculate_annual_electricity_consumption_averages|function|ab549c0d5659daf7
+calculate_average_electricity_costs|function|90e17ad77edffe4b
+calculate_annual_electricity_consumption_averages|function|3d9b6028c04da787
 calculate_average_profiles|function|0c3efaf97c588617
 project_gas_retail_volumetric_price|function|98f2cab3d192491a
 project_petrol_data|function|29cc8b635f6cf276
@@ -183,8 +193,5 @@ get_gas_best_offers|function|bd6d23bcd355f081
 get_jacobs_retail_prices|function|a470f992a0bd91ac
 get_retail_data_aemc|function|1c7350b71772339b
 get_gas_prices_data|function|62adc9911c83bfc7
-average_profiles_w_batteries|stem|cf16db6fa44e26ca|74c840e2901222fc|3f9018ed94c652e8|1195634406||t20285.2884768397s|s661664b|661664|rds|local|vector|||18.97||
-tou_consumer_profiles_w_batteries|stem|f5d576126f0db619|a20a14a0553a7919|9b230fa5d4a91899|1492036783||t20285.2909518311s|s10206926b|10206926|rds|local|vector|||180.93||
-all_tou_consumer_profiles|stem|1f861f389728ea2c|8763966423cfada8|749a90f0e1bebd4c|1214139478||t20285.2912311732s|s16684618b|16684618|rds|local|vector|||3.08||
-annual_electricity_consumption_profiles|stem|e4cbe473591bc854|308effb6643fd695|ecceeec628e6acc9|-343668873||t20285.2914787579s|s163307b|163307|rds|local|vector|||21.3||
-cameo_electricity_costs|stem|686143e5a2207eaf|887d2456287300d4|c863b81239dabe58|-1040597584||t20285.2914810813s|s144771b|144771|rds|local|vector|||0.08||
+retail_electricity_tariffs|stem|cc88e34204f5643f|34d1562ba3e8f072|084dd0c762869346|1177516099||t20285.5314925181s|s3359b|3359|rds|local|vector|||0.29|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 20 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
+weighted_average_electricity_costs|stem|ecd372758124af43|84e694b2df8e8ede|14467fc72de8b27a|-1047290402||t20285.5314944656s|s5880b|5880|rds|local|vector|||0.04||

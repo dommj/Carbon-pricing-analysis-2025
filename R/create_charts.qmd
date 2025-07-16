@@ -37,7 +37,7 @@ Average consumer energy spending by source
 #INCLUDE LATER
 
 #load data
-tar_load(average_electricity_costs)
+tar_load(weighted_average_electricity_costs)
 tar_load(average_gas_costs)
 tar_load(average_petrol_costs)
 tar_load(household_connections)
@@ -59,7 +59,7 @@ chart_colour_palette <- c(
 )
 
 
-net_average_electricity_costs <- average_electricity_costs %>% 
+net_average_electricity_costs <- weighted_average_electricity_costs %>% 
   mutate(category = "Electricity") %>% 
   group_by(year, state, electrification, category) %>% 
   summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
