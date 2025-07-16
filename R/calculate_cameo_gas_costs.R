@@ -40,7 +40,12 @@ calculate_cameo_gas_costs <- function(gas_retail_volumetric_price_projections,
     mutate(`Gas volumetric` = annual_consumption_gj * dollars_per_gj,
            `Gas connection` = annual_connection_charge) %>% 
     select(-c(annual_consumption_gj, dollars_per_gj, annual_connection_charge)) %>% 
-    pivot_longer(cols = contains("gas"), names_to = "category", values_to = "annual_cost_dollars")
+    pivot_longer(cols = contains("gas"), names_to = "category", values_to = "annual_cost_dollars") %>% 
+    
+    #cross join with battery or no (gas consumption the same), only allow batteries with PV
+    cross_join(tibble(battery = c(T, F))) %>% 
+    filter(!(pv == F & battery == T))
+    
 
   gas_costs
 }

@@ -418,9 +418,20 @@ tar_plan(
                                                                           c("cooking", "water_heating", "space_heating", "ev", "pv", "state", "year", "season"), 
                                                                           battery_capacity = 11)),
   
+  tar_target(all_tou_consumer_profiles, bind_rows(tou_consumer_profiles %>% mutate(battery = F),
+                                                  
+                                                  #combine with profiles of consumers with PV and batteries
+                                                  bind_rows(tou_consumer_profiles %>% 
+                                                              filter(pv == T) %>% 
+                                                              mutate(battery = T),
+                                                            
+                                                            #add in battery end_use
+                                                            tou_consumer_profiles_w_batteries %>% 
+                                                    mutate(power_kwh = battery_action) %>% 
+                                                    select(-c(battery_action, battery_level, net_power))))),
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(tou_consumer_profiles,
+  tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(all_tou_consumer_profiles,
                                                                                                         rbs_fuel_consumption_profiles,
                                                                                                         rbs_households)),
   
@@ -472,6 +483,10 @@ tar_plan(
                                                        household_connections,
                                                        csiro_pv_prevalance_file)),
   
+  #proportion of pv systems with batteries
+  
+  
+  
   #calculate total PV generation per system by state (and sense check implied size of system)
   
   tar_target(average_pv_profile, calculate_average_pv_profile(pv_profiles,
@@ -490,7 +505,8 @@ tar_plan(
   tar_target(average_profiles_w_batteries, generate_battery_profiles(average_profiles, 
                                                                           #trace definining characteristics
                                                                           c("pv", "electrification", "state", "year", "season"), 
-                                                                          battery_capacity = 11)),
+                                                                          battery_capacity = 11) %>% 
+               rename(source = end_use)),
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles

@@ -28,12 +28,15 @@ calculate_cameo_petrol_costs <- function(average_petrol_use_per_km,
     water_heating = c("gas", "electric"),
     space_heating = c("gas", "electric"),
     pv = c(TRUE, FALSE),
+    battery = c(TRUE, FALSE),
     ev = c(0, 1, 2)
   )
   
   average_fuel_cost_per_vehicle <- average_fuel_cost_per_vehicle %>% 
     cross_join(params) %>% 
-    mutate(ice = as.numeric(ice))
+    mutate(ice = as.numeric(ice)) %>% 
+    #cross join with battery or no (gas consumption the same), only allow batteries with PV
+    filter(!(pv == F & battery == T))
   
   
   average_fuel_cost_per_vehicle

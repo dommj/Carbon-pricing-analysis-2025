@@ -11,9 +11,10 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
   
 
   # Simple optimization function
-  optimize_battery_simple <- function(power_data = average_consumption_export[[1]]$power_kwh, 
+  optimize_battery_simple <- function(power_data = power_kwh_col, #average_consumption_export[[1]]$power_kwh, 
                                       battery_capacity_kwh = battery_capacity, 
-                                      max_usable_capacity = 0.85) {
+                                      max_usable_capacity = 0.85,
+                                      efficiency_factor = 0.85) {
     
     max_charge_rate_kw <- battery_capacity_kwh / 2.1 #CSIRO assumption
     
@@ -32,11 +33,11 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
         power <- power_data[hour]
         
         if (power < 0) {  # Excess generation - charge battery
-          charge_amount <- min(abs(power), max_charge_rate_kw, max_storage - battery_level)
-          battery_level <- battery_level + charge_amount
+          charge_amount <- min(abs(power), max_charge_rate_kw, (max_storage - battery_level)/ sqrt(efficiency_factor))
+          battery_level <- battery_level + charge_amount * sqrt(efficiency_factor)
         } else {  # Consumption - discharge if beneficial
           discharge_amount <- min(power, max_charge_rate_kw, battery_level - min_storage)
-          battery_level <- battery_level - discharge_amount
+          battery_level <- battery_level - discharge_amount 
         }
       }
       return(abs(battery_level - target_start))  # Return the imbalance
@@ -60,15 +61,15 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
       }
       
       if (power < 0) {  # Excess generation - charge battery
-        charge_amount <- min(abs(power), max_charge_rate_kw, max_storage - battery_level)
-        battery_actions[hour] <- charge_amount
-        battery_level <- battery_level + charge_amount
+        charge_amount <- min(abs(power), max_charge_rate_kw, (max_storage - battery_level)/ sqrt(efficiency_factor))
+        battery_actions[hour] <- charge_amount #consumes charge amount with out losses
+        battery_level <- battery_level + charge_amount * sqrt(efficiency_factor)
         battery_levels[hour] <- battery_level
         
       } else {  # Consumption - discharge if beneficial
         discharge_amount <- min(power, max_charge_rate_kw, battery_level - min_storage)
-        battery_actions[hour] <- -discharge_amount
-        battery_level <- battery_level - discharge_amount
+        battery_actions[hour] <- -discharge_amount * sqrt(efficiency_factor) #outputs charge amount minus losses
+        battery_level <- battery_level - discharge_amount #battery drops by output + losses
         battery_levels[hour] <- battery_level
       }
     }
@@ -95,7 +96,8 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
   
   
   all_results_comb <- bind_rows(all_results) %>% 
-    mutate(battery = T)
+    mutate(battery = T,
+           end_use = "battery")
   
   return(all_results_comb)
   

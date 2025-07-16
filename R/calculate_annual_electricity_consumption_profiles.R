@@ -1,6 +1,6 @@
 #take aggregate fuel use values for non-pv households. for PV households, net out hourly consumption to determine total grid consumption and total exports
 
-calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profiles,
+calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_profiles,
                                                             rbs_fuel_consumption_profiles,
                                                             rbs_households){
   
@@ -10,29 +10,28 @@ calculate_annual_electricity_consumption_profiles <- function(tou_consumer_profi
 
   
   #calculate annual electricity consumption and exports from tou_profiles
-  annual_consumption_exports <- tou_consumer_profiles %>% 
+  annual_consumption_exports <- all_tou_consumer_profiles %>% 
 
-    group_by(cooking, water_heating, space_heating, ev, pv, 
+    group_by(cooking, water_heating, space_heating, ev, pv, battery,
              year, 
              state, season, hour) %>% 
     summarise(power_kwh = sum(power_kwh)) %>% 
     
     
     mutate(consumption_export = if_else(power_kwh < 0, "Exports", "Consumption")) %>%
-    group_by(cooking, water_heating, space_heating, ev, pv, 
+    group_by(cooking, water_heating, space_heating, ev, pv, battery,
              year, 
              state, season, consumption_export) %>% 
     summarise(power_kwh = sum(power_kwh)) %>%  
     ungroup() %>% 
     mutate(season_total = power_kwh * (365 / 4)) %>% 
-    group_by(cooking, water_heating, space_heating, ev, pv, 
+    group_by(cooking, water_heating, space_heating, ev, pv, battery,
              year, 
              state, consumption_export) %>% 
     summarise(annual_consumption_kwh = sum(season_total)) %>%  
     ungroup()
   
   
-  #next, apply expected increase in curtailment to exports... probably don't need to do as price goes to zero...
   
   ############################################################
   #Sense Checking: confirm that summed tou matches aggregate inputs

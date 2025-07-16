@@ -397,17 +397,19 @@ cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs) %>%
 
 electrification_data <- cameo_cost_data %>% 
   filter(year == 2025) %>%
-  group_by(year, cooking, water_heating, space_heating, ev, pv, ice, state) %>% 
+  group_by(year, cooking, water_heating, space_heating, ev, pv, ice, battery, state) %>% 
   summarise(total_cost_dollars = sum(annual_cost_dollars)) %>% 
-  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
-  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_1", # all gas with an ICE vehicle
-                              "gas_gas_gas_1_FALSE_0",
-                              "gas_gas_gas_1_TRUE_0",
-                              "electric_electric_electric_1_TRUE_0")) %>% 
-  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_1" ~ "Fossil fuel home",
-                                       consumer_type == "gas_gas_gas_1_FALSE_0" ~ "Switch to an EV",
-                                       consumer_type == "gas_gas_gas_1_TRUE_0" ~ "Install solar",
-                                       consumer_type == "electric_electric_electric_1_TRUE_0" ~ "Electrify gas") %>% fct_rev()) %>% 
+  mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, battery, ice, sep = "_")) %>% 
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_FALSE_1", # all gas with an ICE vehicle
+                              "gas_gas_gas_1_FALSE_FALSE_0",
+                              "gas_gas_gas_1_TRUE_FALSE_0",
+                              "gas_gas_gas_1_TRUE_TRUE_0",
+                              "electric_electric_electric_1_TRUE_TRUE_0")) %>% 
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_FALSE_1" ~ "Fossil fuel home",
+                                       consumer_type == "gas_gas_gas_1_FALSE_FALSE_0" ~ "Switch to an EV",
+                                       consumer_type == "gas_gas_gas_1_TRUE_FALSE_0" ~ "Install solar",
+                                       consumer_type == "gas_gas_gas_1_TRUE_TRUE_0" ~ "Install a battery",
+                                       consumer_type == "electric_electric_electric_1_TRUE_TRUE_0" ~ "Electrify gas") %>% fct_rev()) %>% 
   filter(state %nin% c("WA", "NT", "Aus")) %>% 
   ungroup()
 
@@ -465,6 +467,7 @@ fall_chart_data %>%
             fill_colours = c(grattan_red,
                              grattan_orange,
                              grattan_orange,
+                             grattan_orange,
                              grattan_orange),
             total_rect_color = grattan_yellow,
             fill_by_sign = F,
@@ -506,11 +509,12 @@ electrification_data <- cameo_cost_data %>%
   group_by(year, cooking, water_heating, space_heating, ev, pv, ice, state) %>% 
   summarise(total_cost_dollars = sum(annual_cost_dollars)) %>% 
   mutate(consumer_type = paste(cooking, water_heating, space_heating, ev, pv, ice, sep = "_")) %>% 
-  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_1", # all gas with an ICE vehicle
-                              "gas_gas_gas_1_FALSE_0",
-                              "gas_gas_gas_1_TRUE_0",
+  filter(consumer_type %in% c("gas_gas_gas_0_FALSE_FALSE_1", # all gas with an ICE vehicle
+                              "gas_gas_gas_1_FALSE_FALSE_0",
+                              "gas_gas_gas_1_TRUE_FALSE_0",
+                              "gas_gas_gas_1_TRUE_TRUE_0",
                               "electric_electric_electric_1_TRUE_0")) %>% 
-  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_1" ~ "Fossil fuel home",
+  mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_FALSE_1" ~ "Fossil fuel home",
                                        consumer_type == "gas_gas_gas_1_FALSE_0" ~ "Switch to an EV",
                                        consumer_type == "gas_gas_gas_1_TRUE_0" ~ "Install solar",
                                        consumer_type == "electric_electric_electric_1_TRUE_0" ~ "Electrify gas") %>% fct_rev()) %>% 
