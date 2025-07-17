@@ -1,9 +1,10 @@
 
-get_electricity_tariffs <- function(electricity_tariffs_file, jacobs_retail_prices){
+get_electricity_tariffs <- function(electricity_tariffs_file, 
+                                    jacobs_retail_prices,
+                                    household_connections){
   
   electricity_tariffs <- read_excel(electricity_tariffs_file) %>% 
-    clean_names() %>% 
-    mutate(state = if_else(state == "NSW", "NSW and ACT", state))
+    clean_names() 
   
   jacobs_index <- jacobs_retail_prices %>% 
     filter(market == "Residential",

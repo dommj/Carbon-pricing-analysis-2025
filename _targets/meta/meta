@@ -90,7 +90,6 @@ get_retail_data|function|1c7350b71772339b|||||||||||||||
 gas_network_charge_revenue|stem|f07e99f82f8b1862|5470353d71a4ff2b|0239cbd879e7d3ff|164348950||t20277.0220074139s|s254b|254|rds|local|vector|||0.07||
 jacobs_retail_model_file_base|stem|08f3642ced1423b4|8ed5326ab609f658|2c530c1562a7fbd1|-1769544656|Data/Jacobs/RetailPriceProjections_Base.xlsx|t20277.044224537s|s11935625b|11935625|file|local|vector|||0||
 petrol_price_projections|stem|387f6dd7c32e96b5|34b7ad8839a8cb45|0070556d41fa0ba9|1848450527||t20277.0485793298s|s488b|488|rds|local|vector|||0.03||
-jacobs_retail_prices|stem|77a3f4f78d6bfdc8|79a6b9ba2c813e23|08221135fdce3853|-1898956932||t20277.0750524498s|s22205b|22205|rds|local|vector|||2.86||
 average_pv_profile|stem|c3a95159dfb9c661|7258b3d3c472399b|df785c0bd3b127ce|505815694||t20277.106060299s|s65115b|65115|rds|local|vector|||8.43|Detected an unexpected manytomany relationship between x and y.ℹ Row 97 of x matches multiple rows in y.ℹ Row 2 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
 household_energy_efficiency|stem|fbf8edf836555153|31c35db0b9834bca|43e7da0d718a1d1a|-1478083940||t20277.1244953506s|s1795b|1795|rds|local|vector|||2.32||
 wem_esoo_2024_data_register_file|stem|c16ab86bc1604e0a|b721b30e94b7c080|2c530c1562a7fbd1|1300580162|Data/2024 ESOO/2024 WEM ESOO Data Register.xlsx|t20277.2019704132s|s8586311b|8586311|file|local|vector|||0||
@@ -125,16 +124,30 @@ average_profiles_w_batteries|stem|cf16db6fa44e26ca|74c840e2901222fc|3f9018ed94c6
 tou_consumer_profiles_w_batteries|stem|f5d576126f0db619|a20a14a0553a7919|9b230fa5d4a91899|1492036783||t20285.2909518311s|s10206926b|10206926|rds|local|vector|||180.93||
 all_tou_consumer_profiles|stem|1f861f389728ea2c|8763966423cfada8|749a90f0e1bebd4c|1214139478||t20285.2912311732s|s16684618b|16684618|rds|local|vector|||3.08||
 annual_electricity_consumption_profiles|stem|e4cbe473591bc854|308effb6643fd695|ecceeec628e6acc9|-343668873||t20285.2914787579s|s163307b|163307|rds|local|vector|||21.3||
-cameo_electricity_costs|stem|686143e5a2207eaf|887d2456287300d4|c863b81239dabe58|-1040597584||t20285.2914810813s|s144771b|144771|rds|local|vector|||0.08||
 pv_profiles|stem|431e8083bbedadcc|95510441fd357dce|54f81ff81d8a4946|1913122209||t20285.32463862s|s329687b|329687|rds|local|vector|||5.44||
 pv_system_stock|stem|1408b9b64e382ffb|05c7a1cf9cd529ca|5e7cf8dd856bad2e|-385287104||t20285.324667225s|s3331b|3331|rds|local|vector|||2.43||
 csiro_pv_prevalance_file|stem|f2a6493cf356b89a|d439a3eada1e9c13|2c530c1562a7fbd1|-113951789|Data/solar_prevalence_csiro_24.xlsx|t20285.3242361111s|s11835b|11835|file|local|vector|||0||
 battery_n_pv_prop|stem|bddd800403e390eb|1550cd4f49b5cdda|25045e0f26e4cd6b|1902636607||t20285.3314806163s|s1548b|1548|rds|local|vector|||0.32||
 all_average_profiles|stem|a072c9d7710ec94e|9a29ed33b7a79cf8|03cb289f57832ffb|1061941665||t20285.3378771097s|s1410730b|1410730|rds|local|vector|||0.28||
 annual_electricity_consumption_averages|stem|6f06bedd40bff597|ee650bb8b35d03f6|c74b03e9fdda675c|1412026781||t20285.356097883s|s11764b|11764|rds|local|vector|||1.86||
-average_electricity_costs|stem|050028e90466cb17|cf54d4b4eff3d7fc|681ae44794809613|-1713345144||t20285.3663058391s|s26723b|26723|rds|local|vector|||0.37||
 electricity_tariffs_file|stem|86fdaec18acd838d|0592bb94c7dc735b|2c530c1562a7fbd1|-1622380561|Data/electricity_tariffs_july_25.xlsx|t20285.5174421296s|s11576b|11576|file|local|vector|||0.02||
 retail_price_data_aemc|stem|72a0298d9b31ef84|ebbdb2e0621ecc3c|d5ecb34925a3c486|-822477999||t20285.5310108636s|s248b|248|rds|local|vector|||3.39||
+retail_electricity_tariffs|stem|cc88e34204f5643f|34d1562ba3e8f072|084dd0c762869346|1177516099||t20285.5314925181s|s3359b|3359|rds|local|vector|||0.29|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 20 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
+average_electricity_costs|stem|6776484c648e42ce|0c5d46f3b4ae826f|d81e83e5c30c9304|-1713345144||t20285.9740743957s|s27679b|27679|rds|local|vector|||0.36||
+weighted_average_electricity_costs|stem|5598efa82e8e5d29|84e694b2df8e8ede|1fc969c3e77ca167|-1047290402||t20285.9740755915s|s5860b|5860|rds|local|vector|||0.05||
+cameo_electricity_costs|stem|099ee2dad1e92141|17fea9a0876de964|a1b2e5c979987a88|-1040597584||t20285.9867717475s|s114798b|114798|rds|local|vector|||0.12||
+jacobs_retail_prices|stem|77a3f4f78d6bfdc8|79a6b9ba2c813e23|0b645cab43c709b3|-1898956932||t20277.0750524498s||22205|rds|local|vector|||1.25|There was 1 warning in mutate.ℹ In argument c_kwh  as.numericdollars_mwh1000  100.Caused by warning NAs introduced by coercion|Cant combine QLD character and 0...3 double.
+jacobs_retail_model_reference_case|stem|c1b8d0da6025021b|3df74f1680f5203f|2c530c1562a7fbd1|-2007340919|Data/Jacobs/RetailPriceProjections_Ref.xlsx|t20286.0855439815s|s12598862b|12598862|file|local|vector|||0||
+jacobs_retail_model_1_5_opt2_Data.Jacobs.RetailPriceProjections_1_5_option1.xlsx|stem||2049703bb9e4ebb8|2c530c1562a7fbd1|-274748835|Data/Jacobs/RetailPriceProjections_1_5_option1.xlsx|t20286.1032941851s||0|file|local|vector|||||_paths_ missing files DataJacobsRetailPriceProjections_1_5_option1.xlsx
+jacobs_retail_model_reference_case_Data.Jacobs.RetailPriceProjections_Ref.xlsx|stem|c1b8d0da6025021b|3df74f1680f5203f|2c530c1562a7fbd1|-1091558265|Data/Jacobs/RetailPriceProjections_Ref.xlsx|t20286.0855439815s|s12598862b|12598862|file|local|vector|||0||
+jacobs_retail_model_1_5_opt1_Data.Jacobs.RetailPriceProjections_1_5_Opt1.xlsx|stem|831edd052e08209e|a8290c7dfe9c0499|2c530c1562a7fbd1|-2081385455|Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx|t20286.0873057882s|s12531652b|12531652|file|local|vector|||0||
+jacobs_retail_model_1_5_opt2_Data.Jacobs.RetailPriceProjections_1_5_Opt1.xlsx|stem|831edd052e08209e|a8290c7dfe9c0499|2c530c1562a7fbd1|1951793223|Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx|t20286.0873057882s|s12531652b|12531652|file|local|vector|||0||
+jacobs_retail_prices_reference_case_Data.Jacobs.RetailPriceProjections_Ref.xlsx|stem|c92979a9d522bb32|bc10ad46e12d5140|2c8ada27b28203ce|-1947628495||t20286.1078720537s|s10042b|10042|rds|local|vector|||1.06||
+jacobs_retail_prices_1_5_opt2_Data.Jacobs.RetailPriceProjections_1_5_Opt1.xlsx|stem|b3133929d30c8776|370942de2fc251c2|cf5b4d0a54ef93f9|-1643275971||t20286.1078838266s|s10116b|10116|rds|local|vector|||0.97||
+jacobs_retail_prices_1_5_opt1_Data.Jacobs.RetailPriceProjections_1_5_Opt1.xlsx|stem|b3133929d30c8776|151bb8e5415938db|57f56abb36a43161|-1238207966||t20286.1078961915s|s10116b|10116|rds|local|vector|||1.01||
+jacobs_retail_model_1_5_opt1|stem|831edd052e08209e|a8290c7dfe9c0499|2c530c1562a7fbd1|-1198247203|Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx|t20286.0873057882s|s12531652b|12531652|file|local|vector|||0||
+jacobs_retail_prices_1_5_opt1|stem|b3133929d30c8776|f72a215fb273448b|00f5a2a6279220b0|1713358620||t20286.109472144s|s10116b|10116|rds|local|vector|||1.11||
+jacobs_retail_prices_reference_case|stem|c92979a9d522bb32|2d75890efa343192|3c56dc20376b61b5|-283335048||t20286.1094979163s|s10042b|10042|rds|local|vector|||1.18||
 calculate_total_gas_network_revenue|function|4774541bfacf99fb
 calculate_average_petrol_consumption|function|c1738fb23010ebaa
 %nin%|function|5c849418054c52ef
@@ -152,9 +165,9 @@ calculate_average_petrol_costs|function|d42cbfe2e943a51b
 write_numbers_in_text|function|6e4db2254ce212b9
 create_esoo_demand_chart|function|cd9f2944450e15de
 calculate_gas_bill|function|c158470acbf1dafa
-get_electricity_tariffs|function|0962996f35912862
+get_electricity_tariffs|function|fd10f0a796bc499d
 calculate_average_gas_costs|function|477ea8ec3cf05958
-calculate_average_electricity_costs|function|90e17ad77edffe4b
+calculate_average_electricity_costs|function|b97c1b97bdd19ca8
 calculate_annual_electricity_consumption_averages|function|3d9b6028c04da787
 calculate_average_profiles|function|0c3efaf97c588617
 project_gas_retail_volumetric_price|function|98f2cab3d192491a
@@ -165,7 +178,7 @@ project_gas_connection_charges|function|884d7ec35b0d9e05
 get_aemo_vehicle_data|function|ba93c92ad3a1367b
 calculate_average_residential_gas_consumption|function|20be6e013774e59f
 load_jacobs_demand_data|function|b9cb9d4d6ca8b6d2
-calculate_cameo_electricity_costs|function|045958667d587075
+calculate_cameo_electricity_costs|function|4def0665341cc4c4
 get_residential_ev_consumption_data|function|b07bf88b3553ad4f
 get_petrol_data|function|baf8af38e4bf648a
 get_fuel_conversion_coefficients|function|dbddd8e2b44cd34e
@@ -190,8 +203,8 @@ get_ev_consumption_profiles|function|e493499d5b14879a
 get_household_connections_data|function|8f69e13dc78ecfdd
 get_esoo_average_underlying_demand|function|7c53b91f9a01972f
 get_gas_best_offers|function|bd6d23bcd355f081
-get_jacobs_retail_prices|function|a470f992a0bd91ac
+get_jacobs_retail_prices|function|4c9684569239a37a
 get_retail_data_aemc|function|1c7350b71772339b
 get_gas_prices_data|function|62adc9911c83bfc7
-retail_electricity_tariffs|stem|cc88e34204f5643f|34d1562ba3e8f072|084dd0c762869346|1177516099||t20285.5314925181s|s3359b|3359|rds|local|vector|||0.29|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 20 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
-weighted_average_electricity_costs|stem|ecd372758124af43|84e694b2df8e8ede|14467fc72de8b27a|-1047290402||t20285.5314944656s|s5880b|5880|rds|local|vector|||0.04||
+jacobs_retail_model_1_5_opt2|stem|5785909b53984e00|13df2e90702ddd0f|2c530c1562a7fbd1|-14241329|Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx|t20286.075496718s|s12510775b|12510775|file|local|vector|||0||
+jacobs_retail_prices_1_5_opt2|stem|a567e24ac9e34919|dcbbc0655d4525d7|1831dc111268b0b4|-646066848||t20286.1162092489s|s10090b|10090|rds|local|vector|||2.95||

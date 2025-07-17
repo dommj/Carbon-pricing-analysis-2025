@@ -136,13 +136,17 @@ tar_plan(
   #jacobs demand file
   tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0704.xlsx'),
   
-  #jacobs retail model file base
+  #jacobs retail model file base - this is the old outdated spreadsheet
   tar_file(jacobs_retail_model_file_base, "Data/Jacobs/RetailPriceProjections_Base.xlsx"),
   
   #jacobs retail model file reference_case
-  #tar_file(jacobs_retail_model_reference_case, "Data/Jacobs/..."),
-  
-  
+  # tar_file(jacobs_retail_model_reference_case, "Data/Jacobs/RetailPriceProjections_Ref.xlsx"),
+  # 
+  # #jacobs retail model file option 1 1.5
+  # tar_file(jacobs_retail_model_1_5_option1, "Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx"),
+  # 
+  # #jacobs retail model file option 2 1.5
+  # tar_file(jacobs_retail_model_1_5_option2, "Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx"),
   
   #other data files
   
@@ -242,11 +246,42 @@ tar_plan(
   tar_target(retail_price_data_aemc, get_retail_data_aemc(retail_file)),
   
   #get retail prices from jacobs sheets
-  tar_target(jacobs_retail_prices, get_jacobs_retail_prices(jacobs_retail_model_file_base,
-                                                            household_connections)),
+  
+  #creates targets named:
+  #jacobs_retail_model_reference_case
+  #jacobs_retail_model_1_5_opt1
+  #jacobs_retail_model_1_5_opt2
+  
+  #jacobs_retail_prices_reference_case
+  #jacobs_retail_prices_1_5_opt1
+  #jacobs_retail_prices_1_5_opt2
+  
+  
+  tar_map(
+    tibble(scenario = c("reference_case", "1_5_opt1", "1_5_opt2"),
+           filepath = c("Data/Jacobs/RetailPriceProjections_Ref.xlsx",
+                        "Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx", 
+                        "Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx")),
+    names = scenario,
+    tar_target(jacobs_retail_model, filepath, format = "file"),
+    tar_target(jacobs_retail_prices, 
+               get_jacobs_retail_prices(jacobs_retail_model, household_connections))
+  ),
+  
+  
+  
+  # tar_target(jacobs_retail_prices_ref, get_jacobs_retail_prices(jacobs_retail_model_reference_case,
+  #                                                               household_connections)),
+  # 
+  # tar_target(jacobs_retail_prices_1_5_opt1, get_jacobs_retail_prices(jacobs_retail_model_1_5_option1,
+  #                                                                    household_connections)),
+  # 
+  # tar_target(jacobs_retail_prices_1_5_opt2, get_jacobs_retail_prices(jacobs_retail_model_1_5_option2,
+  #                                                                    household_connections)),
   
   tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
-                                                                 jacobs_retail_prices)),
+                                                                 jacobs_retail_prices,
+                                                                 household_connections)),
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)),
@@ -455,7 +490,8 @@ tar_plan(
   
   #calculate electricity costs
   tar_target(cameo_electricity_costs, calculate_cameo_electricity_costs(annual_electricity_consumption_profiles,
-                                                                        jacobs_retail_prices)),
+                                                                        jacobs_retail_prices,
+                                                                        retail_electricity_tariffs)),
   
     
   #calculate petrol costs

@@ -100,6 +100,73 @@ grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Ap
              object = ggplot2::last_plot())
 ```
 
+Electricity consumption state
+
+```{r}
+#| echo: false
+
+tar_load(annual_electricity_consumption_averages)
+tar_load(average_electricity_costs)
+
+annual_electricity_consumption_averages %>% 
+  mutate(consumer_type = paste0(pv, "_", battery)) %>% 
+  left_join(average_electricity_costs %>% 
+            select(state, year, consumer_type, prop)) %>% 
+  filter(electrification == T,
+         consumption_export == "Consumption") %>% 
+  group_by(year, state) %>% 
+  summarise(annual_consumption_kwh = weighted.mean(annual_consumption_kwh, prop))
+
+tar_load(integrated_fuel_use)
+tar_load(rbs_households)
+
+integrated_fuel_use %>%
+  filter(state == "Tas", 
+         conversion == "unconverted") %>% 
+  group_by(year, state, fuel) %>% 
+  summarise(pj = sum(pj)) %>% 
+  left_join(rbs_households) %>% 
+  mutate(kwh = pj / occupied_households * 2.778e+8)
+```
+
+Electricity bill state
+
+```{r}
+#| echo: false
+
+net_average_electricity_costs %>% 
+  filter(electrification == T,
+         year == 2025) %>%
+  ggplot(aes(x = state , y = average_cost_dollars)) +
+  geom_col()
+
+
+```
+
+dollar mwh state
+
+```{r}
+#| echo: false
+
+average_electricity_costs %>% 
+  filter(electrification == T,
+         year == 2025) %>%
+  group_by(year, state, consumer_type, prop) %>% 
+  summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+  left_join(annual_electricity_consumption_averages %>% 
+              filter(consumption_export == "Consumption",
+                     electrification == T) %>% 
+              mutate(consumer_type = paste0(pv, "_", battery))) %>% 
+  mutate(dollar_mwh = average_cost_dollars/ (annual_consumption_kwh / 1000)) %>% 
+  group_by(year, state) %>% 
+  summarise(dollar_mwh = weighted.mean(dollar_mwh, prop)) %>% 
+  filter(state != "WA") %>% 
+  ggplot(aes(x = state, y = dollar_mwh)) +
+  geom_col(position = "dodge")
+
+
+```
+
 ## 3. Households will save on energy as they electrify
 
 ```{r}
@@ -207,7 +274,7 @@ line_chart_data %>%
   grattan_y_continuous(limits = c(2000, 8000),
                        labels = scales::dollar_format()) +
   grattan_x_continuous(expand_left = 0.1, expand_right = 0.1) +
-  grattan_label(data = chart_data %>% 
+  grattan_label(data = line_chart_data %>% 
                     filter(year == 2025,
                            electrification == T), 
                 aes(x = year, 

@@ -1,0 +1,71 @@
+---
+title: "modelled_retail_prices_charts"
+author: "Dominic Jones"
+format: html
+editor: visual
+---
+
+## setup
+
+```{r}
+#| echo: false
+#setup
+
+#load packages
+library(targets)
+library(dplyr)
+library(tidyr) 
+library(ggplot2)
+library(patchwork)
+library(grattantheme)
+library(forcats)
+
+tar_load(c(jacobs_retail_prices_reference_case,
+           jacobs_retail_prices_1_5_opt1,
+           jacobs_retail_prices_1_5_opt2)) 
+  
+retail_prices <- bind_rows(jacobs_retail_prices_reference_case,
+           jacobs_retail_prices_1_5_opt1,
+           jacobs_retail_prices_1_5_opt2) %>% 
+  mutate(scenario = fct_case_when(scenario == "Ref" ~ "Reference case",
+                                  scenario == "1_5_Opt1" ~ "RET 1.5 C",
+                                  scenario == "1_5_Opt2" ~ "Safeguard 1.5 C"))
+
+chart_palette <- c("Reference case" = grattan_red,
+                   "RET 1.5 C" = grattan_yellow,
+                   "Safeguard 1.5 C" = grattan_orange)
+```
+
+Residential prices by state and scenario over time
+
+```{r}
+#|echo: false
+
+tar_load(household_connections)
+
+retail_prices %>% 
+  filter(market == "Residential",
+         consumption_export == "Consumption",
+         state %nin% c("ACT", "NT")) %>% 
+  ggplot(aes(x = year, 
+             y = (c_kwh / 100) * 1000, #convert to dollars per mwh
+             colour = scenario)) +
+  geom_line() +
+  facet_wrap(~state) +
+  grattan_y_continuous(labels = scales::dollar_format()) +
+  scale_colour_manual(values = chart_palette) +
+  theme_grattan() +
+  labs(title = "In most states, prices are higher under a carbon price, but the Safeguard option quickly converges",
+       subtitle = "Dollars per MWh ($2024)",
+       x = "",
+       y = "")
+  
+
+```
+
+```{r}
+#| echo: false
+
+grattan_save_all("retail prices first chart")
+
+```
