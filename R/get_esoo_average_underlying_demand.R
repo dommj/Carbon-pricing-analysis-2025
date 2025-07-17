@@ -59,13 +59,14 @@ wem_esoo_underlying_non_ev <- read_excel(wem_esoo_2024_operational_file) %>%
   filter(source != "energy efficiency",
          year <= 2050)
 
+total_underlying_non_ev <- bind_rows(esoo_underlying_non_ev, wem_esoo_underlying_non_ev)
 
-plot <- esoo_underlying_non_ev %>% 
+
+plot <- total_underlying_non_ev %>% 
   filter(year <= 2050) %>% 
   ggplot(aes(x = year, y = power_kwh, fill = source)) +
   geom_area() +
   facet_wrap(~state)
 
-
-return(esoo_underlying_non_ev)
+return(total_underlying_non_ev)
 }

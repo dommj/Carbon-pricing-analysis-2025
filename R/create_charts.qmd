@@ -61,7 +61,7 @@ chart_colour_palette <- c(
 
 net_average_electricity_costs <- weighted_average_electricity_costs %>% 
   mutate(category = "Electricity") %>% 
-  group_by(year, state, electrification, category) %>% 
+  group_by(year, state, scenario, electrification, category) %>% 
   summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
   ungroup()
 

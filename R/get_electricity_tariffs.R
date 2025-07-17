@@ -10,12 +10,13 @@ get_electricity_tariffs <- function(electricity_tariffs_file,
     filter(market == "Residential",
            year >= 2025,
            consumption_export == "Consumption") %>% 
-    group_by(state) %>% 
+    group_by(state, scenario) %>% 
     mutate(index = c_kwh / c_kwh[year == 2025])
   
   electricity_tariffs_scaled <- electricity_tariffs %>% 
     left_join(jacobs_index %>% 
-                select(year, state, index)) %>% 
+                select(year, state, scenario, index),
+              relationship = "many-to-many") %>% 
     mutate(price = price * index)
   
   

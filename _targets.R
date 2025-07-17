@@ -242,6 +242,8 @@ tar_plan(
   #load and clean price data
   ####################################################################
   
+  #MUST convert everything to 2025 Q2 dollars. (same as jacobs retail and scraped tarifs)
+  
   #get retail electricity data from AEMC price trends
   tar_target(retail_price_data_aemc, get_retail_data_aemc(retail_file)),
   
@@ -268,7 +270,10 @@ tar_plan(
                get_jacobs_retail_prices(jacobs_retail_model, household_connections))
   ),
   
-  
+  #combine prices for all scenarios
+  tar_target(jacobs_retail_prices, bind_rows(jacobs_retail_prices_reference_case,
+                                             jacobs_retail_prices_1_5_opt1,
+                                             jacobs_retail_prices_1_5_opt2)),
   
   # tar_target(jacobs_retail_prices_ref, get_jacobs_retail_prices(jacobs_retail_model_reference_case,
   #                                                               household_connections)),
@@ -491,7 +496,8 @@ tar_plan(
   #calculate electricity costs
   tar_target(cameo_electricity_costs, calculate_cameo_electricity_costs(annual_electricity_consumption_profiles,
                                                                         jacobs_retail_prices,
-                                                                        retail_electricity_tariffs)),
+                                                                        retail_electricity_tariffs,
+                                                                        rbs_households)),
   
     
   #calculate petrol costs
@@ -591,18 +597,17 @@ tar_plan(
                                                             household_connections,
                                                             average_gas_consumption)),
   
-  #USE TAR_MAP TO CREATE RESULTS ACROSS INPUT RETAIL SPREADSHEETS
-  
   #calculate electricity costs
   tar_target(average_electricity_costs, calculate_average_electricity_costs(annual_electricity_consumption_averages,
                                                                             jacobs_retail_prices,
                                                                             retail_electricity_tariffs,
+                                                                            rbs_households,
                                                                         pv_system_stock,
                                                                         battery_n_pv_prop)),
   #calculate the weighted average across consumer types
   tar_target(weighted_average_electricity_costs, average_electricity_costs %>% 
                mutate(average_cost_dollars = average_cost_dollars * prop) %>% 
-               group_by(year, state, electrification, category) %>% 
+               group_by(year, state, scenario, electrification, category) %>% 
                summarise(average_cost_dollars = sum(average_cost_dollars))),
   
   tar_target(average_petrol_costs, calculate_average_petrol_costs(petrol_price_projections,

@@ -4,6 +4,8 @@ get_gas_best_offers <- function(gas_standing_offers_file){
   offers <- read_xlsx(gas_standing_offers_file, 
                         sheet = 4) %>% 
     clean_names() %>% 
+    #filter out act as nsw and act assumed to have nsw tariffs
+    filter(state != "ACT") %>% 
     select(company, state, customer_class, price_type, price) %>% 
     mutate(min_vol = if_else(price_type != "supply charge", 
                              str_extract(price_type, "(^\\d*\\.\\d*|^\\d*)"), 
