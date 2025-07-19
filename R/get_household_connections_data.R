@@ -114,7 +114,7 @@ get_household_connections_data <- function(esoo_2024_assumptions_workbook_file,
                   str_match(year, '\\d\\d\\d\\d-(\\d\\d)')[,2]) %>% 
     as.numeric())
   
-  #extrapolate forwards linearly
+  #extrapolate forwards linearly. This projection is not actually used as we have decided to only report WA data up to 2034 due to lack of data
   
   # Fit linear model
   linear_model <- lm(connections ~ year, data = wem_connections)

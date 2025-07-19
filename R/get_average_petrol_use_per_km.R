@@ -3,7 +3,7 @@
 get_average_petrol_use_per_km <- function(mv_survey_data_file){
   
   
-  #get just petrol value for now
+  #get just petrol value 
   ice <- read_excel(mv_survey_data_file,
                                  sheet = "Table_6",
                                  range = "A79:D86") %>% 
@@ -15,7 +15,13 @@ get_average_petrol_use_per_km <- function(mv_survey_data_file){
     mutate(fuel_type = 'ICE',
            fuel_l_km = fuel_l_km /100)
   
-  phev <- 0.03 #need to put in real PHEV value here using https://www.greenvehicleguide.gov.au/Vehicle/Search
+  #average fuel consumption has remained flat over the last decade, as fuel efficiency gains have been compensated for by larger vehicles.
+  #we assume constant rate of fuel consumption
+  
+  #test with team about a bogus rate of decline e.g 1% per annum
+
+  
+  phev <- 0.03 #fuel consumption of PHEVs is not used in the model. but for ref -> https://www.greenvehicleguide.gov.au/Vehicle/Search
     
   bev <- 0
   
@@ -25,9 +31,34 @@ get_average_petrol_use_per_km <- function(mv_survey_data_file){
   average_petrol_use_per_vehicle
 }
 
-get_average_petrol_use_per_km('Data/92080DO001_202006.xls')
+#Done, no QC below here needed
 
 
+#get_average_petrol_use_per_km('Data/92080DO001_202006.xls')
+
+# ice_efficiency_scraped <- read_csv(ice_efficiency_file) %>% 
+#   select(year, g_co2_km) 
+# #interpolate values for each year
+# 
+# ice_efficiency_scraped_interpolated <- tibble(
+#   year = 2020:2039,
+#   g_co2_km = approx(x = ice_efficiency_scraped$year, 
+#                      y = ice_efficiency_scraped$g_co2_km, 
+#                      xout = 2020:2039, 
+#                      method = "linear")$y
+# ) %>% 
+#   {
+#     value_2039 <- .$g_co2_km[.$year == 2039]
+#     complete(., year = seq(2020, 2050),
+#              fill = list(g_co2_km = value_2039))
+#   } %>% 
+#   mutate(index = g_co2_km / g_co2_km[year == 2020])
+# 
+# ice <- full_join(ice, ice_efficiency_scraped_interpolated) %>% 
+#   fill(fuel_type = "ICE",
+#        fuel_l_km)
+
+#join 
 
 
 

@@ -1,4 +1,4 @@
-#this file gets gas connections data from the AER
+#this file gets gas connections data from the AER, Victoria (SEC), Tasmanian regulator and WA regulator
 get_gas_connections_data <- function(connection_data_aer_file, connection_data_vic_file,
                                      connection_data_wa_file){
   

@@ -1,6 +1,7 @@
 #calculate average petrol consumption per household
 
 calculate_average_petrol_consumption <- function(ev_fleet_data, 
+                                                 vehicles_per_household,
                                                  average_petrol_use_per_km, 
                                                  average_km_per_vehicle){
   
@@ -14,7 +15,7 @@ calculate_average_petrol_consumption <- function(ev_fleet_data,
     summarise(vehicles_count = sum(vehicles_count)) %>% 
     group_by(year, state) %>% 
     mutate(prop_ice = vehicles_count/ sum(vehicles_count),
-           num_ice = prop_ice * 1.8) %>% 
+           num_ice = prop_ice * vehicles_per_household) %>% 
     filter(fuel_type == "ICE") %>% 
     select(year, state, fuel_type, num_ice)
 

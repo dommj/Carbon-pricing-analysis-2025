@@ -1,5 +1,36 @@
 #targets graveyard
 
+
+#tar_source('R/get_average_residential_operational_demand.R')
+
+
+#average consumption - archive
+# tar_source('R/non_pipe/get_esoo_electrification_per_household.R')
+# tar_source('R/get_rbs_baseline_consumption.R')
+# tar_source('R/calculate_displaced_gas_consumption.R')
+# tar_source("R/calculate_additional_electricity_consumption.R")
+# tar_source("R/calculate_average_adj_tou_consumption.R")
+
+#calculate average household costs
+#tar_source("R/calculate_average_household_costs.R")
+
+#AER retail markets 2024 file
+tar_file(aer_retail_markets_file, 'Data/Data - State of the energy market 2024 - Chapter 6 - Retail energy markets.xlsx'),
+
+
+#retail electricity prices
+tar_file(retail_file, 'Data/AEMC price trends/nsw_25.csv'),
+
+#get retail electricity data from AEMC price trends
+tar_target(retail_price_data_aemc, get_retail_data_aemc(retail_file)),
+
+#jacobs retail model file base - this is the old outdated spreadsheet
+tar_file(jacobs_retail_model_file_base, "Data/Jacobs/RetailPriceProjections_Base.xlsx"),
+
+
+#jacobs demand file
+tar_file(jacobs_demand_data_file, 'Data/Jacobs/Consolidated Electricity Demand Forecasts - DJ0704.xlsx'),
+
 #Electricity use
 tar_target(average_residential_operational_demand, get_average_residential_operational_demand(esoo_2024_operational_file, residential_ev_econsumption, household_connections)),
 

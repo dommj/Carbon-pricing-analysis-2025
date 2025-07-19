@@ -3,14 +3,13 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
                                                   esoo_2020_operational_file,
                                                   wem_esoo_2024_operational_file){
   
-  #underlyng demand = total residential delivered + total residential PV
+  #underlying demand = total residential delivered + total residential PV
   
   #define underlying demand for 2020-2024
   res_underlying_esoo_2020_24 <-   read_excel(esoo_2020_operational_file) %>% 
     clean_names() %>% 
     filter(scenario %in% c('Actual', 'Central'),
            parent_category == 'Operational (Sent Out)',
-           #only include explicitly residential categories. residential EV will be added on top.
            category %in% c('Residential', 'Electrification', 'Rooftop PV'),
            
            #only include residential electrification
@@ -30,7 +29,6 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
     clean_names() %>% 
     filter(scenario %in% c('Actual', 'Central'),
            parent_category == 'Operational (Sent Out)',
-           #only include explicitly residential categories. residential EV will be added on top.
            category %in% c('Residential', 'Electrification', 'Rooftop PV'),
            
            #only include residential electrification
@@ -48,10 +46,9 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
     clean_names() %>% 
     filter(scenario %in% c('Actual', 'Central'),
            parent_category == 'Operational (Sent Out)',
-           #only include explicitly residential categories. residential EV will be added on top.
            category %in% c('Energy Efficiency'),
            
-           #only include residential electrification
+           #only include residential 
            sub_category != 'Business',
            region != 'NEM',
            year <= 2024) %>% 
@@ -133,7 +130,7 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
       filter(scenario %in% c('Actual', 'Expected (Step Change)'),
              parent_category == 'Operational (Sent Out)',
              category %in% c('Energy Efficiency'),
-             #only include residential electrification
+             #only include residential 
              sub_category != 'Business') %>% 
       mutate(state = "WA") %>% 
       select(year, state, category, annual_consumption_t_wh)
@@ -147,8 +144,6 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
       #energy efficiency + underlying represents the total underlying consumption if there were no efficiency gains
       #the energy efficiency multiplier represents the value that we should scale down underlying consumption in that year
       mutate(efficiency_multiplier = Underlying / (`Energy Efficiency` + Underlying)) %>% 
-      
-      #note that efficiency gains flatline after 2050, with some uplift in underlying demand (likely due to economic growth / appliance consumption) - not really relevant for us as we just go out to 2050
       
       select(year, state, efficiency_multiplier) %>% 
       ungroup() %>% 

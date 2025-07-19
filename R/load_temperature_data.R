@@ -1,5 +1,5 @@
 #load typical year temperature data
-load_temperature_data <- function(temp_data_folder, comfort_temp_heating = 18, comfort_temp_cooling = 20){
+load_temperature_data <- function(temp_data_folder){
   
   temp_files <- list.files(path = temp_data_folder)
   

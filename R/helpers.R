@@ -20,7 +20,7 @@ convert_states <- function(state){
   
 }
 
-
+#function name says 2024 but actually converts to Q1 2025
 convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar year"){
   
   cpi_fy <- read_cpi() %>%
@@ -42,29 +42,29 @@ convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar
   
   if (unit_type == "calendar year"){
     
-    dollars_24 <- dollars_24 <- dollars * 
-      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+    dollars_25 <- dollars_25 <- dollars * 
+      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
       (cpi_calendar %>% filter(year == current_year) %>% pull(cpi))
     
   }
   
   if (unit_type == "fy"){
     
-    dollars_24 <- dollars_24 <- dollars * 
-      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+    dollars_25 <- dollars_25 <- dollars * 
+      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
       (cpi_fy %>% filter(fy == current_year) %>% pull(cpi))
     
   }
   
   if (unit_type == "qtr"){
     
-    dollars_24 <- dollars_24 <- dollars * 
-      (cpi_calendar %>% filter(year == 2024) %>% pull(cpi)) / 
+    dollars_25 <- dollars_25 <- dollars * 
+      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
       (cpi_qtr %>% filter(qtr == current_year) %>% pull(cpi))
     
   }
  
-  dollars_24 
+  dollars_25 
 }
 
 

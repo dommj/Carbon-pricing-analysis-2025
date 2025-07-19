@@ -3,7 +3,8 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
                                        average_load_shapes,
                                        average_pv_profile,
                                        ev_consumption_profiles,
-                                       ev_fleet_data){
+                                       ev_fleet_data,
+                                       vehicles_per_household){
   
   #multiply normalised profiles by esoo demand to get average profiles (without EV)
   average_base_profile <- average_load_shapes %>% 
@@ -35,7 +36,7 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
     summarise(vehicles_count = sum(vehicles_count)) %>% 
     group_by(year, state) %>% 
     mutate(prop_ev = vehicles_count/ sum(vehicles_count),
-           num_ev = prop_ev * 1.8) %>% 
+           num_ev = prop_ev * vehicles_per_household) %>% 
     filter(fuel_type == "BEV") %>% 
     select(year, state, num_ev)
   

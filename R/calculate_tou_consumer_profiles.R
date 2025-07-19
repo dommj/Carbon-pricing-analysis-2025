@@ -154,8 +154,9 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
 
 
 
-
-
+##########################################
+#Done, below is just investigation :))
+##########################################
 
 
 

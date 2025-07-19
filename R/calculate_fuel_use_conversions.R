@@ -99,20 +99,12 @@ calculate_fuel_use_conversions <- function(fuel_conversion_coefficients,
                                    gas_to_elec_conv,
                                    elec_to_gas_conv) %>% 
     mutate(conversion = if_else(is.na(conversion), 'unconverted', conversion)) %>% 
-    #filter out transport consumption (added in from CSIRO EV dat)
+    #filter out transport consumption (added in from CSIRO EV data)
     #filter out Natural Gas appliance use (negligible, only applies to gas pool heaters and isn't needed to represent a standard profile)
     filter(end_use != "Transport",
            !(fuel == 'Natural Gas' & end_use == "Appliances")) 
     
-  #add australian total
-    
-    integrated_fuel_use <- integrated_fuel_use %>%
-      group_by(year, fuel, end_use, conversion) %>%
-      summarise(pj = sum(pj), .groups = "drop") %>%
-      mutate(state = "Australia") %>%
-      bind_rows(integrated_fuel_use) %>% 
-      mutate(state = convert_states(state))
-  
+
   return(integrated_fuel_use)
   
   # #check per cent natural gas use that comes from appliances

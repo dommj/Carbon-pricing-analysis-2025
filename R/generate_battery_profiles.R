@@ -10,8 +10,8 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
   
   
 
-  # Simple optimization function
-  optimize_battery_simple <- function(power_data = power_kwh_col, #average_consumption_export[[1]]$power_kwh, 
+  # Simple optimisation function
+  optimise_battery_simple <- function(power_data = power_kwh_col, #average_consumption_export[[1]]$power_kwh, 
                                       battery_capacity_kwh = battery_capacity, 
                                       max_usable_capacity = 0.85,
                                       efficiency_factor = 0.85) {

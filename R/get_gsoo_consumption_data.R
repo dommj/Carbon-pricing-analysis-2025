@@ -18,8 +18,8 @@ get_gsoo_consumption_data <- function(gsoo_consumption_data_file,
   
   wa_gsoo <- read_excel(wa_gsoo_consumption_data_file) %>% 
     clean_names() %>% 
-    filter(region == "METRO/SOUTH-WEST",
-           category == "Tariff V",
+    filter(region == "METRO/SOUTH-WEST", #our model only looks at SWIS area consumption
+           category == "Tariff V", #tariff V is for small customers (residential and small business)
            scenario %in% c("Actual", "Step Change")) %>% 
     mutate(state = "WA") %>% 
     group_by(year, state) %>% 

@@ -1,14 +1,8 @@
 #project out the supply component of gas charges
 
-calculate_total_gas_network_revenue  <- function(standing_offer_bills, 
-                                        gas_standing_offers, 
-                                        gas_connections_data){
+calculate_total_gas_network_revenue  <- function(best_offer_bills, 
+                                                 gas_connections_data){
   
-  #take the best standing offer from each state
-  
-  best_offer_bills <- standing_offer_bills %>%
-    group_by(state) %>%
-    filter(total_cost == min(total_cost)) 
   
   gas_connections_data <- gas_connections_data %>% 
     #amalgamate nsw and act

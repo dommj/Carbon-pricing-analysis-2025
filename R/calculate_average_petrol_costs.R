@@ -1,9 +1,9 @@
 
-calculate_average_petrol_costs <- function(petrol_price_projections,
+calculate_average_petrol_costs <- function(petrol_price_data,
                                            average_petrol_consumption){
   
   
-  petrol_costs <- left_join(average_petrol_consumption, petrol_price_projections) %>% 
+  petrol_costs <- left_join(average_petrol_consumption, petrol_price_data) %>% 
     select(year, state, category, electrification, average_petrol_use_per_household, c_litre) %>% 
     mutate(average_cost_dollars = average_petrol_use_per_household * c_litre / 100) %>%
     select(year, state, category, electrification, average_cost_dollars)

@@ -1,4 +1,7 @@
 
+#this script loads in retail tariffs as of July 2025 and scales them according to Jacobs' projections
+#the scaling assumes that daily charges will increase at the same rate as usage charges
+
 get_electricity_tariffs <- function(electricity_tariffs_file, 
                                     jacobs_retail_prices,
                                     household_connections){
