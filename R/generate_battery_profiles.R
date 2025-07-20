@@ -45,7 +45,7 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
     
     #search for the start level
     
-    optim_start_level <- optimize(battery_residual, 
+    optim_start_level <- optimise(battery_residual, 
                                   c(min_storage, max_storage))
     
     start_level <- optim_start_level$minimum
@@ -88,7 +88,7 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
 
   all_results <- imap(average_consumption_export,
                       ~ left_join(.x, 
-                                  optimize_battery_simple(power_data = .x$power_kwh, 
+                                  optimise_battery_simple(power_data = .x$power_kwh, 
                                                           battery_capacity_kwh = battery_capacity, 
                                                           max_usable_capacity = 0.85),
                                   by = join_by(hour))
@@ -107,7 +107,7 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
   
   
 # left_join(average_consumption_export[[1]], 
-#           optimize_battery_simple(power_data = average_consumption_export[[1]]$power_kwh, 
+#           optimise_battery_simple(power_data = average_consumption_export[[1]]$power_kwh, 
 #                                   battery_capacity_kwh = 11, 
 #                                   max_usable_capacity = 0.85))
   

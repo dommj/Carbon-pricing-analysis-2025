@@ -1,10 +1,6 @@
 
 #this script generates two demand profiles over time, a baseline demand (which declines with energy efficiency) and an electrification demand (which shows electrification of gas use from 2025 onwards)
 
-# we then create two demand traces, baseline is just in the shape of 2020 ToU
-#electrification is in the shape of cooking, hot water and space heating, weighted by the proportion of coverted demand for each end use.
-
-#We will need to add in WEM from jacobs consolidated demand file
 
 get_esoo_average_underlying_demand <- function(esoo_2024_operational_file,
                                                wem_esoo_2024_operational_file,
@@ -23,6 +19,7 @@ esoo_underlying_non_ev <- read_excel(esoo_2024_operational_file) %>%
   rename(state = region) %>% 
   mutate(state = convert_states(state),
          state = if_else(state == 'NSW', 'NSW and ACT', state),
+         #we allocate demand that is note related to electrification or energy efficiency to "baseline"
          source = case_when(category == "Electrification" ~ "electrification", 
                             category == "Energy Efficiency" ~ "energy efficiency", 
                             .default = "baseline")) %>% 

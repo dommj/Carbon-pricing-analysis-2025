@@ -492,12 +492,9 @@ tar_plan(
                                                        household_connections,
                                                        csiro_pv_prevalance_file)),
   
-  #proportion of connections with pv and batteries
-  tar_target(battery_n_pv_prop, estimate_battery_prevalence(pv_system_stock,
-                                                            csiro_pv_prevalance_file)),
-  
-  tar_target(battery_capacity_per_household, get_battery_capacity_per_household(esoo_2024_assumptions_workbook_file, 
-                                                                                household_connections)),
+  #proportion of connections with pv **and** batteries
+  tar_target(battery_n_pv_prop, estimate_battery_prevalence(esoo_2024_assumptions_workbook_file,
+                                                            household_connections)),
   
   
   #calculate total PV generation per system by state (and sense check implied size of system)
@@ -581,13 +578,12 @@ tar_plan(
                                                                   average_petrol_consumption)),
   
   ####################################################################
-  #Create charts
+  #Create charts - Charts to be QC'd by Ben 
   ####################################################################
   
-  #need to comment out overleaf paths before sending for QC
   
   #create esoo demand chart
-  tar_target(esoo_demand_chart, create_esoo_demand_chart(esoo_2024_operational_file))
+  #tar_target(esoo_demand_chart, create_esoo_demand_chart(esoo_2024_operational_file))
   
   
   #create victorian consumption charts to compare to AEMO
@@ -595,6 +591,10 @@ tar_plan(
   
   
   #early_charts_for_savings.R
+  
+  #report_charts.qmd
+  
+  #create_charts.qmd
   
 )
 

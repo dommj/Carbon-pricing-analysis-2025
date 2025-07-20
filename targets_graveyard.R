@@ -56,6 +56,8 @@ tar_target(esoo_electrification_per_household, get_esoo_electrification_per_hous
                                                                                       rbs_baseline_consumption)),
 
 
+tar_target(battery_capacity_per_household, get_battery_capacity_per_household(esoo_2024_assumptions_workbook_file, 
+                                                                              household_connections)),
 
 
 ##############################################

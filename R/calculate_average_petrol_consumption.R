@@ -8,8 +8,6 @@ calculate_average_petrol_consumption <- function(ev_fleet_data,
   
   num_ice_timeseries <- ev_fleet_data %>%
     
-    #plug in hybrids are never estimated to represent more than 1.5% of fleet so for purposes of additional electricity demand we assume electricty consumption equal to EV, this will inflate demand and deflate overall savings slightly
-    
     mutate(fuel_type = if_else(fuel_type == "PHEV", "BEV", fuel_type)) %>%
     group_by(year, state, fuel_type) %>%
     summarise(vehicles_count = sum(vehicles_count)) %>% 

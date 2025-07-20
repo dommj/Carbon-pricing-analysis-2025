@@ -1,4 +1,5 @@
-#calculate baseline and electrified load shapes
+# we now create two demand traces, baseline is just in the shape of 2020 ToU
+#electrification is in the shape of cooking, hot water and space heating, weighted by the proportion of converted demand for each end use.
 
 calculate_average_load_shapes <- function(rbs_tou_consumption_data,
                                           integrated_fuel_use,
@@ -21,6 +22,7 @@ calculate_average_load_shapes <- function(rbs_tou_consumption_data,
              state = if_else(state %in% c("NSW", "ACT"), "NSW and ACT", state)) %>% 
       select(-c(WD, WE)) %>% 
       group_by(year, state, season, source, hour) %>% 
+    #this is total consumption (tou) for each state
       summarise(power = sum(power))
   
   
@@ -105,6 +107,7 @@ calculate_average_load_shapes <- function(rbs_tou_consumption_data,
   
   #calculate weights for final loads
   weights <- integrated_fuel_use %>% 
+    #filter for the final electricity loads of each end use when all gas is converted
     filter(conversion == "gas_to_electric_converted") %>% 
     mutate(#aggregate NSW and ACT
       state = if_else(state %in% c("NSW", "ACT"), "NSW and ACT", state)) %>% 

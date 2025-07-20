@@ -58,15 +58,6 @@ calculate_cameo_electricity_costs <-  function(annual_electricity_consumption_pr
 }
 
 
-#archived code
 
-function(){
-  
-  
-  
-  
-  
-  
-}
 
   

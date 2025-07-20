@@ -74,7 +74,8 @@ estimate_pv_system_stock <- function(rbs_outputs_data_file,
   #check interpolation  
   interpolated_pv_prevalence %>%
     ggplot(aes(x = year, y = prop, colour = state))+
-    geom_line()
+    geom_line() +
+    scale_y_continuous(limits = c(0, 0.7))
 
   
   #stock = prevalence * number of AEMO households in projections

@@ -76,3 +76,11 @@ calculate_average_pv_profile <- function(pv_profiles,
   
   return(pv_profile_average)
 }
+
+
+
+
+# pv_profile_average %>% 
+#   mutate(power_kwh = power_kwh * 365/4) %>% 
+#   group_by(state, end_use, year) %>% 
+#   summarise(power_kwh_7kw = sum(power_kwh))
