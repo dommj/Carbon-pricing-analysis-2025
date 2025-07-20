@@ -152,6 +152,9 @@ pv_profiles|stem|431e8083bbedadcc|95510441fd357dce|0e32eab60dee5178|1913122209||
 tou_consumer_profiles_w_batteries|stem|f5d576126f0db619|a20a14a0553a7919|73290fb6481afb64|1492036783||t20289.4390964068s|s10206926b|10206926|rds|local|vector|||93.05||
 average_profiles_w_batteries|stem|4bef41ef956cb03a|74c840e2901222fc|497d26d6e1c79e7e|1195634406||t20289.4392461115s|s685478b|685478|rds|local|vector|||12.53||
 pv_system_stock|stem|1408b9b64e382ffb|05c7a1cf9cd529ca|4f0afe3423591475|-385287104||t20289.4818825568s|s3331b|3331|rds|local|vector|||2.99||
+battery_n_pv_prop|stem|6d91023363339f17|d82192273af91838|d84eb8a530b2e38e|1902636607||t20289.4837405058s|s1530b|1530|rds|local|vector|||0.78||
+average_electricity_costs|stem|8486976422cfb046|6f12f1ff11f5a1ee|48bbd88bc96f38bb|-1713345144||t20289.4837502674s|s50274b|50274|rds|local|vector|||0.7|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 1171 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
+weighted_average_electricity_costs|stem|b0c01193f70396e4|b7c29d16379d6580|ad546b88ba6276bf|-1047290402||t20289.4837515878s|s13505b|13505|rds|local|vector|||0.06||
 calculate_total_gas_network_revenue|function|1de4883e3f644e49
 calculate_average_petrol_consumption|function|2d88e26c8af98a74
 %nin%|function|5c849418054c52ef
@@ -206,6 +209,3 @@ get_esoo_average_underlying_demand|function|e0df445f46c71047
 get_gas_best_offers|function|c2d3871e32e2fbb2
 get_jacobs_retail_prices|function|4c9684569239a37a
 get_gas_prices_data|function|c4bbc0519ef9cb53
-battery_n_pv_prop|stem|6d91023363339f17|d82192273af91838|d84eb8a530b2e38e|1902636607||t20289.4837405058s|s1530b|1530|rds|local|vector|||0.78||
-average_electricity_costs|stem|8486976422cfb046|6f12f1ff11f5a1ee|48bbd88bc96f38bb|-1713345144||t20289.4837502674s|s50274b|50274|rds|local|vector|||0.7|Detected an unexpected manytomany relationship between x and y.ℹ Row 1 of x matches multiple rows in y.ℹ Row 1171 of y matches multiple rows in x.ℹ If a manytomany relationship is expected, set relationship   manytomany to silence this warning.|
-weighted_average_electricity_costs|stem|b0c01193f70396e4|b7c29d16379d6580|ad546b88ba6276bf|-1047290402||t20289.4837515878s|s13505b|13505|rds|local|vector|||0.06||

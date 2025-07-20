@@ -457,9 +457,18 @@ tar_load(cameo_gas_costs)
 tar_load(cameo_petrol_costs)
 tar_load(household_connections)
 
-cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs) %>% 
+cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs %>% 
+                                cross_join(tibble(scenario = cameo_electricity_costs %>% 
+                      select(scenario) %>% 
+                      unique() %>% 
+                      pull()))) %>% 
   cross_join(tibble(ice = c(0,1,2))) %>% 
-  bind_rows(cameo_petrol_costs)
+  bind_rows(cameo_petrol_costs %>% 
+    cross_join(tibble(scenario = cameo_electricity_costs %>% 
+                      select(scenario) %>% 
+                      unique() %>% 
+                      pull()))) %>% 
+  filter(scenario == "Ref")
 
 
 electrification_data <- cameo_cost_data %>% 
