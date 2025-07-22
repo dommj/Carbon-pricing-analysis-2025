@@ -16,17 +16,32 @@ get_average_petrol_use_per_km <- function(mv_survey_data_file){
            fuel_l_km = fuel_l_km /100)
   
   #average fuel consumption has remained flat over the last decade, as fuel efficiency gains have been compensated for by larger vehicles.
-  #we assume constant rate of fuel consumption
+  #we assume constant rate of fuel consumption, or use the Grattan Car Plan (2022) assumption of 1.5% annual improvement
   
-  #test with team about a bogus rate of decline e.g 1% per annum
-
+  ice_over_time <- ice %>% 
+    mutate(year = 2020) %>% 
+    complete(year = seq(2020, 2050), fuel_type = "ICE") %>% 
+    arrange(year) %>%
+    mutate(
+      years_since_2020 = year - 2020,
+      fuel_l_km = first(fuel_l_km, na_rm = TRUE) * (0.985 ^ years_since_2020)
+    ) %>%
+    select(-years_since_2020)
+      
+  
   
   phev <- 0.03 #fuel consumption of PHEVs is not used in the model. but for ref -> https://www.greenvehicleguide.gov.au/Vehicle/Search
     
   bev <- 0
   
-  average_petrol_use_per_vehicle <- tibble(fuel_type = c('PHEV', 'BEV'), fuel_l_km = c( phev, bev)) %>% 
-    bind_rows(ice)
+  average_petrol_use_per_vehicle <- tibble(fuel_type = c('PHEV', 'BEV'), fuel_l_km = c(phev, bev)) %>% 
+    mutate(year = 2020) %>% 
+    complete(year = seq(2020, 2050),
+             fuel_type = c("PHEV", "BEV")) %>% 
+    group_by(fuel_type) %>%
+    fill(fuel_l_km, .direction = "down") %>%
+    ungroup() %>% 
+    bind_rows(ice_over_time)
   
   average_petrol_use_per_vehicle
 }

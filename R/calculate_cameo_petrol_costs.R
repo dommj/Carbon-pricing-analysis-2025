@@ -5,18 +5,17 @@ calculate_cameo_petrol_costs <- function(average_petrol_use_per_km,
                                          petrol_price_data){
   
   fuel_consumption_ice <- average_petrol_use_per_km %>% 
-    filter(fuel_type == "ICE") %>% 
-    pull(fuel_l_km)
+    filter(fuel_type == "ICE")
   
   average_fuel_use_per_vehicle <- average_km_per_vehicle %>% 
-   mutate(avg_fuel_use = average_kilometres_travelled * fuel_consumption_ice)
+    cross_join(fuel_consumption_ice) %>% 
+   mutate(avg_fuel_use = average_kilometres_travelled * fuel_l_km)
  
   
   #attach petrol price projections to average fuel use (like a full join but theres no matching variable)
   
   average_fuel_cost_per_vehicle <- average_fuel_use_per_vehicle %>% 
     left_join(petrol_price_data) %>% 
-    cross_join(tibble(year = seq(2025, 2050))) %>% 
     mutate(petrol_cost = avg_fuel_use * c_litre) %>% 
     mutate(`0` = 0 * petrol_cost / 100,
            `1` = 1 * petrol_cost / 100,
