@@ -214,7 +214,7 @@ tar_plan(
   tar_file(csiro_pv_prevalance_file, 'Data/solar_prevalence_csiro_24.xlsx'),
   
   #ice vehicle efficiency file
-  tar_file(ice_efficiency_file, "Data/ICE fuel efficiency.csv"),
+  #tar_file(ice_efficiency_file, "Data/ICE fuel efficiency.csv"),
   
   ####################################################################
   #load and clean price data
