@@ -236,10 +236,12 @@ tar_plan(
   
   
   tar_map(
-    tibble(scenario = c("reference_case", "1_5_opt1", "1_5_opt2"),
+    tibble(scenario = c("reference_case", "1_5_opt1", "1_5_opt2", "2_opt1", "2_opt2"),
            filepath = c("Data/Jacobs/RetailPriceProjections_Ref.xlsx",
                         "Data/Jacobs/RetailPriceProjections_1_5_Opt1.xlsx", 
-                        "Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx")),
+                        "Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx",
+                        "Data/Jacobs/RetailPriceProjections_2_Opt1.xlsx", 
+                        "Data/Jacobs/RetailPriceProjections_2_Opt2.xlsx")),
     names = scenario,
     tar_target(jacobs_retail_model, filepath, format = "file"),
     tar_target(jacobs_retail_prices, 
@@ -249,7 +251,9 @@ tar_plan(
   #combine prices for all scenarios
   tar_target(jacobs_retail_prices, bind_rows(jacobs_retail_prices_reference_case,
                                              jacobs_retail_prices_1_5_opt1,
-                                             jacobs_retail_prices_1_5_opt2)),
+                                             jacobs_retail_prices_1_5_opt2,
+                                             jacobs_retail_prices_2_opt1,
+                                             jacobs_retail_prices_2_opt2,)),
   
   
   tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
@@ -537,6 +541,22 @@ tar_plan(
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
+  
+  
+  #creating a target for consumer type weights to call when making charts etc.
+  tar_target(average_consumer_type_weights,  
+             pv_system_stock %>% 
+               filter(year >= 2025) %>% 
+               left_join(battery_n_pv_prop) %>% 
+               mutate(pv_only_prop = prop - battery_and_pv_prop,
+                      no_pv_prop = 1 - prop) %>% 
+               select(-c(prop, pv_stock)) %>% 
+               pivot_longer(cols = contains('prop'), 
+                            names_to = 'consumer_type',
+                            values_to = 'prop') %>% 
+               mutate(consumer_type = case_when(consumer_type == "battery_and_pv_prop" ~ "1_1",
+                                                consumer_type == "pv_only_prop" ~ "1_0",
+                                                consumer_type == "no_pv_prop" ~ "0_0"))),
   
   
   # Gas use - average over all households with an electricity connection

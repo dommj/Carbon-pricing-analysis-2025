@@ -35,8 +35,8 @@ calculate_average_electricity_costs <-  function(annual_electricity_consumption_
   #add back in
   
   consumption_tariffs_agg <- consumption_tariffs %>%
-    bind_rows(consumption_tariffs_nsw_act %>% 
-                filter(state %nin% c("NSW", "ACT")))
+    bind_rows(consumption_tariffs_nsw_act) %>% 
+                filter(state %nin% c("NSW", "ACT"))
   
   
   consumer_type_props <- pv_system_stock %>% 
