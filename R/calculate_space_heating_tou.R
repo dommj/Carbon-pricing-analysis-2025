@@ -12,7 +12,8 @@
 calculate_space_heating_tou <- function(rbs_tou_consumption_data, temperature_data, 
                                         comfort_temp_heating = 18, comfort_temp_cooling = 18){
   
-  
+  comfort_temp_heating <- 18
+  comfort_temp_cooling <- 18
   
   heating_cooling_degree_days <- temperature_data %>% 
     mutate(cooling_deg_days = if_else(average > comfort_temp_cooling, average - comfort_temp_cooling, 0),
@@ -39,6 +40,7 @@ calculate_space_heating_tou <- function(rbs_tou_consumption_data, temperature_da
     mutate(end_use_category = paste0(end_use_category, ' - ', type)) %>% 
     select(-type)
   
+  ## checked totals match - they do :) 
   heating_cooling_profiles
 }
 

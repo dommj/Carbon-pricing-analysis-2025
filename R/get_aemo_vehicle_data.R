@@ -135,7 +135,7 @@ aemo_vehicle_data <- bind_rows(aemo_bev_nsw_act_data,
                                aemo_ice_sa_data,
                                aemo_ice_tas_data,
                                aemo_ice_vic_data,
-                               aemo_ice_wa_data,) %>% 
+                               aemo_ice_wa_data) %>% 
   pivot_longer(cols = contains("20"),
                names_to = "year",
                values_to = "vehicles_count") %>%
@@ -147,8 +147,6 @@ aemo_vehicle_data <- bind_rows(aemo_bev_nsw_act_data,
 #############################
 #2024 data
 #############################
-
-#I started reading in the step change data, but actually it doesn't matter bcos up to 2024 these are actuals / the same so some are prog change bcos I couldn't be bothered to change the code
 
 #BEV data
 aemo_bev_nsw_act_data_24 <- read_excel(iasr_23_ev_workbook_file,
@@ -184,31 +182,31 @@ aemo_bev_vic_data_24 <- read_excel(iasr_23_ev_workbook_file,
 #PHEV data
 aemo_phev_nsw_act_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                      sheet = "PHEV_Numbers",
-                                     range = "B69:AF79") %>% 
+                                     range = "B131:AF141") %>% 
   mutate(state = 'NSW and ACT',
          fuel_type = 'PHEV')
 
 aemo_phev_qld_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                  sheet = "PHEV_Numbers",
-                                 range = "B81:AF91") %>% 
+                                 range = "B143:AF153") %>% 
   mutate(state = 'Qld',
          fuel_type = 'PHEV')
 
 aemo_phev_sa_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                 sheet = "PHEV_Numbers",
-                                range = "B93:AF103") %>% 
+                                range = "B155:AF165") %>% 
   mutate(state = 'SA',
          fuel_type = 'PHEV')
 
 aemo_phev_tas_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                  sheet = "PHEV_Numbers",
-                                 range = "B105:AF115") %>% 
+                                 range = "B167:AF177") %>% 
   mutate(state = 'Tas',
          fuel_type = 'PHEV')
 
 aemo_phev_vic_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                  sheet = "PHEV_Numbers",
-                                 range = "B117:AF127") %>% 
+                                 range = "B179:AF189") %>% 
   mutate(state = 'Vic',
          fuel_type = 'PHEV')
 
@@ -216,31 +214,31 @@ aemo_phev_vic_data_24 <- read_excel(iasr_23_ev_workbook_file,
 #ICE data
 aemo_ice_nsw_act_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                     sheet = "ICE_Numbers",
-                                    range = "B69:AF79") %>% 
+                                    range = "B131:AF141") %>% 
   mutate(state = 'NSW and ACT',
          fuel_type = 'ICE')
 
 aemo_ice_qld_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                 sheet = "ICE_Numbers",
-                                range = "B81:AF91") %>% 
+                                range = "B143:AF153") %>% 
   mutate(state = 'Qld',
          fuel_type = 'ICE')
 
 aemo_ice_sa_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                sheet = "ICE_Numbers",
-                               range = "B93:AF103") %>% 
+                               range = "B155:AF165") %>% 
   mutate(state = 'SA',
          fuel_type = 'ICE')
 
 aemo_ice_tas_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                 sheet = "ICE_Numbers",
-                                range = "B105:AF115") %>% 
+                                range = "B167:AF177") %>% 
   mutate(state = 'Tas',
          fuel_type = 'ICE')
 
 aemo_ice_vic_data_24 <- read_excel(iasr_23_ev_workbook_file,
                                 sheet = "ICE_Numbers",
-                                range = "B117:AF127") %>% 
+                                range = "B179:AF189") %>% 
   mutate(state = 'Vic',
          fuel_type = 'ICE')
 

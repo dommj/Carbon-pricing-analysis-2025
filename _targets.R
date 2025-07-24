@@ -257,14 +257,14 @@ tar_plan(
                                                                  household_connections)),
   
   #get petrol price data
-  tar_target(petrol_price_data, get_petrol_data(petrol_file)),
+  tar_target(petrol_price_data, get_petrol_data(petrol_file)), #CHECKED
   
   # #project out price data
   # tar_target(petrol_price_projections, project_petrol_data(petrol_price_data, end_year)),
   
   #get gas volume prices
   tar_target(gas_volume_price_data, get_gas_prices_data(gas_prices_file,
-                                                        wa_gas_prices_file)),
+                                                        wa_gas_prices_file)), #CHECKED
   
   ####################################################################
   #calculate gas bill data
@@ -272,48 +272,48 @@ tar_plan(
   
   #load gas consumption data
   tar_target(gsoo_consumption_data, get_gsoo_consumption_data(gsoo_consumption_data_file,
-                                                              wa_gsoo_consumption_data_file)),
+                                                              wa_gsoo_consumption_data_file)), #CHECKED
   
   #get gas connections data
   tar_target(gas_connections_data, get_gas_connections_data(connection_data_aer_file, connection_data_vic_file,
-                                                            connection_data_wa_file)),
+                                                            connection_data_wa_file)), #CHECKED
   
   #get gas standing offers
   #tar_target(gas_standing_offers, get_gas_standing_offers(gas_standing_offers_file)),
   
   #get gas best offers
-  tar_target(gas_best_offers, get_gas_best_offers(gas_standing_offers_file)),
+  tar_target(gas_best_offers, get_gas_best_offers(gas_standing_offers_file)), #CHECKED
   
   #get AER benchmark gas use
-  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,                                                                      gas_connections_data)),
+  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file)), #CHECKED                                                                      gas_connections_data)),
   
   #project residential gas consumption and connection projections
   tar_target(residential_gas_consumption_projections, project_residential_gas_consumption(gas_connections_data,
                                                                                           benchmark_gas_consumption,
-                                                                                          gsoo_consumption_data)),
+                                                                                          gsoo_consumption_data)), #CHECKED
   # #calculate gas bills from standing offers
   # tar_target(standing_offer_bills, calculate_gas_bill(gas_standing_offers, benchmark_gas_consumption)),
   
   #calculate gas bills from best offers - this script isn't really used to the full extent anymore, it used to calculate the best bill from a range of offers but we now simply take the best offer as calculated by government comparison sites. The connection charge costs are used to calculate total revenue but this can easily be derived by multiplying connection charges by 365 days and by connections.
   
   #NO REAL QC NEEDED (just to save you time), Happy to discuss.
-  tar_target(best_offer_bills, calculate_gas_bill(gas_best_offers, benchmark_gas_consumption)),
+  tar_target(best_offer_bills, calculate_gas_bill(gas_best_offers, benchmark_gas_consumption)), ##NOT CHECKED
   
   
   #calculate total supply charge revenue (we assume this is held constant in real terms for now) (this is in 2025 dollars)
   tar_target(gas_network_charge_revenue, 
              calculate_total_gas_network_revenue(best_offer_bills,  
-                                                 gas_connections_data)),
+                                                 gas_connections_data)), #CHECKED (assuming network cost is accurate)
   
   #average gas volumetric charge (indexed to our volumetric price series)
   tar_target(gas_retail_volumetric_price_projections, project_gas_retail_volumetric_price(best_offer_bills, 
                                                                                           benchmark_gas_consumption,
-                                                                                          gas_volume_price_data)),
+                                                                                          gas_volume_price_data)), #CHECKED (assuming usage cost is accurate)
   
   
   #Estimate projected supply charges per connection
   
-  tar_target(gas_connection_charge_projections, project_gas_connection_charges(gas_network_charge_revenue, residential_gas_consumption_projections)),
+  tar_target(gas_connection_charge_projections, project_gas_connection_charges(gas_network_charge_revenue, residential_gas_consumption_projections)), #CHECKED
   
   
   ####################################################################
@@ -324,7 +324,7 @@ tar_plan(
   #number of connections
   tar_target(household_connections, get_household_connections_data(esoo_2024_assumptions_workbook_file,
                                                                    wem_esoo_2024_data_register_file,
-                                                                   abs_dwelling_completions_file)),
+                                                                   abs_dwelling_completions_file)), #CHECKED
   
   #Residential EV use
   #tar_target(residential_ev_econsumption, get_residential_ev_consumption_data(electric_vehicle_workbook_file,
@@ -332,25 +332,25 @@ tar_plan(
 
   #Petrol use - per km
   
-  tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)),
+  tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)), #CHECKED
   
   #average km per vehicle
-  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file)),
+  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file)), #CHECKED
   
   
   #AEMO vehicle fleet data
   tar_target(ev_fleet_data, get_aemo_vehicle_data(electric_vehicle_workbook_file,
                                                   iasr_23_ev_workbook_file,
-                                                  wem_esoo_2024_ev_projections_file)),
+                                                  wem_esoo_2024_ev_projections_file)), #CHECKED
   
   # Load EV consumption profiles
   tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
                                                                   wem_esoo_2024_ev_projections_file,
-                                                                  ev_fleet_data)),
+                                                                  ev_fleet_data)), #CHECKED
   
   #vehicles per household
   #source: https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021
-  tar_target(vehicles_per_household, 1.8),
+  tar_target(vehicles_per_household, 1.8), #CHECKED
   
   
   #Not used, average vehicle use from ABS taken instead
@@ -364,29 +364,29 @@ tar_plan(
   #################################################################### 
   
   #load RBS household numbers and deflate to represent 10% vacancy rate.
-  tar_target(rbs_households, load_and_deflate_rbs_households(rbs_outputs_data_file)),
+  tar_target(rbs_households, load_and_deflate_rbs_households(rbs_outputs_data_file)), #CHECKED
   
   #residential baseline fuel use data
-  tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)),
+  tar_target(rbs_fuel_end_use_by_state, get_rbs_fuel_end_use(rbs_outputs_data_file)), #CHECKED
   
   #load in fuel efficiency coefficients
-  tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)),
+  tar_target(fuel_conversion_coefficients, get_fuel_conversion_coefficients(electric_to_gas_coefficients_file)), #CHECKED
   
   #get rbs electricity consumption curves
-  tar_target(rbs_tou_consumption_data, get_rbs_electricity_consumption_data(rbs_electricity_consumption_data_file)),
+  tar_target(rbs_tou_consumption_data, get_rbs_electricity_consumption_data(rbs_electricity_consumption_data_file)), #CHECKED
   
   #load temperature data
-  tar_target(temperature_data, load_temperature_data(temp_data_folder)),
+  tar_target(temperature_data, load_temperature_data(temp_data_folder)), ##NOT CHECKED 
   
   #generate space heating tou profiles for heating and cooling
   tar_target(heating_cooling_profiles, calculate_space_heating_tou(rbs_tou_consumption_data, temperature_data, 
-                                                                   comfort_temp_heating = 18, comfort_temp_cooling = 18)),
+                                                                   comfort_temp_heating = 18, comfort_temp_cooling = 18)), #CHECKED
   
   
   tar_target(integrated_fuel_use, calculate_fuel_use_conversions(fuel_conversion_coefficients,
                                                                  rbs_outputs_data_file,
                                                                  rbs_fuel_end_use_by_state,
-                                                                 heating_cooling_profiles)),
+                                                                 heating_cooling_profiles)), #CHECKED
   
   #calculate energy efficiency multiplier for underlying demand
   tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file,

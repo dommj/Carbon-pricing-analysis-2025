@@ -48,13 +48,18 @@ get_household_connections_data <- function(esoo_2024_assumptions_workbook_file,
     group_by(state, year) %>% 
     summarise(completions = sum(completions)) %>% 
     filter(!is.na(completions),
-           state != "Aus")
+           state != "Aus") %>%
+    
+    ## only have half a FY's worth of data for 2018-19, so set to NA
+    mutate(completions = ifelse(year==2019, NA, completions))
   
   #this is only approximate, but early years are only needed to estimate changes in consumption per household, which should be fairly steady over the 4 years from 2020 to 2024
   
   nem_back_calculated <- expand_grid(
     state = unique(aemo_projections$state),
-    year = 2019:2023 ) %>%  # Years to backfill: 2019-2020 through 2022-2023
+    
+    ## FY== 2019-200 <=> year==2020
+    year = 2020:2023 ) %>%  # Years to backfill: 2019-2020 through 2022-2023
     bind_rows(aemo_projections) %>% 
     left_join(abs_completions, by = join_by(state, year)) %>% 
     group_by(state) %>% 
@@ -64,7 +69,11 @@ get_household_connections_data <- function(esoo_2024_assumptions_workbook_file,
       # For each state, calculate iteratively
       for(i in 2:nrow(.x)) {
         if(is.na(.x$connections[i])) {
-          .x$connections[i] <- .x$connections[i-1] - .x$completions[i]
+          
+          
+          ## I think it makes more sense to subtract the completions 1 year ahead?
+          ## e.g. Cal year 2023 == cal year 2024 - completions 2023-24
+          .x$connections[i] <- .x$connections[i-1] - .x$completions[i-1]
         }
       }
       return(.x)

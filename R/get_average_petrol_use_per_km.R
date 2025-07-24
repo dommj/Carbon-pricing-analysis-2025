@@ -80,21 +80,21 @@ get_average_petrol_use_per_km <- function(mv_survey_data_file){
 
 ################################
 
-
-function(){
-  
-get_average_petrol_use_per_vehicle('Data/92080DO001_202006.xls')
-
-
-read_excel('Data/92080DO001_202006.xls',
-           sheet = "Table_4",
-           range = "A5:J12") %>% 
-  clean_names() %>% 
-  rename(year = 1) %>% 
-  filter(year == '2020') %>% 
-  mutate(average_kilometres_travelled =  as.numeric(average_kilometres_travelled) * 1000,
-         #divide rate of consumption by 100 to get rate per km
-         average_petrol_consumption_per_vehicle = average_kilometres_travelled * as.numeric(rate_of_fuel_consumption) / 100) %>% 
-  pull(average_petrol_consumption_per_vehicle)
-
-}
+# 
+# function(){
+#   
+# get_average_petrol_use_per_vehicle('Data/92080DO001_202006.xls')
+# 
+# 
+# read_excel('Data/92080DO001_202006.xls',
+#            sheet = "Table_4",
+#            range = "A5:J12") %>% 
+#   clean_names() %>% 
+#   rename(year = 1) %>% 
+#   filter(year == '2020') %>% 
+#   mutate(average_kilometres_travelled =  as.numeric(average_kilometres_travelled) * 1000,
+#          #divide rate of consumption by 100 to get rate per km
+#          average_petrol_consumption_per_vehicle = average_kilometres_travelled * as.numeric(rate_of_fuel_consumption) / 100) %>% 
+#   pull(average_petrol_consumption_per_vehicle)
+# 
+# }

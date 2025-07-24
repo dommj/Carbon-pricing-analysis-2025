@@ -47,6 +47,9 @@ get_rbs_electricity_consumption_data <- function(rbs_electricity_consumption_dat
     mutate(power = power * total_rbs / total_heyfield,
            season = str_to_sentence(season)) %>% 
     select(-c(total_heyfield, total_rbs))
+  ## So, just confirming, you're assuming RBS is right on total electricity consumption for space heating in Vic, 
+  ## and Heyfield is more accurate on the time of day?
+  
   
   #double check total adds to RBS total
   vic_space_conditioning_normalised %>% 

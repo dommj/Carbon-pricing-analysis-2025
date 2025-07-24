@@ -66,6 +66,8 @@ project_residential_gas_consumption <- function(gas_connections_data,
               by = join_by(year, state)) %>% 
     mutate(pct_residential_consumption = (residential_consumption / 1000) / annual_consumption_gj) %>% 
     select(state, pct_residential_consumption)
+  
+  ## bit weird that in SA 102% of gas consumption is residential?? 
 
  residential_consumption <- gas_consumption_projections_complete %>%
   full_join(residential_consumption_pct) %>% 

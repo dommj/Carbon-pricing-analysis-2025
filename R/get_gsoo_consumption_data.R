@@ -15,6 +15,9 @@ get_gsoo_consumption_data <- function(gsoo_consumption_data_file,
            !is.na(state)) %>% 
     select(year, state, annual_consumption_gj)
   
+  ## Noting: there is 'Tarriff V' and 'Tariff V blending' in the NEM GSOO data, separate to Residential and Commercial. 
+  ## You don't need to include this?
+  
   
   wa_gsoo <- read_excel(wa_gsoo_consumption_data_file) %>% 
     clean_names() %>% 
@@ -28,6 +31,7 @@ get_gsoo_consumption_data <- function(gsoo_consumption_data_file,
     mutate(annual_consumption_gj = average_daily_consumption_tj_day * 365 *1e3) %>% 
     select(- average_daily_consumption_tj_day )
     
+  ## there are some negative values in average_daily_consumption for Tariff V? Is this right?
   
   gsoo_data <- bind_rows(nem_gsoo, wa_gsoo)
   

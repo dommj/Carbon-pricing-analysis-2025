@@ -2,6 +2,7 @@
 get_gas_connections_data <- function(connection_data_aer_file, connection_data_vic_file,
                                      connection_data_wa_file){
   
+  ## why are you using the 2023 data not the 2024 data which looks to be available in the same folder?
   
   #residential and small business connections data, nsw, act, qld, SA
   res_connect <- read_excel(connection_data_aer_file,
@@ -60,13 +61,15 @@ get_gas_connections_data <- function(connection_data_aer_file, connection_data_v
   
   
   #TAS data: https://www.economicregulator.tas.gov.au/Documents/25%20437%20Energy%20in%20Tasmania%202023-24.pdf (only two retailers (Aurora and Solstice)
-  
+  ## Business customers are included for other states -- why have you excluded them for Tas?  
   #table 10.6: Residential gas customers from Aurora energy
+  
+
   aurora_22_23 <- 4681
   aurora_23_24 <- 4546
   
   
-  #table 10.6: Residential gas customers from Solstice energy
+  #table 11.3: Residential gas customers from Solstice energy
   solstice_22_23 <- 9093
   solstice_23_24 <- 8910
   
@@ -85,7 +88,7 @@ get_gas_connections_data <- function(connection_data_aer_file, connection_data_v
     clean_names() %>% 
     filter(energy_type == "Gas",
            category == "Customer numbers",
-           subcategory == "Residential customers",
+           subcategory == "Residential customers", ## Again, consider including business customers here for consistency with otehr states?
            indicator_description == "Total",
            date == "30/6/2023") %>% 
     group_by(date) %>% 
@@ -103,6 +106,8 @@ get_gas_connections_data <- function(connection_data_aer_file, connection_data_v
     clean_names() %>% 
     ungroup() %>% 
     bind_rows(tas_23, wa_data)
+  
+  ## I wonder why you leave NSW and ACT separate here, where they are aggregated up everywhere else?
 
   
   return(customers)

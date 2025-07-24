@@ -8,9 +8,12 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
   #define underlying demand for 2020-2024
   res_underlying_esoo_2020_24 <-   read_excel(esoo_2020_operational_file) %>% 
     clean_names() %>% 
-    filter(scenario %in% c('Actual', 'Central'),
+    filter(scenario %in% c('Actual', 'Central'), ## I note there is a 'Step Change' scenario here, which elsewhere is the central scenario?
            parent_category == 'Operational (Sent Out)',
            category %in% c('Residential', 'Electrification', 'Rooftop PV'),
+           ## So, just confirming the treatment of Rooftop PV here. It's a positive value that is added to the Res grid demand -- so 
+           ## it's representing consumption also that is currently being served by rooftop PV?
+           ## There are also negative values for 'Res SNSG offset' -- I don't know what these mean
            
            #only include residential electrification
            sub_category != 'Business',
@@ -103,6 +106,8 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
     complete(year = seq(from = 2020, to = 2050), 
              state = unique(state),
              fill = list(efficiency_multiplier = 1))
+  
+  
     
     
     ################

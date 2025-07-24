@@ -30,6 +30,8 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
            vehicle_type = str_remove(charge_type, ",.*"),
            day_type = "WD") %>% 
     group_by(state, vehicle_type, day_type, hour) %>% 
+    
+    ## Would be a bit more accurate to do this as a weighted mean -- weighted by the charge profiles in 'BEV_PHEV_Charge_Type (%)'
     summarise(power_kwh = mean(as.numeric(content))) %>% 
     filter(str_detect(vehicle_type, "Residential")) 
   
@@ -50,6 +52,8 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
            vehicle_type = str_remove(charge_type, ",.*"),
            day_type = "WE") %>% 
     group_by(state, vehicle_type, day_type, hour) %>% 
+    
+    ## Would be a bit more accurate to do this as a weighted mean -- weighted by the charge profiles in 'BEV_PHEV_Charge_Type (%)'
     summarise(power_kwh = mean(as.numeric(content))) %>% 
     filter(str_detect(vehicle_type, "Residential")) 
   
@@ -80,8 +84,14 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
            time = format(as_datetime(time), format = "%H:%M:%S"),
            vehicle_type = str_remove(charge_type, ",.*"),
            vehicle_type = str_remove(vehicle_type, "\r\n"),
+           
+           ## Some bonus spaces causing chaos
+           vehicle_type = str_squish(vehicle_type),
            day_type = "WD") %>% 
     group_by(state, vehicle_type, day_type, hour) %>% 
+    
+    
+    ## Would be a bit more accurate to do this as a weighted mean -- weighted by the charge profiles in 'BEV_PHEV_Charge_Type (%)'
     summarise(power_kwh = mean(as.numeric(content))) %>% 
     filter(str_detect(vehicle_type, "Residential")) 
   
@@ -100,8 +110,15 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
            time = format(as_datetime(time), format = "%H:%M:%S"),
            vehicle_type = str_remove(charge_type, ",.*"),
            vehicle_type = str_remove(vehicle_type, "\r\n"),
+           
+           
+           ## Some bonus spaces causing chaos
+           vehicle_type = str_squish(vehicle_type),
            day_type = "WE") %>% 
     group_by(state, vehicle_type, day_type, hour) %>% 
+    
+    
+    ## Would be a bit more accurate to do this as a weighted mean -- weighted by the charge profiles in 'BEV_PHEV_Charge_Type (%)'
     summarise(power_kwh = mean(as.numeric(content))) %>% 
     filter(str_detect(vehicle_type, "Residential")) 
   
@@ -115,6 +132,7 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
   
   total_unweighted_ev_profiles <- bind_rows(wem_unweighted_ev_profiles, nem_unweighted_ev_profiles)
   
+  ## Why not include both BEV and PHEV in calculating weights?
   vehicle_type_weights <- ev_fleet_data %>% 
     filter(fuel_type == "BEV") %>% # battery EVs dominate the charging profile
     select(year, state, vehicle_type, vehicles_count)
@@ -141,45 +159,45 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
 ##########################################
 #old
 ##########################################
-function(){
-
-weekday <- read_excel("Data/2024 ESOO/2024 Electric Vehicle Workbook.xlsx", 
-                      sheet = "BEV_PHEV_Profile_kW (Weekday)",
-                      skip = 4) %>% 
-  mutate(state = case_when(
-    # Identify rows that are state headings (not NA in first column, but NA in others)
-    !is.na(.[[1]]) & is.na(.[[2]]) ~ .[[1]],
-    TRUE ~ NA
-  )) %>%
-  # Fill the state values down
-  fill(state, .direction = "down") %>%
-  # Remove the state heading rows
-  filter(!is.na(.[[1]]), !is.na(.[[2]])) %>% 
-  rename(charging_profile = 1)
-
-
-weekend <- read_excel("Data/2024 ESOO/2024 Electric Vehicle Workbook.xlsx", 
-                      sheet = "BEV_PHEV_Profile_kW (Weekend)",
-                      skip = 4) %>% 
-  mutate(state = case_when(
-    # Identify rows that are state headings (not NA in first column, but NA in others)
-    !is.na(.[[1]]) & is.na(.[[2]]) ~ .[[1]],
-    TRUE ~ NA
-  )) %>%
-  # Fill the state values down
-  fill(state, .direction = "down") %>%
-  # Remove the state heading rows
-  filter(!is.na(.[[1]]), !is.na(.[[2]])) %>% 
-  rename(charging_profile = 1)
-
-
-
-residential_charging <- weekday %>% 
-  rowwise() %>%
-  mutate(total = sum(c_across(contains('..')), na.rm = TRUE),
-         total_kwh = total * 0.5) %>% #convert 30min increments to kwh consumption
-  ungroup() %>% 
-  select(state, charging_profile, total_kwh) %>% 
-  filter(str_detect(charging_profile, "Residential")) 
-}
-
+# function(){
+# 
+# weekday <- read_excel("Data/2024 ESOO/2024 Electric Vehicle Workbook.xlsx", 
+#                       sheet = "BEV_PHEV_Profile_kW (Weekday)",
+#                       skip = 4) %>% 
+#   mutate(state = case_when(
+#     # Identify rows that are state headings (not NA in first column, but NA in others)
+#     !is.na(.[[1]]) & is.na(.[[2]]) ~ .[[1]],
+#     TRUE ~ NA
+#   )) %>%
+#   # Fill the state values down
+#   fill(state, .direction = "down") %>%
+#   # Remove the state heading rows
+#   filter(!is.na(.[[1]]), !is.na(.[[2]])) %>% 
+#   rename(charging_profile = 1)
+# 
+# 
+# weekend <- read_excel("Data/2024 ESOO/2024 Electric Vehicle Workbook.xlsx", 
+#                       sheet = "BEV_PHEV_Profile_kW (Weekend)",
+#                       skip = 4) %>% 
+#   mutate(state = case_when(
+#     # Identify rows that are state headings (not NA in first column, but NA in others)
+#     !is.na(.[[1]]) & is.na(.[[2]]) ~ .[[1]],
+#     TRUE ~ NA
+#   )) %>%
+#   # Fill the state values down
+#   fill(state, .direction = "down") %>%
+#   # Remove the state heading rows
+#   filter(!is.na(.[[1]]), !is.na(.[[2]])) %>% 
+#   rename(charging_profile = 1)
+# 
+# 
+# 
+# residential_charging <- weekday %>% 
+#   rowwise() %>%
+#   mutate(total = sum(c_across(contains('..')), na.rm = TRUE),
+#          total_kwh = total * 0.5) %>% #convert 30min increments to kwh consumption
+#   ungroup() %>% 
+#   select(state, charging_profile, total_kwh) %>% 
+#   filter(str_detect(charging_profile, "Residential")) 
+# }
+# 
