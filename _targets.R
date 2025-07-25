@@ -511,7 +511,7 @@ tar_plan(
                                                           average_pv_profile,
                                                           ev_consumption_profiles,
                                                           ev_fleet_data,
-                                                          vehicles_per_household)),
+                                                          vehicles_per_household)), #CHECKED
   
   
   tar_target(average_profiles_w_batteries, generate_battery_profiles(average_profiles, 
@@ -536,18 +536,18 @@ tar_plan(
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
+  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)), #CHECKED
   
   
   # Gas use - average over all households with an electricity connection
   tar_target(average_gas_consumption, calculate_average_residential_gas_consumption(household_connections,
-                                                                                    residential_gas_consumption_projections)),
+                                                                                    residential_gas_consumption_projections)), #CHECKED
   
   #average_petrol_consumption per household
   tar_target(average_petrol_consumption, calculate_average_petrol_consumption(ev_fleet_data,
                                                                               vehicles_per_household,
                                                                               average_petrol_use_per_km,
-                                                                              average_km_per_vehicle)),
+                                                                              average_km_per_vehicle)), #CHECKED
   
   
   ####################################################################

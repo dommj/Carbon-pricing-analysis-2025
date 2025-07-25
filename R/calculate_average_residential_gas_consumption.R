@@ -7,6 +7,10 @@ calculate_average_residential_gas_consumption <- function(household_connections,
     mutate(average_annual_consumption_gj = residential_consumption_gj / connections,
            category = 'Gas',
            electrification = T) %>% 
+    
+    ## Why is electrification = T here? Elsehwere, you use this notation to mean ALL gas use is converted to electricity, which 
+    ## is clearly not what's happening here since gas consumption > 0?
+    
     select(year, state, category, average_annual_consumption_gj, electrification) %>% 
     filter(!is.na(average_annual_consumption_gj),
            year >= 2024) 

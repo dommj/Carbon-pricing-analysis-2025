@@ -107,7 +107,7 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
 
 function(){
   
-  average_profiles %>% 
+  average_household_profiles %>% 
   filter(state == "Vic",
          season == "Winter",
          pv == 0,
