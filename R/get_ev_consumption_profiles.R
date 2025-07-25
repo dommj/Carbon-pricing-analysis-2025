@@ -13,6 +13,12 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
   
   theme <- formats$local$fill$patternFill$fgColor$theme
   
+  ##########################
+  #NEM charge type weights
+  ##########################
+  
+  
+  
   weekday_profiles <- ev_workbook_cells %>% 
     filter(row > 6,
            sheet == "BEV_PHEV_Profile_kW (Weekday)") %>% 
@@ -57,6 +63,8 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
                                       weekend_profiles) %>% 
     mutate(state = convert_states(state),
            state = if_else(state == "NSW", "NSW and ACT", state)) 
+  
+
   
   ###################################
   #WEM
@@ -181,5 +189,20 @@ residential_charging <- weekday %>%
   ungroup() %>% 
   select(state, charging_profile, total_kwh) %>% 
   filter(str_detect(charging_profile, "Residential")) 
+
+
+
+total_unweighted_ev_profiles %>% 
+  #filter(vehicle_type == "Medium Residential") %>% 
+  group_by(state, vehicle_type, day_type) %>% 
+  summarise(power_kwh = sum(power_kwh)) %>% 
+  pivot_wider(names_from = day_type, values_from = power_kwh) %>% 
+  mutate(total_daily = (5 * WD + 2 *WE)/7,
+         total_annual = total_daily * 365)
+
+
 }
+
+
+
 

@@ -63,6 +63,8 @@ tar_source('R/get_aemo_vehicle_data.R')
 tar_source('R/get_vehicles_per_household.R')
 tar_source('R/get_average_km_per_vehicle.R')
 #tar_source('R/get_residential_ev_consumption.R')
+tar_source("R/get_ev_consumption_profiles.R")
+tar_source("R/project_ev_efficiency.R")
 
 
 #create cameo usage profiles
@@ -74,7 +76,6 @@ tar_source("R/create_rbs_fuel_consumption_profiles.R")
 tar_source("R/calculate_space_heating_tou.R")
 tar_source("R/get_rbs_electricity_consumption_data.R")
 tar_source("R/get_pv_profiles.R")
-tar_source("R/get_ev_consumption_profiles.R")
 tar_source("R/calculate_tou_consumer_profiles.R")
 tar_source("R/calculate_household_energy_efficiency.R")
 tar_source("R/generate_battery_profiles.R")
@@ -168,6 +169,9 @@ tar_plan(
   #NEM ESOO 2024 EV workbook
   tar_file(electric_vehicle_workbook_file, 'Data/2024 ESOO/2024 Electric Vehicle workbook.xlsx'),
   
+  #CSIRO EV efficiency values page 30 Electric vehicle projections 2024, scraped with webplot digitiser
+  tar_file(ev_efficiency_file, "Data/csiro_ev_efficiency_kw_km.csv"),
+  
   #NEM IASR 2023 EV workbook (to get 2024 numbers)
   tar_file(iasr_23_ev_workbook_file, 'Data/Detailed Electric Vehicle databook.xlsx'),
   
@@ -182,7 +186,8 @@ tar_plan(
   
   
   #motorvehicle use survey data
-  tar_file(mv_survey_data_file, 'Data/92080DO001_202006.xls'),
+  tar_file(mv_survey_data_file_20, 'Data/smvu_2020.xls'),
+  tar_file(mv_survey_data_file_18, 'Data/smvu_2018.xls'),
   
   #abs dwelling completions file: https://dataexplorer.abs.gov.au/vis?tm=building%20activity&pg=0&df[ds]=ABS_ABS_TOPICS&df[id]=BUILDING_ACTIVITY&df[ag]=ABS&df[vs]=1.0.0&pd=2019-Q1%2C&dq=M7...TOT.9.100.10.Q&ly[cl]=TIME_PERIOD&ly[rw]=REGION&to[TIME_PERIOD]=false
   tar_file(abs_dwelling_completions_file, "Data/dwelling_completions_abs.xlsx"),
@@ -336,10 +341,10 @@ tar_plan(
 
   #Petrol use - per km
   
-  tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file)),
+  tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file_20)),
   
   #average km per vehicle
-  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file)),
+  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file_20)),
   
   
   #AEMO vehicle fleet data
@@ -351,6 +356,15 @@ tar_plan(
   tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
                                                                   wem_esoo_2024_ev_projections_file,
                                                                   ev_fleet_data)),
+  #calculate EV efficiency over time
+  #tar_target(ev_efficiency_projections, project_ev_efficiency(ev_efficiency_file)),
+  
+  #calculate scaled ev_tou_profiles according to smvu km per vehical data.
+  # tar_target(scaled_ev_profiles, calculate_scaled_ev_profiles(ev_consumption_profiles,
+  #                                                             ev_efficiency_projections,
+  #                                                             average_km_per_vehicle,
+  #                                                             ev_fleet_data)),
+  # 
   
   #vehicles per household
   #source: https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021
