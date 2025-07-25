@@ -45,6 +45,8 @@ calculate_cameo_gas_costs <- function(gas_retail_volumetric_price_projections,
     #cross join with battery or no (gas consumption the same), only allow batteries with PV
     cross_join(tibble(battery = c(T, F))) %>% 
     filter(!(pv == F & battery == T))
+  
+  ## Note: no price projections for NT so these are all NA -- assume you don't use / will filter later
     
 
   gas_costs

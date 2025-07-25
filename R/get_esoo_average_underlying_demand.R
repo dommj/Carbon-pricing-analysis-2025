@@ -9,10 +9,10 @@ get_esoo_average_underlying_demand <- function(esoo_2024_operational_file,
 #define underlying demand 
 esoo_underlying_non_ev <- read_excel(esoo_2024_operational_file) %>% 
   clean_names() %>% 
-  filter(scenario %in% c('Actual', 'Central'),
+  filter(scenario %in% c('Actual', 'Central'), ## not 'Step Change' scenario
          parent_category == 'Operational (Sent Out)',
          #only include explicitly residential categories. residential EV will be added on top.
-         category %in% c('Rooftop PV', 'Residential', "Electrification", "Energy Efficiency"),
+         category %in% c('Rooftop PV', 'Residential', "Electrification", "Energy Efficiency"), 
          #only include residential electrification
          sub_category != 'Business',
          region != 'NEM') %>% 

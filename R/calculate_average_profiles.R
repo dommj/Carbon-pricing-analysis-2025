@@ -11,6 +11,8 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
     ungroup() %>% 
     select(-year) %>% 
     right_join(esoo_average_underlying_demand, relationship = "many-to-many") %>% 
+    ## surely you want to filter for baseline here? I don't think power_normalised (average baseline load normalised) * total electrification demand has any meaning?
+    
     #power = normalised load shape * total demand
     mutate(power_kwh = power_kwh * power_normalised) %>% 
     select(-power_normalised)

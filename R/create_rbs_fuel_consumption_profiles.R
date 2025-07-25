@@ -92,6 +92,8 @@ create_rbs_fuel_consumption_profiles <- function(integrated_fuel_use,
     
     #space_conditioning - cooling is constant and not converted
   
+    
+    ## As discussed -- concerned we have dropped microwave here/
     fuel_use <-  integrated_fuel_use %>% 
       filter(end_use %nin% c("Cooking",
                              "Water heating",

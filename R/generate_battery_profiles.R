@@ -33,6 +33,9 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
         power <- power_data[hour]
         
         if (power < 0) {  # Excess generation - charge battery
+          
+          ## I don't quite understand why divide and then multiply by the efficiency_factor in the third case: (max_storage - battery_level). 
+          ## Is it because you're saying that it can overcharge to deal with the efficiency loss to get to actually 100%? 
           charge_amount <- min(abs(power), max_charge_rate_kw, (max_storage - battery_level)/ sqrt(efficiency_factor))
           battery_level <- battery_level + charge_amount * sqrt(efficiency_factor)
         } else {  # Consumption - discharge if beneficial
@@ -61,6 +64,9 @@ generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_c
       }
       
       if (power < 0) {  # Excess generation - charge battery
+        
+        ## I don't quite understand why divide and then multiply by the efficiency_factor in the third case: (max_storage - battery_level). 
+        ## Is it because you're saying that it can overcharge to deal with the efficiency loss to get to actually 100%? 
         charge_amount <- min(abs(power), max_charge_rate_kw, (max_storage - battery_level)/ sqrt(efficiency_factor))
         battery_actions[hour] <- charge_amount #consumes charge amount with out losses
         battery_level <- battery_level + charge_amount * sqrt(efficiency_factor)

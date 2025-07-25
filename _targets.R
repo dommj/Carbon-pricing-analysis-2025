@@ -249,12 +249,12 @@ tar_plan(
   #combine prices for all scenarios
   tar_target(jacobs_retail_prices, bind_rows(jacobs_retail_prices_reference_case,
                                              jacobs_retail_prices_1_5_opt1,
-                                             jacobs_retail_prices_1_5_opt2)),
+                                             jacobs_retail_prices_1_5_opt2)), #CHECKED
   
   
   tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
                                                                  jacobs_retail_prices,
-                                                                 household_connections)),
+                                                                 household_connections)), #CHECKED
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)), #CHECKED
@@ -392,7 +392,7 @@ tar_plan(
   tar_target(household_energy_efficiency, calculate_household_energy_efficiency(esoo_2024_operational_file,
                                                                                 household_connections,
                                                                                 esoo_2020_operational_file,
-                                                                                wem_esoo_2024_operational_file)),
+                                                                                wem_esoo_2024_operational_file)), #CHECKED
   
   
   
@@ -403,11 +403,11 @@ tar_plan(
   
   #create fuel consumption totals for each profile
   tar_target(rbs_fuel_consumption_profiles, create_rbs_fuel_consumption_profiles(integrated_fuel_use,
-                                                                                        rbs_households)),
+                                                                                        rbs_households)), #CHECKED
 
   
   # Calculate PV generation for each state
-  tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households, csiro_pv_prevalance_file)),
+  tar_target(pv_profiles, get_pv_profiles(pv_data_path, rbs_households, csiro_pv_prevalance_file)), #CHECKED
   
   
   #apply fuel profiles to generate loads for all customer classes, add in pv and evs, apply efficiency gains
@@ -418,7 +418,7 @@ tar_plan(
                                                                     pv_profiles,
                                                                     rbs_households,
                                                                     heating_cooling_profiles,
-                                                                    household_energy_efficiency)),
+                                                                    household_energy_efficiency)), #CHECKED
   
   tar_target(tou_consumer_profiles_w_batteries, generate_battery_profiles(tou_consumer_profiles, 
                                                                           #trace definining characteristics
@@ -440,7 +440,7 @@ tar_plan(
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(all_tou_consumer_profiles,
                                                                                                         rbs_fuel_consumption_profiles,
-                                                                                                        rbs_households)),
+                                                                                                        rbs_households)), #CHECKED
   
   #calculate aggregate gas consumption
   
@@ -453,19 +453,19 @@ tar_plan(
   tar_target(cameo_gas_costs, calculate_cameo_gas_costs(gas_retail_volumetric_price_projections,
                                                         gas_connection_charge_projections,
                                                         rbs_fuel_consumption_profiles,
-                                                        rbs_households)),
+                                                        rbs_households)), #CHECKED
   
   #calculate electricity costs
   tar_target(cameo_electricity_costs, calculate_cameo_electricity_costs(annual_electricity_consumption_profiles,
                                                                         jacobs_retail_prices,
                                                                         retail_electricity_tariffs,
-                                                                        rbs_households)),
+                                                                        rbs_households)), #CHECKED
   
     
   #calculate petrol costs
   tar_target(cameo_petrol_costs, calculate_cameo_petrol_costs(average_petrol_use_per_km, 
                                                               average_km_per_vehicle,
-                                                              petrol_price_data)),
+                                                              petrol_price_data)), #CHECKED
 
   
   
@@ -476,12 +476,12 @@ tar_plan(
   #get the underlying electricity demand for consumers
   tar_target(esoo_average_underlying_demand, get_esoo_average_underlying_demand(esoo_2024_operational_file, 
                                                                                 wem_esoo_2024_operational_file,
-                                                                                household_connections)),
+                                                                                household_connections)), #CHECKED
   
   #calculate the load shape for baseline demand and electrified demand
   tar_target(average_load_shapes, calculate_average_load_shapes(rbs_tou_consumption_data,
                                                                  integrated_fuel_use,
-                                                                 heating_cooling_profiles)),
+                                                                 heating_cooling_profiles)), #CHECKED (not sure about the weights for electrification demand)
   
   
   #PV load shape can just be taken from existing PV Watts and scaled to ESOO capacity
@@ -490,11 +490,11 @@ tar_plan(
   tar_target(pv_system_stock, estimate_pv_system_stock(rbs_outputs_data_file,
                                                        rbs_households,
                                                        household_connections,
-                                                       csiro_pv_prevalance_file)),
+                                                       csiro_pv_prevalance_file)), #CHECKED
   
   #proportion of connections with pv **and** batteries
   tar_target(battery_n_pv_prop, estimate_battery_prevalence(esoo_2024_assumptions_workbook_file,
-                                                            household_connections)),
+                                                            household_connections)), #CHECKED
   
   
   #calculate total PV generation per system by state (and sense check implied size of system)
@@ -502,7 +502,7 @@ tar_plan(
   tar_target(average_pv_profile, calculate_average_pv_profile(pv_profiles,
                                                               esoo_2024_operational_file,
                                                               wem_esoo_2024_operational_file,
-                                                              pv_system_stock)),
+                                                              pv_system_stock)), #CHECKED
   
   
   #now add in EVs and PV to base consumption and calculate average profiles for Solar and non-solar owners

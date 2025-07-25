@@ -100,6 +100,12 @@ calculate_average_load_shapes <- function(rbs_tou_consumption_data,
   
   normalised_electrification_load_shape <- electrification_load_shape %>% 
     left_join(annual_consumption_end_use) %>%
+    
+    
+    ## so here, you normalise the additional electrification demand from gas >> electricity conversion to 
+    ## the current total annual demand from electricity only
+    ## Does that make sense? Shouldn't you normalise to, say, total converted gas + electricity MWH?
+    
     mutate(power_normalised = power / annual_consumption_mwh,
            #there is 0 total space conditioning - heating consumption in NT, giving us infinity. Set to zero
            power_normalised = if_else(state == "NT" & end_use == "Space conditioning - heating", 0, power_normalised)) %>% 
@@ -116,6 +122,9 @@ calculate_average_load_shapes <- function(rbs_tou_consumption_data,
     group_by(year, state) %>% 
     mutate(weight = pj /sum(pj)) %>% 
     select(year, state, end_use, weight)
+  
+  ## Wouldn't it make more sense to do the weights based on end_use? e.g. the gas >> electric Cooking is XX% of the existing
+  ## electric cooking profile, so you just weight up the cooking profile based on that???
   
   
   normalised_electrification_load_shape_weighted <- normalised_electrification_load_shape %>% 

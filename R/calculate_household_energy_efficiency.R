@@ -141,7 +141,7 @@ calculate_household_energy_efficiency <- function(esoo_2024_operational_file,
       select(year, state, category, annual_consumption_t_wh)
     
     
-    #calculate estimated energy efficiency gains as a per cent of estimated underlying 2021-2050
+    #calculate estimated energy efficiency gains as a per cent of estimated underlying 2024-2050
     pct_efficiency_underlying_wem <- bind_rows(res_energy_efficiency_wem_2025,
                                                res_underlying_wem_2025) %>% 
       pivot_wider(names_from = category, values_from = annual_consumption_t_wh) %>% 
