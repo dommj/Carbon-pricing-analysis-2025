@@ -1,11 +1,18 @@
+# tou_consumer_profiles <- average_profiles
+# grouping <- c("pv", "electrification", "state", "year", "season")
+
+# tou_consumer_profiles <- tou_consumer_profiles
+# grouping <- c("cooking", "water_heating", "space_heating", "ev", "pv", "state", "year", "season")
+
 generate_battery_profiles <- function(tou_consumer_profiles, grouping, battery_capacity = 11){
   
   average_consumption_export <- tou_consumer_profiles %>% 
-    filter(pv == TRUE) %>% 
+    filter(pv == TRUE,
+           year > 2024) %>% 
     group_by(!!!syms(grouping), hour) %>% 
     summarise(power_kwh = sum(power_kwh)) %>% 
     ungroup() %>% 
-    group_split(!!!syms(grouping))
+    group_split(!!!syms(grouping)) 
     
   
   

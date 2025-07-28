@@ -2,7 +2,7 @@
 calculate_average_profiles <- function(esoo_average_underlying_demand,
                                        average_load_shapes,
                                        average_pv_profile,
-                                       ev_consumption_profiles,
+                                       scaled_ev_consumption_profiles,
                                        ev_fleet_data,
                                        vehicles_per_household){
   
@@ -42,7 +42,7 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
   
   ev_consumption_per_household <- num_ev_timeseries %>% 
     #calulate total consumption per household
-    left_join(ev_consumption_profiles) %>% 
+    left_join(scaled_ev_consumption_profiles) %>% 
     mutate(power_kwh = power_kwh * num_ev,
            end_use = "Electric vehicles",
            source = "Electric vehicles",
@@ -53,9 +53,9 @@ calculate_average_profiles <- function(esoo_average_underlying_demand,
     ungroup() %>% 
     filter(year <= 2050)
   
-  #create an ev consumption profile for all years in the counterfactual where there is no further ev uptake after 2024
+  #create an ev consumption profile for all years in the counterfactual where there is no further ev uptake after 2025
   ev_consumption_per_household_no_change <- ev_consumption_per_household %>% 
-    filter(year == 2024) %>% 
+    filter(year == 2025) %>% 
     select(- year) %>% 
     cross_join(tibble(year = 2025:2050))
   

@@ -129,6 +129,8 @@ weighted_nem_average_retail_prices %>%
 
 Check the our estimates for residential operational served approx equal ESOO forecasts:
 
+This is no longer relevant as Vehicle demand has been scaled differently to AEMO to align with average petrol usage SMVU (but you can see that still broadly aligns)
+
 ```{r}
 #| echo: false
 

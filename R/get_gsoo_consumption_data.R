@@ -11,9 +11,11 @@ get_gsoo_consumption_data <- function(gsoo_consumption_data_file,
     filter(publication == 'GSOO 2024',
            version == '2024-03-21',
            scenario %in% c('Actual', 'Step Change'),
-           subcategory == "Residential and Commercial",
+           subcategory == "Residential and Commercial" | subcategory == "Tariff V blending",#includes additional hydrogen blended into residential supply
            !is.na(state)) %>% 
-    select(year, state, annual_consumption_gj)
+    group_by(year, state) %>% 
+    summarise(annual_consumption_gj = sum(annual_consumption_gj)) %>% 
+    ungroup()
   
   
   wa_gsoo <- read_excel(wa_gsoo_consumption_data_file) %>% 

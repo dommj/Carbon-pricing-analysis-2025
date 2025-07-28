@@ -136,6 +136,7 @@ Electricity bill state
 
 net_average_electricity_costs %>% 
   filter(electrification == T,
+         scenario == "Ref",
          year == 2025) %>%
   ggplot(aes(x = state , y = average_cost_dollars)) +
   geom_col()

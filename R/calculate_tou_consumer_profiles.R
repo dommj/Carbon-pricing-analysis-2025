@@ -3,7 +3,7 @@
 calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
                                             integrated_fuel_use,
                                             rbs_tou_consumption_data,
-                                            ev_consumption_profiles,
+                                            scaled_ev_consumption_profiles,
                                             pv_profiles,
                                             rbs_households,
                                             heating_cooling_profiles,
@@ -104,16 +104,16 @@ calculate_tou_consumer_profiles <- function(rbs_fuel_consumption_profiles,
   ##############################################################################
   #give an EV electricity consumption profile to each customer type (0,1,2 EVs)
   ##############################################################################
-  no_ev_profile <- ev_consumption_profiles %>% 
+  no_ev_profile <- scaled_ev_consumption_profiles %>% 
     mutate(ev = 0,
            end_use = "Electric vehicle",
            power_kwh = 0)
   
-  one_ev_profile <- ev_consumption_profiles %>% 
+  one_ev_profile <- scaled_ev_consumption_profiles %>% 
     mutate(ev = 1,
            end_use = "Electric vehicle")
   
-  two_ev_profile <- ev_consumption_profiles %>% 
+  two_ev_profile <- scaled_ev_consumption_profiles %>% 
     mutate(ev = 2,
            end_use = "Electric vehicle",
            power_kwh = 2 * power_kwh)

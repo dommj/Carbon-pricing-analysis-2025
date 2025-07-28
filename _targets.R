@@ -65,6 +65,7 @@ tar_source('R/get_average_km_per_vehicle.R')
 #tar_source('R/get_residential_ev_consumption.R')
 tar_source("R/get_ev_consumption_profiles.R")
 tar_source("R/project_ev_efficiency.R")
+tar_source("R/calculate_scaled_ev_consumption_profiles.R")
 
 
 #create cameo usage profiles
@@ -352,13 +353,20 @@ tar_plan(
                                                   iasr_23_ev_workbook_file,
                                                   wem_esoo_2024_ev_projections_file)),
   
+  #calculate EV efficiency over time
+  tar_target(ev_efficiency_projections, project_ev_efficiency(ev_efficiency_file)),
+  
   # Load EV consumption profiles
   tar_target(ev_consumption_profiles, get_ev_consumption_profiles(electric_vehicle_workbook_file,
                                                                   wem_esoo_2024_ev_projections_file,
-                                                                  ev_fleet_data)),
-  #calculate EV efficiency over time
-  #tar_target(ev_efficiency_projections, project_ev_efficiency(ev_efficiency_file)),
+                                                                  ev_fleet_data,
+                                                                  ev_efficiency_projections)),
   
+  tar_target(scaled_ev_consumption_profiles, calculate_scaled_ev_consumption_profiles(average_km_per_vehicle,
+                                                        ev_efficiency_projections,
+                                                        ev_fleet_data,
+                                                        ev_consumption_profiles)),
+
   #calculate scaled ev_tou_profiles according to smvu km per vehical data.
   # tar_target(scaled_ev_profiles, calculate_scaled_ev_profiles(ev_consumption_profiles,
   #                                                             ev_efficiency_projections,
@@ -432,7 +440,7 @@ tar_plan(
   tar_target(tou_consumer_profiles, calculate_tou_consumer_profiles(rbs_fuel_consumption_profiles,
                                                                     integrated_fuel_use,
                                                                     rbs_tou_consumption_data,
-                                                                    ev_consumption_profiles,
+                                                                    scaled_ev_consumption_profiles,
                                                                     pv_profiles,
                                                                     rbs_households,
                                                                     heating_cooling_profiles,
@@ -527,7 +535,7 @@ tar_plan(
   tar_target(average_profiles, calculate_average_profiles(esoo_average_underlying_demand,
                                                           average_load_shapes,
                                                           average_pv_profile,
-                                                          ev_consumption_profiles,
+                                                          scaled_ev_consumption_profiles,
                                                           ev_fleet_data,
                                                           vehicles_per_household)),
   

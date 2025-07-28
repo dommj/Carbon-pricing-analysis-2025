@@ -6,7 +6,7 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
   
   nem_total_degraded_mwh_capacity <- read_excel(esoo_2024_assumptions_workbook_file,
                                                 sheet = "Embedded energy storages",
-                                                range = "B24:AF29") %>% 
+                                                range = "B53:AF58") %>% 
     rename(state = 1) %>% 
     pivot_longer(cols = contains('20'), names_to = 'year', values_to = 'mwh') %>% 
     mutate(year = str_remove(year, "\\d\\d-") %>% 
@@ -20,7 +20,7 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
   
   battery_prevalence <- nem_total_degraded_mwh_capacity %>% 
     left_join(household_connections) %>% 
-    mutate(battery_stock = mwh * 1000 / 11, # how many 11 kw batteries are there? (if all = 11kw). estimates for 2025 look very close to SRES actuals which is good.
+    mutate(battery_stock = mwh * 1000 / 11, # how many 11 kw batteries are there? (if all = 11kw). 
            battery_and_pv_prop = battery_stock / connections) %>% #final levels converge to CSIRO prevalence estimates too! see figure 5-7 and table A-1
     #no battery bonus for WEM consumers
     complete(state = "WA",
@@ -53,7 +53,11 @@ function(){
     left_join(pv_system_stock %>% 
                 select(year, state, prop)) %>% 
     mutate(battery_and_pv_prop = pct_of_pv * prop) %>% 
-    select(year, state, battery_and_pv_prop)
+    select(year, state, battery_and_pv_prop) %>% 
+    left_join(household_connections) %>% 
+    left_join(nem_total_degraded_mwh_capacity) %>% 
+    mutate(kwh_per_b = mwh / (battery_and_pv_prop * connections) *1000)
+    
   
   return(csiro_battery_prevalance)
   
