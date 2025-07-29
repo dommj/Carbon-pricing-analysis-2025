@@ -345,7 +345,7 @@ tar_plan(
   tar_target(average_petrol_use_per_km, get_average_petrol_use_per_km(mv_survey_data_file_20)),
   
   #average km per vehicle
-  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file_20)),
+  tar_target(average_km_per_vehicle, get_average_km_per_vehicle(mv_survey_data_file_18)),
   
   
   #AEMO vehicle fleet data

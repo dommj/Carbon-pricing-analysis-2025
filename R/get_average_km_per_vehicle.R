@@ -1,4 +1,5 @@
 #get average driving distances
+#mv_survey_data_file <- mv_survey_data_file_18
 
 get_average_km_per_vehicle <- function(mv_survey_data_file){
   
@@ -26,7 +27,10 @@ get_average_km_per_vehicle <- function(mv_survey_data_file){
     filter(!is.na(vehicle), !is.na(average_kilometres_travelled),
            vehicle == 'Passenger vehicles',
            state != 'ACT') %>% 
-    select(state, average_kilometres_travelled) 
+    select(state, average_kilometres_travelled) %>% 
+    #deflate by 10% to get current use, consistent with 
+    #Electric vehicle projections 2024, pg 32
+    mutate(average_kilometres_travelled = average_kilometres_travelled * 0.9)
 }
 
 #get_average_km_per_vehicle('Data/92080DO001_202006.xls')

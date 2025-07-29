@@ -12,7 +12,10 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
     mutate(year = str_remove(year, "\\d\\d-") %>% 
              as.numeric(),
            state = convert_states(state),
-           state = if_else(state == "NSW", "NSW and ACT", state))
+           state = if_else(state == "NSW", "NSW and ACT", state),
+           #we deflate total capacity by 7% reflecting assumption that 7% of capacity is small commercial 
+           #(CSIRO small scale report 2024, Figure 5-6 and Figure 5-7)
+           mwh = 0.93 * mwh)
   
   #we don't have an appropriate data source for the WEM (small commercial batteries seem to dominate their estimates) So we don't include the impact of batteries. Given this will only affect a small number of consumers out to 2034 this means our WEM estimate is more conservative than our NEM estimate for consumer savings.
   
@@ -21,7 +24,16 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
   battery_prevalence <- nem_total_degraded_mwh_capacity %>% 
     left_join(household_connections) %>% 
     mutate(battery_stock = mwh * 1000 / 11, # how many 11 kw batteries are there? (if all = 11kw). 
-           battery_and_pv_prop = battery_stock / connections) %>% #final levels converge to CSIRO prevalence estimates too! see figure 5-7 and table A-1
+           battery_and_pv_prop = battery_stock / connections) #final levels converge to CSIRO prevalence estimates too! see figure 5-7 and table A-1
+  
+  #add WA in as equal to NEM mean
+  wa_prevalence <- battery_prevalence %>% 
+    group_by(year) %>% 
+    summarise(battery_and_pv_prop = mean(battery_and_pv_prop),
+              state = "WA") %>% 
+    filter(year <= 2034) #WA data doesn't extend out any further
+  
+  
     #no battery bonus for WEM consumers
     complete(state = "WA",
              year = seq(2025, 2034),
@@ -62,3 +74,17 @@ function(){
   return(csiro_battery_prevalance)
   
 }
+
+
+function(){
+  
+  
+  read_excel(esoo_2024_assumptions_workbook_file,
+             sheet = "Embedded energy storages",
+             range = "B53:AF58")
+  
+  
+  
+}
+
+
