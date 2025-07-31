@@ -105,7 +105,13 @@ tar_source("R/calculate_average_electricity_costs.R")
 tar_source("R/calculate_average_petrol_costs.R")
 
 #create charts
-tar_source("R/create_esoo_demand_chart.R")
+tar_source("R/compile_average_net_costs.R")
+
+tar_source("R/plot_energy_wallet.R")
+tar_source("R/plot_gas_supply_charges.R")
+tar_source("R/plot_average_profiles.R")
+
+#tar_source("R/create_esoo_demand_chart.R")
 
 # Replace the target list below with your own:
 tar_plan(
@@ -374,9 +380,15 @@ tar_plan(
   #                                                             ev_fleet_data)),
   # 
   
+  #https://www.abs.gov.au/statistics/people/population/household-and-family-projections-australia/2021-2046
+  tar_target(total_households_aus_21, 9993.9e3),
+  
+  #https://www.abs.gov.au/methodologies/motor-vehicle-census-australia-methodology/31-jan-2021
+  tar_target(total_passenger_vehicles_21, 14850675),
+  
   #vehicles per household
   #source: https://www.abs.gov.au/statistics/industry/tourism-and-transport/transport-census/2021
-  tar_target(vehicles_per_household, 1.8),
+  tar_target(vehicles_per_household, total_passenger_vehicles_21 / total_households_aus_21),
   
   
   #Not used, average vehicle use from ABS taken instead
@@ -619,10 +631,49 @@ tar_plan(
   tar_target(average_petrol_costs, calculate_average_petrol_costs(petrol_price_data,
                                                                   average_petrol_consumption)),
   
+
+  
   ####################################################################
   #Create charts - Charts to be QC'd by Ben 
   ####################################################################
   
+  tar_target(average_net_costs, compile_average_net_costs(weighted_average_electricity_costs,
+                                                           average_gas_costs,
+                                                           average_petrol_costs)),
+  
+  ########################
+  #Chapter 5
+  ########################
+  
+  #Electricity forms just part of total household costs
+  tar_target(energy_wallet_chart, plot_energy_wallet(average_net_costs,
+                                                     household_connections)),
+  
+  
+  #calculate and plot 10/20 year CP cost burden and savings
+  
+  
+  
+  
+  ################
+  #Appendix C
+  ################
+  
+  #changing underlying demand
+  tar_target(average_profiles_chart, plot_average_profiles(all_average_profiles)),
+  
+  
+  #gas supply charges 
+  
+  tar_target(gas_supply_charge_chart, plot_gas_supply_charges(gas_connection_charge_projections, 
+                                                              residential_gas_consumption_projections)),
+  
+  #do WA charts for everything we did for NEM.
+  
+  
+  #####################
+  #ARCHIVE
+  #####################
   
   #create esoo demand chart
   #tar_target(esoo_demand_chart, create_esoo_demand_chart(esoo_2024_operational_file))

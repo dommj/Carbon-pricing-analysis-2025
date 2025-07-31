@@ -32,14 +32,12 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
     summarise(battery_and_pv_prop = mean(battery_and_pv_prop),
               state = "WA") %>% 
     filter(year <= 2034) #WA data doesn't extend out any further
-  
-  
-    #no battery bonus for WEM consumers
-    complete(state = "WA",
-             year = seq(2025, 2034),
-             battery_and_pv_prop = 0) %>% 
-    select(year, state, battery_and_pv_prop)
 
+  battery_prevalence <- bind_rows(battery_prevalence,
+                                  wa_prevalence)
+
+  
+  return(battery_prevalence)
 }
 
 
