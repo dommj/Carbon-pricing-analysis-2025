@@ -122,6 +122,7 @@ weighted_nem_average_retail_prices <- retail_prices_nem_res %>%
 
 
 weighted_nem_average_retail_prices %>% 
+  filter(scenario %in% c("Reference case", "Safeguard 1.5 C")) %>% 
   ggplot(aes(x = year, y = c_kwh, colour = scenario)) +
   geom_line()
 

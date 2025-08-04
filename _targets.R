@@ -209,6 +209,7 @@ tar_plan(
   #rbs connections estimates and fuel use data
   tar_file(rbs_outputs_data_file, 'Data/2021 RBS_OutputTablesV1.9.2-AU.xlsx'),
   
+  
   #############
   #MISC
   #############
@@ -641,6 +642,26 @@ tar_plan(
                                                            average_gas_costs,
                                                            average_petrol_costs)),
   
+  
+  ##################### Chapter 4 - Jacobs Results #######################
+  
+  tar_file(jacobs_results_summary, "Data/Jacobs/SummaryResultsV3U.xlsx"),
+  
+  tar_file(results_ref, "Data/Jacobs/ResultsRef_V2Rev.xlsm"),
+  
+  tar_file(results_1_5_Opt1, "Data/Jacobs/ResultsOption1_V1.xlsm"),
+  
+  tar_file(results_1_5_Opt2, "Data/Jacobs/ResultsOption2_V1.xlsm"),
+  
+  tar_file(results_2_Opt1, "Data/Jacobs/Results2DOption1_V1.xlsm"),
+  
+  tar_file(results_2_Opt2, "Data/Jacobs/Results2DOption2_V2U.xlsm"),
+  
+  
+  
+  
+  
+  
   ########################
   #Chapter 5
   ########################
@@ -652,6 +673,8 @@ tar_plan(
   
   #calculate and plot 10/20 year CP cost burden and savings
   
+  
+  #average annual bill no solar, solar, solar and battery.
   
   
   

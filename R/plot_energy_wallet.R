@@ -11,15 +11,6 @@ plot_energy_wallet <- function(average_net_costs,
     "Total costs without electrification" = grattan_black
   )
   
-  chart_colour_palette <- c(
-    "Petrol" = grattan_red,
-    "Gas" = grattan_orange, 
-    "Electricity" = grattan_yellow,
-    "Electrification savings" = grattan_black,
-    "Total costs without electrification" = grattan_black
-  )
-  
-  
   wallet_chart_data_nem <- average_net_costs %>% 
     left_join(household_connections, by = join_by(year, state)) %>% 
     group_by(year, electrification, scenario, category) %>% 
@@ -65,5 +56,3 @@ plot_energy_wallet <- function(average_net_costs,
 
 
 
-grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_energy_wallet.pdf",
-                 object = ggplot2::last_plot())
