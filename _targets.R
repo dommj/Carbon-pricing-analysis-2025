@@ -98,6 +98,7 @@ tar_source("R/calculate_average_profiles.R")
 tar_source("R/calculate_annual_electricity_consumption_averages.R")
 tar_source('R/calculate_average_residential_gas_consumption.R')
 tar_source("R/calculate_average_petrol_consumption.R")
+tar_source("R/get_jacobs_curtailment.R")
 
 #calculate average costs
 tar_source("R/calculate_average_gas_costs.R")
@@ -234,7 +235,6 @@ tar_plan(
   ####################################################################
   
   #MUST convert everything to 2025 Q2 dollars. (same as jacobs retail and scraped tarifs)
-
   
   #get retail prices from jacobs sheets
   
@@ -272,6 +272,7 @@ tar_plan(
   tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
                                                                  jacobs_retail_prices,
                                                                  household_connections)),
+  
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)),
@@ -575,7 +576,8 @@ tar_plan(
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
+  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles,
+                                                                                                        jacobs_curtailment)),
   
   
   #creating a target for consumer type weights to call when making charts etc.
@@ -657,9 +659,11 @@ tar_plan(
   
   tar_file(results_2_Opt2, "Data/Jacobs/Results2DOption2_V2U.xlsm"),
   
-  
-  
-  
+  tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
+                                                        results_1_5_Opt1,
+                                                        results_1_5_Opt2,
+                                                        results_2_Opt1,
+                                                        results_2_Opt2)),
   
   
   ########################
