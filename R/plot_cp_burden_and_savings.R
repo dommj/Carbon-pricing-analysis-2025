@@ -22,7 +22,7 @@ plot_cp_burden_and_savings <- function(average_net_costs,
   
   years <- seq(2025, 2050, 5)
   
-  degrees <- "1_5_Opt2"
+  degrees <- "2_Opt2"
   
   chart_data <- average_net_costs %>% 
     left_join(household_connections) %>% 
@@ -73,7 +73,7 @@ plot_cp_burden_and_savings <- function(average_net_costs,
     mutate(y_position = cumsum(average_cost_dollars),
            y_position = y_position - 0.5 * average_cost_dollars) %>% 
     ungroup()
-
+  
   
   plot <- col_chart_data %>% 
     filter(category != "Electrification savings") %>% 
@@ -89,21 +89,6 @@ plot_cp_burden_and_savings <- function(average_net_costs,
                   hjust = 0,
                   nudge_x = 2.5) +
     
-    
-    # # Add dotted borders for Electrification savings (top and sides only)
-    # geom_segment(data = savings_box_data,
-    #              aes(x = year - 2.25, xend = year + 2.25,
-    #                  y = cumsum_top, yend = cumsum_top),  # top edge
-    #              linetype = "dashed", color = "black", size = 1) +
-    # geom_segment(data = savings_box_data,
-    #              aes(x = year - 2.25, xend = year - 2.25,
-    #                  y = cumsum_bottom, yend = cumsum_top),  # left edge
-    #              linetype = "dashed", color = "black", size = 1) +
-    # geom_segment(data = savings_box_data,
-    #              aes(x = year + 2.25, xend = year + 2.25,
-    #                  y = cumsum_bottom, yend = cumsum_top),  # right edge
-    #              linetype = "dashed", color = "black", size = 1) +
-    
     grattan_y_continuous(labels = scales::dollar_format(), expand_top = 0.1) +
     scale_x_continuous_grattan(expand_right = 0.3,
                                breaks = seq(2025,2050, by = 5)) +
@@ -117,6 +102,26 @@ plot_cp_burden_and_savings <- function(average_net_costs,
          caption = "Notes: \nSource: Grattan Institute analaysis see app X")
   
   plot
+  
+  
+  ##########################
+  #total annualised
+  ##########################
+  
+  chart_data_2 <- average_net_costs %>% 
+    left_join(household_connections) %>% 
+    filter(state != "WA",
+           scenario == "Ref" | scenario == "2_Opt1",
+           electrification == T) %>% 
+    group_by(year, scenario, category) %>% 
+    summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
+    mutate(category = fct(category, levels = c("Petrol", "Electricity", "Gas"))) %>% 
+    ungroup() 
+  
+  annualised_25_yrs <- chart_data_2 %>% 
+    group_by(scenario, category) %>% 
+    summarise(annualised_cost = sum(average_cost_dollars) / n())
+  
   
   
 }
