@@ -1,0 +1,1 @@
+#1 vs 2 degree comparison for capacity and transmission charts

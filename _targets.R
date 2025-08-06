@@ -657,7 +657,18 @@ tar_plan(
   
   tar_file(results_2_Opt2, "Data/Jacobs/Results2DOption2_V2U.xlsm"),
   
+  tar_file(value_of_emissions_file, "Data/value_of_emissions_reductions_aer.xlsx"),
   
+  
+  
+  #load_emissions data
+  
+  
+  
+  #load generation data
+  
+  
+  #load capacity data
   
   
   
@@ -672,6 +683,8 @@ tar_plan(
   
   
   #calculate and plot 10/20 year CP cost burden and savings
+  
+  
   
   
   #average annual bill no solar, solar, solar and battery.

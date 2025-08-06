@@ -171,6 +171,14 @@ jacobs_retail_prices_1_5_opt1|stem|b3133929d30c8776|f72a215fb273448b|32918a14807
 energy_wallet_chart|stem|840f93eaa3333aeb|f5662a62d7dab5a0|027834334f740932|-408387636||t20301.0036365068s|s200506b|200506|rds|local|vector|||17.11|package gdtools was built under R version 4.4.3|
 jacobs_results_summary|stem|9c4e11065aa54a40|44ba9a9ee0cb6cf3|2c530c1562a7fbd1|321467457|Data/Jacobs/SummaryResultsV3U.xlsx|t20301.0976388889s|s90886b|90886|file|local|vector|||0||
 jacobs_retail_model_1_5_opt2|stem|aa7e18d86fbb2659|13df2e90702ddd0f|2c530c1562a7fbd1|-14241329|Data/Jacobs/RetailPriceProjections_1_5_Opt2.xlsx|t20301.1005787037s|s12511116b|12511116|file|local|vector|||0||
+results_1_5_Opt1|stem|4ed0b4e20354fb61|7f75ee4cf1262a73|2c530c1562a7fbd1|1006001164|Data/Jacobs/ResultsOption1_V1.xlsm|t20300.0917861858s|s2473468b|2473468|file|local|vector|||0.02||
+jacobs_retail_model_reference_case|stem|c8175c990e83a0b0|3df74f1680f5203f|2c530c1562a7fbd1|-2007340919|Data/Jacobs/RetailPriceProjections_Ref.xlsx|t20301.0991319444s|s12598987b|12598987|file|local|vector|||0||
+results_1_5_Opt2|stem|2a2ffe87d4170212|eeea9e74006ba293|2c530c1562a7fbd1|1471251698|Data/Jacobs/ResultsOption2_V1.xlsm|t20300.2871161623s|s2641027b|2641027|file|local|vector|||0||
+results_2_Opt1|stem|12cf8c9e743fe013|00dd96a07f403039|2c530c1562a7fbd1|1520287327|Data/Jacobs/Results2DOption1_V1.xlsm|t20300.0916309949s|s2682894b|2682894|file|local|vector|||0||
+results_2_Opt2|stem|7e8b1169ca8e28c9|6751a40bf7561dc2|2c530c1562a7fbd1|-563312192|Data/Jacobs/Results2DOption2_V2U.xlsm|t20300.091653314s|s2691264b|2691264|file|local|vector|||0||
+results_ref|stem|110b271ec55a0c6f|c7992f8b7a647997|2c530c1562a7fbd1|1476498057|Data/Jacobs/ResultsRef_V2Rev.xlsm|t20300.0918423162s|s2657776b|2657776|file|local|vector|||0||
+jacobs_retail_prices_1_5_opt2|stem|a567e24ac9e34919|dcbbc0655d4525d7|fa3e8140ccb621a5|-646066848||t20301.1858214253s|s10090b|10090|rds|local|vector|||2.8||
+jacobs_retail_prices_reference_case|stem|c92979a9d522bb32|2d75890efa343192|64c0fd067580bd71|-283335048||t20301.1858493543s|s10042b|10042|rds|local|vector|||2.32||
 calculate_total_gas_network_revenue|function|1de4883e3f644e49
 calculate_average_petrol_consumption|function|2d88e26c8af98a74
 %nin%|function|5c849418054c52ef
@@ -230,11 +238,4 @@ get_esoo_average_underlying_demand|function|e0df445f46c71047
 get_gas_best_offers|function|c2d3871e32e2fbb2
 get_jacobs_retail_prices|function|4c9684569239a37a
 get_gas_prices_data|function|c4bbc0519ef9cb53
-results_1_5_Opt1|stem|4ed0b4e20354fb61|7f75ee4cf1262a73|2c530c1562a7fbd1|1006001164|Data/Jacobs/ResultsOption1_V1.xlsm|t20300.0917861858s|s2473468b|2473468|file|local|vector|||0.02||
-jacobs_retail_model_reference_case|stem|c8175c990e83a0b0|3df74f1680f5203f|2c530c1562a7fbd1|-2007340919|Data/Jacobs/RetailPriceProjections_Ref.xlsx|t20301.0991319444s|s12598987b|12598987|file|local|vector|||0||
-results_1_5_Opt2|stem|2a2ffe87d4170212|eeea9e74006ba293|2c530c1562a7fbd1|1471251698|Data/Jacobs/ResultsOption2_V1.xlsm|t20300.2871161623s|s2641027b|2641027|file|local|vector|||0||
-results_2_Opt1|stem|12cf8c9e743fe013|00dd96a07f403039|2c530c1562a7fbd1|1520287327|Data/Jacobs/Results2DOption1_V1.xlsm|t20300.0916309949s|s2682894b|2682894|file|local|vector|||0||
-results_2_Opt2|stem|7e8b1169ca8e28c9|6751a40bf7561dc2|2c530c1562a7fbd1|-563312192|Data/Jacobs/Results2DOption2_V2U.xlsm|t20300.091653314s|s2691264b|2691264|file|local|vector|||0||
-results_ref|stem|110b271ec55a0c6f|c7992f8b7a647997|2c530c1562a7fbd1|1476498057|Data/Jacobs/ResultsRef_V2Rev.xlsm|t20300.0918423162s|s2657776b|2657776|file|local|vector|||0||
-jacobs_retail_prices_1_5_opt2|stem|a567e24ac9e34919|dcbbc0655d4525d7|fa3e8140ccb621a5|-646066848||t20301.1858214253s|s10090b|10090|rds|local|vector|||2.8||
-jacobs_retail_prices_reference_case|stem|c92979a9d522bb32|2d75890efa343192|64c0fd067580bd71|-283335048||t20301.1858493543s|s10042b|10042|rds|local|vector|||2.32||
+value_of_emissions_file|stem|d61e89dd902519b1|cc04da6a17e26ec3|2c530c1562a7fbd1|253956844|Data/value_of_emissions_reductions_aer.xlsx|t20305.2684606481s|s9628b|9628|file|local|vector|||0||

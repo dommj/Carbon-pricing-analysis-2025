@@ -21,11 +21,12 @@ plot_average_profiles <- function(all_average_profiles){
            year %in% c(2025, 2040)) %>% 
     ggplot(aes(x = hour, y = power_kwh, fill = fct_rev(source), colour = fct_rev(source))) +
     geom_area() +
-    geom_text(data = . %>%  filter(str_detect(facet, "2040")) %>% 
+    grattan_label(data = . %>%  filter(str_detect(facet, "2040"),
+                                   hour == 0) %>% 
                 mutate(x = 0,
-                       y = case_when(source == "Baseline" ~ 1.2,
-                                     source == "Electrification" ~ 1.35,
-                                     source == "Electric vehicles" ~ 1.5)), 
+                       y = case_when(source == "Baseline" ~ 1.05,
+                                     source == "Electrification" ~ 1.3,
+                                     source == "Electric vehicles" ~ 1.55)), 
               aes(x = x, y = y, label = source, colour = source),
               hjust = 0) +
     facet_wrap(~facet) +
