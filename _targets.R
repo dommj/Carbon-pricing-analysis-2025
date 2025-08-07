@@ -25,6 +25,7 @@ library(forcats)
 library(scales)
 library(ggarchery)
 library(ggtext)
+library(patchwork)
 
 # Set target options:
 tar_option_set(

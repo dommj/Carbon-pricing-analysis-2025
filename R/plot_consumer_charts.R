@@ -51,27 +51,32 @@ plot_consumer_charts <- function(average_net_costs,
       
     )
   
-  annual_chart_data %>% 
+  p1 <- annual_chart_data %>% 
     filter(facet == "Total bills") %>% 
-    ggplot(aes(reorder(x = scenario,annualised_cost), y = annualised_cost, fill = scenario)) +
-    facet_wrap(~facet) +
+    ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
+    facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
     theme_grattan() +
     labs(x = "") +
-    scale_fill_manual(values = chart_palette_scenarios) +
-    
-    annual_chart_data %>% 
+    scale_fill_manual(values = chart_palette_scenarios)
+  
+  p2 <- annual_chart_data %>% 
     filter(facet == "Difference in bills") %>% 
-    ggplot(aes(reorder(x = scenario,annualised_cost), y = annualised_cost, fill = scenario)) +
-    facet_wrap(~facet) +
+    ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
+    facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
-    scale_fill_manual(values = chart_palette_scenarios)   +
+    scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
-    labs(x = "") +
-    plot_annotation(title = "Average electricity bills are similar across all scenarios",
-         subtitle ="Average annual household electricity bill in the NEM, 2026-2050 ($2025)") 
+    labs(x = "")
+  
+  # Combine plots vertically using patchwork
+  p1 / p2 +
+    plot_annotation(
+      title = "Average electricity bills are similar across all scenarios",
+      subtitle = "Average annual household electricity bill in the NEM, 2026-2050 ($2025)"
+    )
 
   
   
