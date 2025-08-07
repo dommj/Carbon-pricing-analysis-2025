@@ -663,6 +663,7 @@ tar_plan(
 
   tar_file(value_of_emissions_file, "Data/value_of_emissions_reductions_aer.xlsx"),
   
+<<<<<<< Updated upstream
   
   
   #load_emissions data
@@ -675,12 +676,14 @@ tar_plan(
   #load capacity data
   
   
+=======
   tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
                                                         results_1_5_Opt1,
                                                         results_1_5_Opt2,
                                                         results_2_Opt1,
                                                         results_2_Opt2)),
 
+>>>>>>> Stashed changes
   
   ########################
   #Chapter 5
