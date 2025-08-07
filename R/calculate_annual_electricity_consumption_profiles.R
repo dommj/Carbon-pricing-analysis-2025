@@ -2,6 +2,7 @@
 
 calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_profiles,
                                                             rbs_fuel_consumption_profiles,
+                                                            jacobs_curtailment,
                                                             rbs_households){
   
   rbs_households <- rbs_households %>% 
@@ -18,7 +19,7 @@ calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_p
     summarise(power_kwh = sum(power_kwh)) %>% 
     
     
-    mutate(consumption_export = if_else(power_kwh < 0, "Exports", "Consumption")) %>%
+    mutate(consumption_export = if_else(power_kwh < 0, "Exports", "Consumption")) %>% 
     group_by(cooking, water_heating, space_heating, ev, pv, battery,
              year, 
              state, season, consumption_export) %>% 
@@ -28,10 +29,12 @@ calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_p
     group_by(cooking, water_heating, space_heating, ev, pv, battery,
              year, 
              state, consumption_export) %>% 
-    summarise(annual_consumption_kwh = sum(season_total)) %>%  
-    ungroup()
-  
-  
+    summarise(annual_consumption_kwh = sum(season_total)) %>% 
+    ungroup() %>%
+    left_join(jacobs_curtailment, by = c('year', 'state'),
+              relationship = 'many-to-many') %>%
+    mutate(annual_consumption_kwh = if_else(consumption_export == 'Exports',
+            (1-curtailment) * annual_consumption_kwh, annual_consumption_kwh))
   
   ############################################################
   #Sense Checking: confirm that summed tou matches aggregate inputs
@@ -66,7 +69,7 @@ calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_p
     left_join(annual_consumption_exports %>% filter(consumption_export == "Consumption",
                                                     year == 2023
                                                     ) %>% select(-consumption_export)) %>% 
-    mutate(pct_diff = (annual_consumption_kwh - annual_consumption_kwh_1) / annual_consumption_kwh_1)
+    mutate(pct_diff = (annual_consumption_kwh - annual_consumption_kwh_1) / annual_consumption_kwh_1) %>%
   
   
   return(annual_consumption_exports)

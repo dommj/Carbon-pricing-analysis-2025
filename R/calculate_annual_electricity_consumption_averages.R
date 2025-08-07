@@ -1,5 +1,6 @@
 
-calculate_annual_electricity_consumption_averages <- function(all_average_profiles){
+calculate_annual_electricity_consumption_averages <- function(all_average_profiles,
+                                                              jacobs_curtailment){
   
   #calculate annual electricity consumption and exports from tou_profiles
   annual_consumption_exports <- all_average_profiles %>% 
@@ -15,7 +16,11 @@ calculate_annual_electricity_consumption_averages <- function(all_average_profil
     ungroup() %>% 
     #remove WA data post 2034 becuase esoo only goes out til thenb
     filter(!(state== "WA" & year > 2034),
-           year >= 2025) # we only have all data from 2025
+           year >= 2025) %>% # we only have all data from 2025
+    left_join(jacobs_curtailment, by = c('year', 'state'),
+              relationship = 'many-to-many') %>%
+    mutate(annual_consumption_kwh = if_else(consumption_export == 'Exports',
+          (1-curtailment) * annual_consumption_kwh, annual_consumption_kwh))
   
   annual_consumption_exports
   
