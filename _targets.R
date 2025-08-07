@@ -303,7 +303,7 @@ tar_plan(
   tar_target(gas_best_offers, get_gas_best_offers(gas_standing_offers_file)),
   
   #get AER benchmark gas use
-  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,                                                                      gas_connections_data)),
+  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,gas_connections_data)),
   
   #project residential gas consumption and connection projections
   tar_target(residential_gas_consumption_projections, project_residential_gas_consumption(gas_connections_data,
@@ -661,12 +661,8 @@ tar_plan(
   
 
   tar_file(value_of_emissions_file, "Data/value_of_emissions_reductions_aer.xlsx"),
-  
-<<<<<<< Updated upstream
-  
-  
+
   #load_emissions data
-  
   
   
   #load generation data
@@ -674,15 +670,11 @@ tar_plan(
   
   #load capacity data
   
-  
-=======
   tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
                                                         results_1_5_Opt1,
                                                         results_1_5_Opt2,
                                                         results_2_Opt1,
                                                         results_2_Opt2)),
-
->>>>>>> Stashed changes
   
   ########################
   #Chapter 5
