@@ -98,6 +98,7 @@ tar_source("R/calculate_average_profiles.R")
 tar_source("R/calculate_annual_electricity_consumption_averages.R")
 tar_source('R/calculate_average_residential_gas_consumption.R')
 tar_source("R/calculate_average_petrol_consumption.R")
+tar_source("R/get_jacobs_curtailment.R")
 
 #calculate average costs
 tar_source("R/calculate_average_gas_costs.R")
@@ -479,6 +480,7 @@ tar_plan(
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(all_tou_consumer_profiles,
                                                                                                         rbs_fuel_consumption_profiles,
+                                                                                                        jacobs_curtailment,
                                                                                                         rbs_households)),
   
   #calculate aggregate gas consumption
@@ -576,6 +578,7 @@ tar_plan(
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
+  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles, jacobs_curtailment)),
   
   
   #creating a target for consumer type weights to call when making charts etc.
@@ -672,6 +675,12 @@ tar_plan(
   #load capacity data
   
   
+  tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
+                                                        results_1_5_Opt1,
+                                                        results_1_5_Opt2,
+                                                        results_2_Opt1,
+                                                        results_2_Opt2)),
+
   
   ########################
   #Chapter 5
