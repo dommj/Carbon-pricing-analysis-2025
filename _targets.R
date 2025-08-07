@@ -577,7 +577,6 @@ tar_plan(
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
   tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles, jacobs_curtailment)),
   
   
