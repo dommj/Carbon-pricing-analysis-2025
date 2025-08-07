@@ -98,6 +98,7 @@ tar_source("R/calculate_average_profiles.R")
 tar_source("R/calculate_annual_electricity_consumption_averages.R")
 tar_source('R/calculate_average_residential_gas_consumption.R')
 tar_source("R/calculate_average_petrol_consumption.R")
+tar_source("R/get_jacobs_curtailment.R")
 
 #calculate average costs
 tar_source("R/calculate_average_gas_costs.R")
@@ -302,7 +303,7 @@ tar_plan(
   tar_target(gas_best_offers, get_gas_best_offers(gas_standing_offers_file)),
   
   #get AER benchmark gas use
-  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,                                                                      gas_connections_data)),
+  tar_target(benchmark_gas_consumption, get_benchmark_gas_consumption(aer_gas_benchmarks_file,gas_connections_data)),
   
   #project residential gas consumption and connection projections
   tar_target(residential_gas_consumption_projections, project_residential_gas_consumption(gas_connections_data,
@@ -479,6 +480,7 @@ tar_plan(
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
   tar_target(annual_electricity_consumption_profiles, calculate_annual_electricity_consumption_profiles(all_tou_consumer_profiles,
                                                                                                         rbs_fuel_consumption_profiles,
+                                                                                                        jacobs_curtailment,
                                                                                                         rbs_households)),
   
   #calculate aggregate gas consumption
@@ -575,7 +577,7 @@ tar_plan(
   
   
   #calculate annual electricity consumption and exports for each year by aggregating ToU profiles
-  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles)),
+  tar_target(annual_electricity_consumption_averages, calculate_annual_electricity_consumption_averages(all_average_profiles, jacobs_curtailment)),
   
   
   #creating a target for consumer type weights to call when making charts etc.
@@ -659,11 +661,8 @@ tar_plan(
   
 
   tar_file(value_of_emissions_file, "Data/value_of_emissions_reductions_aer.xlsx"),
-  
-  
-  
+
   #load_emissions data
-  
   
   
   #load generation data
@@ -671,7 +670,11 @@ tar_plan(
   
   #load capacity data
   
-  
+  tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
+                                                        results_1_5_Opt1,
+                                                        results_1_5_Opt2,
+                                                        results_2_Opt1,
+                                                        results_2_Opt2)),
   
   ########################
   #Chapter 5
