@@ -69,7 +69,7 @@ calculate_annual_electricity_consumption_profiles <- function(all_tou_consumer_p
     left_join(annual_consumption_exports %>% filter(consumption_export == "Consumption",
                                                     year == 2023
                                                     ) %>% select(-consumption_export)) %>% 
-    mutate(pct_diff = (annual_consumption_kwh - annual_consumption_kwh_1) / annual_consumption_kwh_1) %>%
+    mutate(pct_diff = (annual_consumption_kwh - annual_consumption_kwh_1) / annual_consumption_kwh_1) 
   
   
   return(annual_consumption_exports)

@@ -32,6 +32,7 @@ tar_option_set(
 )
 
 # Run the R scripts in the R/ folder with your custom functions:
+
 tar_source('R/helpers.R')
 
 #load price data
@@ -107,8 +108,11 @@ tar_source("R/calculate_average_electricity_costs.R")
 tar_source("R/calculate_average_petrol_costs.R")
 
 #create charts
+tar_source("R/plot_scenario_results.R")
+
 tar_source("R/compile_average_net_costs.R")
 
+tar_source("R/plot_consumer_charts.R")
 tar_source("R/plot_energy_wallet.R")
 tar_source("R/plot_gas_supply_charges.R")
 tar_source("R/plot_average_profiles.R")
@@ -274,6 +278,14 @@ tar_plan(
   tar_target(retail_electricity_tariffs, get_electricity_tariffs(electricity_tariffs_file,
                                                                  jacobs_retail_prices,
                                                                  household_connections)),
+  
+  
+  #load curtailment data
+  tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
+                                                        results_1_5_Opt1,
+                                                        results_1_5_Opt2,
+                                                        results_2_Opt1,
+                                                        results_2_Opt2)),
   
   #get petrol price data
   tar_target(petrol_price_data, get_petrol_data(petrol_file)),
@@ -663,30 +675,45 @@ tar_plan(
 
   tar_file(value_of_emissions_file, "Data/value_of_emissions_reductions_aer.xlsx"),
 
-  #load_emissions data
+  #plot chapter 4 jacobs results charts
+
+  tar_target(jacobs_results_charts, plot_scenario_results(jacobs_results_summary,
+                                                          results_ref,
+                                                          results_1_5_Opt1,
+                                                          results_1_5_Opt2,
+                                                          results_2_Opt1,
+                                                          results_2_Opt2,
+                                                          jacobs_retail_prices_reference_case,
+                                                          jacobs_retail_prices_1_5_opt1,
+                                                          jacobs_retail_prices_1_5_opt2,
+                                                          jacobs_retail_prices_2_opt1,
+                                                          jacobs_retail_prices_2_opt2,
+                                                          annual_electricity_consumption_averages,
+                                                          average_consumer_type_weights,
+                                                          household_connections,
+                                                          rbs_households,
+                                                          value_of_emissions_file)),
+
   
   
-  #load generation data
-  
-  
-  #load capacity data
-  
-  tar_target(jacobs_curtailment, get_jacobs_curtailment(results_ref,
-                                                        results_1_5_Opt1,
-                                                        results_1_5_Opt2,
-                                                        results_2_Opt1,
-                                                        results_2_Opt2)),
   
   ########################
   #Chapter 5
   ########################
+  
+  tar_target(consumer_charts, plot_consumer_charts(average_net_costs,
+                                                   household_connections,
+                                                   cameo_electricity_costs,
+                                                   cameo_gas_costs,
+                                                   cameo_petrol_costs)),
+  
   
   #Electricity forms just part of total household costs
   tar_target(energy_wallet_chart, plot_energy_wallet(average_net_costs,
                                                      household_connections)),
   
   
-  #calculate and plot 10/20 year CP cost burden and savings
+  #calculate and plot 10/20 year CP cost burden and savings, with degraded battery (1% degradation per year as per CSIRO small scale report) - include capital costs?
   
   
   

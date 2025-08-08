@@ -22,6 +22,6 @@ calculate_annual_electricity_consumption_averages <- function(all_average_profil
     mutate(annual_consumption_kwh = if_else(consumption_export == 'Exports',
           (1-curtailment) * annual_consumption_kwh, annual_consumption_kwh))
   
-  annual_consumption_exports
+  return(annual_consumption_exports)
   
 }

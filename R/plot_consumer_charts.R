@@ -2,7 +2,10 @@
 
 
 plot_consumer_charts <- function(average_net_costs,
-                                       household_connections){
+                                 household_connections,
+                                 cameo_electricity_costs,
+                                 cameo_gas_costs,
+                                 cameo_petrol_costs){
   
   
   chart_palette_fuels <- c(
@@ -63,31 +66,30 @@ plot_consumer_charts <- function(average_net_costs,
   
   p2 <- annual_chart_data %>% 
     filter(facet == "Difference in bills") %>% 
-    ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
+    #set zero value to NA so we don't get a white box
+    mutate(annualised_cost = if_else(annualised_cost ==0, NA, annualised_cost)) %>% 
+    ggplot(aes(x = scenario, y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
+    scale_x_discrete(limits = c("Safeguard < 2 C", "No new policy",  "RET < 2 C")) +
     scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
     labs(x = "")
   
   # Combine plots vertically using patchwork
-  p1 / p2 +
-    plot_annotation(
-      title = "Average electricity bills are similar across all scenarios",
-      subtitle = "Average annual household electricity bill in the NEM, 2026-2050 ($2025)"
-    )
+  bill_diff_plot <- p1 / p2 
 
   
   
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_dif_in_bills.pdf",
-                   object = ggplot2::last_plot())   
+                   object = bill_diff_plot)   
 
   
   
   
   ################################
-  #total energy Wallet
+  #total energy Wallet over time
   ################################
   label_data <- chart_data %>% 
     filter(scenario == "Safeguard < 2 C") %>% 
@@ -106,7 +108,7 @@ plot_consumer_charts <- function(average_net_costs,
     ungroup() %>% 
     mutate(gap = average_cost_dollars - average_cost_dollars[year==2025])
 
-  plot <- chart_data %>% 
+  energy_wallet_over_time_plot <- chart_data %>% 
     filter(scenario == "Safeguard < 2 C",
            year >= 2025) %>% 
     ggplot(aes(x = year, y = average_cost_dollars)) +
@@ -119,10 +121,10 @@ plot_consumer_charts <- function(average_net_costs,
                       label = str_wrap(category, 13),
                       colour = category),
                   hjust = 0,
-                  nudge_x = 2.5) +
+                  nudge_x = 0.6) +
     
     grattan_y_continuous(labels = scales::dollar_format(), expand_top = 0.1) +
-    scale_x_continuous_grattan(expand_right = 0.2,
+    scale_x_continuous_grattan(expand_right = 0.17,
                                breaks = seq(2025,2050, by = 5)) +
     scale_colour_manual(values = chart_palette_fuels) +
     scale_fill_manual(values = chart_palette_fuels) +
@@ -134,9 +136,8 @@ plot_consumer_charts <- function(average_net_costs,
          caption = "Notes: \nSource: Grattan Institute analaysis see app X")
   
   
-  
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_energy_cost_over_time_safeguard.pdf",
-                   object = plot)
+                   object = energy_wallet_over_time_plot)
   
   
   
@@ -144,28 +145,25 @@ plot_consumer_charts <- function(average_net_costs,
   #####################################
   #Switch 'n' Save
   #####################################
-  
-  
-  tar_load(cameo_electricity_costs)
-  tar_load(cameo_gas_costs)
-  tar_load(cameo_petrol_costs)
-  tar_load(household_connections)
+
   
   cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs %>% 
                                  cross_join(tibble(scenario = cameo_electricity_costs %>% 
+                                                     ungroup() %>% 
                                                      select(scenario) %>% 
                                                      unique() %>% 
                                                      pull()))) %>% 
     cross_join(tibble(ice = c(0,1,2))) %>% 
     bind_rows(cameo_petrol_costs %>% 
                 cross_join(tibble(scenario = cameo_electricity_costs %>% 
+                                    ungroup() %>% 
                                     select(scenario) %>% 
                                     unique() %>% 
                                     pull()))) %>% 
     filter(scenario == "2_Opt2")
   
   
-  
+  #create chart data
   electrification_data <- cameo_cost_data %>% 
     filter(year == 2025) %>%
     group_by(year, cooking, water_heating, space_heating, ev, pv, battery, ice, state) %>% 
@@ -256,9 +254,10 @@ plot_consumer_charts <- function(average_net_costs,
                     aes(x = x_value + 1, y = y_value,
                         label = consumer_name),
                     hjust = 0,
-                    nudge_x = -0.6) +
+                    nudge_x = -0.5) +
       grattan_y_continuous(limits = c(0, 6200), labels = scales::dollar_format()) +
-      scale_x_discrete(breaks = c("Electrify gas","Switch to an EV"), labels = axis_labels) +
+      scale_x_discrete(breaks = c("Electrify gas","Switch to an EV"), labels = axis_labels,
+                       expand = expansion(c(0,0.2)) ) +
       ggtitle(label) +
       theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
       labs(x = "")
@@ -271,14 +270,14 @@ plot_consumer_charts <- function(average_net_costs,
     #filter chart for no Tas for now
     filter(state!= "Tas") %>% 
     #just doing two states for now all in appendix
-    filter(state == "Qld"| state == "SA") %>% 
+    filter(state == "NSW and ACT"| state == "Vic") %>% 
     group_split(!!sym("state"))
   
   # Get the unique values for titles
   facet_labels <- fall_chart_data %>% 
     filter(state!= "Tas") %>% 
     #just doing two states for now all in appendix
-    filter(state == "Qld"| state == "SA") %>% 
+    filter(state == "NSW and ACT"| state == "Vic") %>% 
     distinct(!!sym("state")) %>% 
     pull(!!sym("state"))
   
@@ -311,11 +310,12 @@ plot_consumer_charts <- function(average_net_costs,
   })
   
   # Combine plots
-  wrap_plots(plots, ncol = ncol) 
+  nsw_vic_waterfall_plot <- wrap_plots(plots, ncol = ncol) 
   
+  #check_chart_aspect_ratio(type = "wholecolumn")
     
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_waterfall_qld_sa.pdf",
-                   object = ggplot2::last_plot())   
+  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_waterfall_nsw_vic.pdf",
+                   object = nsw_vic_waterfall_plot)   
   
   
   
@@ -350,15 +350,24 @@ plot_consumer_charts <- function(average_net_costs,
     "Electricity" = grattan_yellow
   )
   
-  label_data <- electrification_data %>% 
-    # Calculate the y positions for the labels at the midpoints of each stack
-    group_by(year) %>% 
-    arrange(category) %>% 
-    mutate(y_position = cumsum(annual_cost_dollars),
-           y_position = y_position - 0.5 * annual_cost_dollars) %>% 
-    ungroup()
+  # label_data <- electrification_data %>% 
+  #   # Calculate the y positions for the labels at the midpoints of each stack
+  #   group_by(year) %>% 
+  #   arrange(category) %>% 
+  #   mutate(y_position = cumsum(annual_cost_dollars),
+  #          y_position = y_position - 0.5 * annual_cost_dollars) %>% 
+  #   ungroup()
   
-  electrification_data %>% 
+  label_data <- tibble(consumer_name = c("Mostly gas household", 
+                                         "Mostly gas household",
+                                         "All electric household"),
+                       year = c(2025, 2025, 2025),
+                       y = c(4500, 4000, 3000),
+                       category = c("Gas connection",
+                                    "Gas consumption",
+                                    "Electricity"))
+  
+  gas_v_electric_household_plot <- electrification_data %>% 
     bind_rows(tibble(year = seq(2045, 2060),
                      consumer_name = "Mostly gas household")) %>% 
     ggplot(aes(x = year, y = annual_cost_dollars, fill = category)) +
@@ -366,19 +375,27 @@ plot_consumer_charts <- function(average_net_costs,
     facet_wrap(~consumer_name) +
     grattan_y_continuous(limits = c(0, 5000),
                          labels = scales::dollar_format()) +
-    scale_x_continuous()+
+    grattan_label(data = label_data, 
+                  aes(x = year, y = y, label = category, colour = category),
+                  hjust = 0) +
     theme_grattan() +
     scale_fill_manual(values = chart_fill_palette) +
+    scale_colour_manual(values = chart_fill_palette) +
     labs(title = "As connection charges grow, households that are stuck on gas will pay far more than they need to",
          subtitle = "Annual gas and electricity costs by household type, Vic ($2025)",
          x = "",
          y= "") 
-    #theme(plot.margin = margin(t = 5, r = 100, b = 5, l = 5, unit = "pt"))
+    
+  #check_chart_aspect_ratio()
   
   
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_gas_v_electric_household.pdf",
-                   object = ggplot2::last_plot())   
+                   object = gas_v_electric_household_plot)   
   
   
-  
+  return(c("bill_diff_plot" = bill_diff_plot,
+         "energy_wallet_over_time_plot" = energy_wallet_over_time_plot,
+         "nsw_vic_waterfall_plot" = nsw_vic_waterfall_plot,
+         "gas_v_electric_household_plot" = gas_v_electric_household_plot
+         ))
 }

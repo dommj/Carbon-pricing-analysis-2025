@@ -14,6 +14,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                   annual_electricity_consumption_averages,
                                   average_consumer_type_weights,
                                   household_connections,
+                                  rbs_households,
                                   value_of_emissions_file){
   
   summary_cells <- xlsx_cells(jacobs_results_summary)
@@ -191,7 +192,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                  "Embedded Battery") ~ "Storage",
                                  .default = "Fossil fuel"))
   
-  #renewable pct plot 
+  #renewable pct plot - replace/supplement with coal exits (capacity) - more interesting
   
   renewable_pct_plot <- scenario_generation %>% 
     filter(year <= 2050,
@@ -305,7 +306,7 @@ plot_scenario_results <- function(jacobs_results_summary,
   
   
   annual_price_chart <- annual_price_chart_data %>% 
-    filter(year %in% seq(2022, 2050)) %>% 
+    filter(year %in% seq(2025, 2050)) %>% 
     ggplot(aes(x = year, y = dollars_mwh, colour = scenario)) +
     geom_line(size = 1) +
     grattan_label(data = . %>%  filter(year == 2050) %>% 
@@ -315,7 +316,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                          scenario == "Safeguard < 2 C" ~ 90)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
-    grattan_y_continuous(limits = c(0, 160), labels = scales::dollar_format()) +
+    grattan_y_continuous(limits = c(0, 130), labels = scales::dollar_format()) +
     scale_x_continuous_grattan(breaks = seq(2025, 2050, by = 5)) +
     theme_grattan() +
     scale_colour_manual(values = chart_palette) +
@@ -329,6 +330,7 @@ plot_scenario_results <- function(jacobs_results_summary,
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_wholesale_results.pdf",
                    object = annual_price_chart)
   
+  #check_chart_aspect_ratio()
   
   ###################
   #Transmission
@@ -423,30 +425,32 @@ plot_scenario_results <- function(jacobs_results_summary,
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_average_nem_retail_line.pdf",
                    object = average_nem_retail_chart)
   
-  weighted_nem_average_retail_prices %>% 
-    mutate(scenario = factor(scenario, levels = c("No new policy", "Safeguard < 2 C", "RET < 2 C"))) %>%
-    filter(year %in% seq(2025,2050, by = 5)) %>% 
-    ggplot(aes(x = year, 
-               y = c_kwh * 1000/100,  #convert to dollars per mwh
-               fill = scenario)) +
-    geom_col(position = "dodge") +
-    grattan_y_continuous(labels = scales::dollar_format(),
-                         limits = c(0,500)) +
-    grattan_label(data = . %>%  filter(year == 2025) %>% 
-                    mutate(y = case_when(scenario == "No new policy" ~ 400,
-                                         scenario == "RET < 2 C" ~ 460,
-                                         scenario == "Safeguard < 2 C" ~ 430)), 
-                  aes(x = year, y = y, label = scenario, colour = scenario),
-                  hjust = 0,
-                  nudge_x = -2) +
-    scale_x_continuous_grattan(breaks = seq(2025,2050, by = 5)) +
-    scale_colour_manual(values = chart_palette) +
-    scale_fill_manual(values = chart_palette) +  # Add this line
-    theme_grattan() +
-    labs(title = "Retail prices are similar across all scenarios, but the Safeguard outperforms the RET",
-         subtitle = "Average NEM residential retail prices, dollars per MWh ($2025)",
-         x = "",
-         y = "")
+  
+  
+  # weighted_nem_average_retail_prices %>% 
+  #   mutate(scenario = factor(scenario, levels = c("No new policy", "Safeguard < 2 C", "RET < 2 C"))) %>%
+  #   filter(year %in% seq(2025,2050, by = 5)) %>% 
+  #   ggplot(aes(x = year, 
+  #              y = c_kwh * 1000/100,  #convert to dollars per mwh
+  #              fill = scenario)) +
+  #   geom_col(position = "dodge") +
+  #   grattan_y_continuous(labels = scales::dollar_format(),
+  #                        limits = c(0,500)) +
+  #   grattan_label(data = . %>%  filter(year == 2025) %>% 
+  #                   mutate(y = case_when(scenario == "No new policy" ~ 400,
+  #                                        scenario == "RET < 2 C" ~ 460,
+  #                                        scenario == "Safeguard < 2 C" ~ 430)), 
+  #                 aes(x = year, y = y, label = scenario, colour = scenario),
+  #                 hjust = 0,
+  #                 nudge_x = -2) +
+  #   scale_x_continuous_grattan(breaks = seq(2025,2050, by = 5)) +
+  #   scale_colour_manual(values = chart_palette) +
+  #   scale_fill_manual(values = chart_palette) +  # Add this line
+  #   theme_grattan() +
+  #   labs(title = "Retail prices are similar across all scenarios, but the Safeguard outperforms the RET",
+  #        subtitle = "Average NEM residential retail prices, dollars per MWh ($2025)",
+  #        x = "",
+  #        y = "")
   
   
   ################## State retail chart ###############
@@ -519,7 +523,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                    skip = 1) %>% 
     rename(dollars_tonne_co2e = 2) %>% 
     #convert to 2025 dollars from 2023 dollars
-    mutate(dollars_tonne_co2e = convert_to_2024_dollars(dollars_tonne_co2e, 2023))
+    mutate(dollars_tonne_co2e = convert_to_2024_dollars(dollars_tonne_co2e, 2023)) %>% 
     clean_names() %>% 
     select(year, dollars_tonne_co2e) %>% 
     left_join(ems_difference) %>% 
@@ -577,18 +581,19 @@ plot_scenario_results <- function(jacobs_results_summary,
          subtitle = "Net present value of system costs and emissions reductions, in billions ($2025)",
          x = "",
          y = "",
-         caption = "Note: Value of emissions reductions are calculated using AER guidance values. Net present value is calculated using a discount rate of 7.5%")
+         caption = "Note: Value of emissions reductions are calculated using AER guidance values. Net present value is calculated using a discount rate of 7.4%")
   
   
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_npv_results.pdf",
                    object = npv_compare_chart)
   
   
+  #check_chart_aspect_ratio()
   
   #cost per tonne abatement
  
   cost_tonne_abatement <- total_costs %>% 
-    filter(category == "Total resource costs") %>% 
+    filter(category == "Resource costs") %>% 
     group_by(scenario, category) %>% 
     summarise(present_value_billions = sum(present_value_billions)) %>% 
     ungroup() %>% 
@@ -623,10 +628,17 @@ plot_scenario_results <- function(jacobs_results_summary,
 #plot coal capacity
   
   
-#safeguard allows new teck to enter in the gas space (hyydrohgen reads)
+#safeguard allows new tec to enter in the gas space (hydrogen ready)
     
+  plot_list <- c("emissions_plot" = emissions_plot, 
+                 "renewable_pct_plot" = renewable_pct_plot, 
+                 "annual_price_chart" = annual_price_chart,
+                 "average_nem_retail_chart" = average_nem_retail_chart, 
+                 "state_retail_chart" = state_retail_chart, 
+                 "npv_compare_chart" = npv_compare_chart,
+                 "abatement_cost_chart" = abatement_cost_chart)
   
-  
+  return(plot_list)
 }
 
 
