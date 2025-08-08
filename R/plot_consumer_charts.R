@@ -146,6 +146,8 @@ plot_consumer_charts <- function(average_net_costs,
   #Switch 'n' Save
   #####################################
 
+  #this plot shows the difference in annual bills for a household in 2025 depending on their consumer type
+  
   
   cameo_cost_data <- bind_rows(cameo_electricity_costs, cameo_gas_costs %>% 
                                  cross_join(tibble(scenario = cameo_electricity_costs %>% 
