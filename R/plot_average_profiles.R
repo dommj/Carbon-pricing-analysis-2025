@@ -14,23 +14,23 @@ plot_average_profiles <- function(all_average_profiles){
                                   source == "Electric vehicles" ~ "Electric vehicles"),
            facet = paste0(state, " ", season, " - ", year )) %>% 
     filter(facet %in% c("Vic Winter - 2025", "Qld Summer - 2025",
-                        "Vic Winter - 2040", "Qld Summer - 2040"),
+                        "Vic Winter - 2050", "Qld Summer - 2050"),
            pv == 0,
            battery == F,
            electrification == T,
-           year %in% c(2025, 2040)) %>% 
+           year %in% c(2025, 2050)) %>% 
     ggplot(aes(x = hour, y = power_kwh, fill = fct_rev(source), colour = fct_rev(source))) +
     geom_area() +
-    grattan_label(data = . %>%  filter(str_detect(facet, "2040"),
+    grattan_label(data = . %>%  filter(str_detect(facet, "2050"),
                                    hour == 0) %>% 
                 mutate(x = 0,
-                       y = case_when(source == "Baseline" ~ 1.05,
-                                     source == "Electrification" ~ 1.3,
-                                     source == "Electric vehicles" ~ 1.55)), 
+                       y = case_when(source == "Baseline" ~ 1.3,
+                                     source == "Electrification" ~ 1.55,
+                                     source == "Electric vehicles" ~ 1.8)), 
               aes(x = x, y = y, label = source, colour = source),
               hjust = 0) +
     facet_wrap(~facet) +
-    grattan_y_continuous() +
+    grattan_y_continuous(expand_top = 0.1) +
     scale_x_continuous_grattan(breaks = seq(0, 23, 8), 
                                labels = c("12am",  "8am",  "4pm")) +
     scale_fill_manual(values = chart_palette) +
@@ -41,7 +41,7 @@ plot_average_profiles <- function(all_average_profiles){
          x = "",
          y = "")
   
-  
+  check_chart_aspect_ratio()
   
   grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_demand_shape_over_time.pdf",
                    object = plot)

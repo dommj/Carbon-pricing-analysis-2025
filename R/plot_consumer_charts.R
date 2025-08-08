@@ -25,6 +25,7 @@ plot_consumer_charts <- function(average_net_costs,
     left_join(household_connections) %>% 
     filter(state != "WA",
            scenario == "Ref" | scenario == "2_Opt2" | scenario == "2_Opt1",
+           #electrification == T is the default scenario that we use for all, showing the expected electrification
            electrification == T) %>% 
     group_by(year, scenario, category) %>% 
     summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
