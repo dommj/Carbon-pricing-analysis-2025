@@ -69,14 +69,19 @@ plot_scenario_results <- function(jacobs_results_summary,
   
   emissions_plot <- emissions_data %>% 
     filter(!str_detect(temp, "1.5")) %>% 
+    group_by(scenario) %>%
+    mutate(total_emissions = sum(mt_co2_e)) %>%
+    ungroup() %>%
     ggplot(aes(x = year, y = mt_co2_e, colour = scenario)) +
     geom_line(size = 1) +
-    grattan_label(data = . %>%  filter(year == 2040) %>% 
+    grattan_label(data = . %>%  filter(year == 2036) %>% 
                 mutate(x = year,
                        y = case_when(scenario == "No new policy" ~ 115,
                                      scenario == "RET < 2 C" ~ 100,
-                                     scenario == "Safeguard < 2 C" ~ 85)), 
-              aes(x = year, y = y, label = scenario, colour = scenario),
+                                     scenario == "Safeguard < 2 C" ~ 85)),
+              aes(x = year, y = y, label = paste0(scenario, " (", 
+                                                  comma(round(total_emissions, 0)), " Mt CO2-e total)"), 
+                                                  colour = scenario),
               hjust = 0) +
     grattan_y_continuous(limits = c(0, 120)) +
     theme_grattan() +
@@ -87,7 +92,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "") 
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_emissions_results.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_emissions_results.pdf",
                    object = emissions_plot)
   
   
@@ -222,7 +227,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          caption = "Notes: Calculated as a proportion of sent out generation.") 
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_renewable_pct_results.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_renewable_pct_results.pdf",
                    object = renewable_pct_plot)
   
   
@@ -327,7 +332,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          caption = "Notes: Average prices are calculated by weighting prices in each grid by total sent out generation.") 
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_wholesale_results.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_wholesale_results.pdf",
                    object = annual_price_chart)
   
   #check_chart_aspect_ratio()
@@ -422,7 +427,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          x = "",
          y = "")
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_average_nem_retail_line.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_average_nem_retail_line.pdf",
                    object = average_nem_retail_chart)
   
   
@@ -483,7 +488,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "")
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_state_retail_line.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_state_retail_line.pdf",
                    object = state_retail_chart)
   
   ############################
@@ -584,7 +589,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          caption = "Note: Value of emissions reductions are calculated using AER guidance values. Net present value is calculated using a discount rate of 7.4%")
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_npv_results.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_npv_results.pdf",
                    object = npv_compare_chart)
   
   
@@ -621,7 +626,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "",
          caption = "Note: Abatement cost is calculated by dividing the present value of total resource costs by the present value of emissions reductions (in tonnes) relative to the 'No new policy' scenario.") 
     
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_abatement_cost.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_abatement_cost.pdf",
                    object = abatement_cost_chart)
   
   

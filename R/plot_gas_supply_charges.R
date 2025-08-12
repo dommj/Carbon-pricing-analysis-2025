@@ -23,7 +23,7 @@ plot_gas_supply_charges <- function(gas_connection_charge_projections,
          x = "",
          y = "")
  
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/projected_nem_gas_supply_charges.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/projected_nem_gas_supply_charges.pdf",
                    object = plot)
   
   return(plot)

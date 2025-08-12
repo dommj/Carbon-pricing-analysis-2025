@@ -83,7 +83,7 @@ plot_consumer_charts <- function(average_net_costs,
 
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_dif_in_bills.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_dif_in_bills.pdf",
                    object = bill_diff_plot)   
 
   
@@ -137,7 +137,7 @@ plot_consumer_charts <- function(average_net_costs,
          caption = "Notes: \nSource: Grattan Institute analaysis see app X")
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_energy_cost_over_time_safeguard.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_energy_cost_over_time_safeguard.pdf",
                    object = energy_wallet_over_time_plot)
   
   
@@ -317,7 +317,7 @@ plot_consumer_charts <- function(average_net_costs,
   
   #check_chart_aspect_ratio(type = "wholecolumn")
     
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_waterfall_nsw_vic.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_waterfall_nsw_vic.pdf",
                    object = nsw_vic_waterfall_plot)   
   
   
@@ -392,7 +392,7 @@ plot_consumer_charts <- function(average_net_costs,
   #check_chart_aspect_ratio()
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_gas_v_electric_household.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_gas_v_electric_household.pdf",
                    object = gas_v_electric_household_plot)   
   
   

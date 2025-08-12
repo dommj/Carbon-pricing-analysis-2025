@@ -39,7 +39,7 @@ plot_energy_wallet <- function(average_net_costs,
   
   
   
-  grattan_save_all("C:/Users/domijones/Grattan Institute Dropbox/Dominic  Jones/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_energy_wallet.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_energy_wallet.pdf",
                    object = plot)
   
 }
