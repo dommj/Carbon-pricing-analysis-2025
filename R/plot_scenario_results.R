@@ -226,11 +226,96 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "",
          caption = "Notes: Calculated as a proportion of sent out generation.") 
   
-  
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_renewable_pct_results.pdf",
                    object = renewable_pct_plot)
   
   
+  #Plot of generation mix 
+  
+  #Create generation palette
+  
+  gen_pal <- c("Solar" = grattan_yellow,
+               "Wind" = grattan_orange,
+               "Hydro" = grattan_lightblue,
+               "Battery" = grattan_lightorange2,
+               "Gas" = grattan_red,
+               "Coal" = grattan_black,
+               "Other" = grattan_lightblue6)
+  
+  show_col(gen_pal)
+  #Creating chart data
+  
+  ret_2_gen_plot_data <- ret_2_generation %>%
+    mutate(state = fct_collapse(region,
+                                'NSW & ACT' = c("New South Wales"),
+                                'VIC' = c("Victoria"),
+                                'QLD' = c("Queensland Central", "Queensland North", "Queensland South",
+                                                 "Mt Isa"),
+                                'WA' = c("WEM", "NW"),
+                                'NT' = c("Northern Territory"),
+                                'SA' = c("South Australia"),
+                                'TAS' = c("Tasmania"))) %>% 
+    mutate(grid = fct_collapse(region,
+                               'NEM' = c("New South Wales", "Victoria", "Queensland South",
+                                         "Queensland North", "Queensland Central", "Tasmania",
+                                         "South Australia"),
+                               'SWIS' = c("WEM"),
+                               'DKIS' = c("Northern Territory"),
+                               'Mt Isa' = c("Mt Isa"),
+                               'NWIS' = c('NW'))) %>%
+    mutate(source = fct_collapse(gen_type,
+                                 'Wind' = c("Wind"),
+                                 'Solar' = c("Rooftop PV", "Solar", "Solar + Storage"),
+                                 'Hydro' = c("Pumped Hydro", "Hydro"),
+                                 'Coal' = c("Black Coal", "Brown Coal"),
+                                 'Gas' = c("Gas CC CCS", "Gas CCGT & Cogen",
+                                           "Gas GT", "Gas Steam"),
+                                 'Battery' = c("Battery Storage", "Embedded Battery"),
+                                 'Other' = c("Biomass", "Distillate", "Geothermal", "Hydrogen ready"))) %>%
+    mutate(source = fct_relevel(source, "Wind", "Solar", "Hydro", "Battery", "Coal", "Gas", "Other")) %>%
+    # mutate(source = fct_rev(source)) %>%
+    group_by(grid, scenario, year, source) %>%
+    summarise(generation = sum(generation_sent_out_gwh)) %>%
+    filter(grid != 'DKIS', grid != 'Mt Isa')
+  
+  ret_2_source_levels <- levels(fct_rev(ret_2_gen_plot_data$source))
+  
+  ret_2_source_labels <- data.frame(
+    labels = ret_2_source_levels,
+    cols = gen_pal,
+    x = c(2022, 2022, 2022, 2022, 2025.5, 2025.5, 2025.5),
+    y = c(seq(280000,520000, length.out = 4), seq(360000,520000, length.out = 3)),
+    stringsAsFactors = FALSE,
+    grid = "NEM")
+  
+  #Plotting generation stack
+  ret_2_gen_plot <- ggplot(ret_2_gen_plot_data) +
+    geom_area(aes(x = year, y = generation, fill = source, colour = source)) +
+    facet_wrap(~grid,
+               ncol = 1,
+               scales = 'free_y') +
+    scale_fill_manual(values = gen_pal) + 
+    scale_colour_manual(values = gen_pal) + 
+    scale_y_continuous(labels = function(x) paste0(x/1000, 'k GWH'),
+                       expand = expansion(mult = c(0, 0.1)),
+                       breaks = scales::breaks_pretty(n = 3)) +
+    xlab('') +
+    scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+    geom_text(data = ret_2_source_labels,
+              aes(x = x, y = y, label = labels, colour = labels),
+              inherit.aes = F,
+              hjust = 0, 
+              size = 4) +
+    theme_grattan() 
+  
+  ret_2_gen_plot
+  check_chart_aspect_ratio()
+  
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_ret_generation_plot.pdf",
+                   object = ret_2_gen_plot)
+  
+  
+
   ##############################
   #wholesale prices
   ##############################
@@ -274,7 +359,7 @@ plot_scenario_results <- function(jacobs_results_summary,
   
   
   ret_lgc_2 <- read_excel(results_2_Opt1,
-                          sheet = "BundledPrice",
+                          sheet = "Bundled Price (Real)",
                           range = "A2:AN4") %>% 
     mutate(scenario = "RET < 2 C")
   
@@ -307,15 +392,17 @@ plot_scenario_results <- function(jacobs_results_summary,
                 summarise(generation_sent_out_gwh  = sum(generation_sent_out_gwh))
               ) %>% 
     group_by(year, scenario) %>% 
-    summarise(dollars_mwh = weighted.mean(dollars_mwh, generation_sent_out_gwh)) 
-  
+    summarise(dollars_mwh = weighted.mean(dollars_mwh, generation_sent_out_gwh)) %>%
+    ungroup()
+
+  ## Figure 4.3 ##
   
   annual_price_chart <- annual_price_chart_data %>% 
     filter(year %in% seq(2025, 2050)) %>% 
     ggplot(aes(x = year, y = dollars_mwh, colour = scenario)) +
     geom_line(size = 1) +
     grattan_label(data = . %>%  filter(year == 2050) %>% 
-                    mutate(x = c(2032, 2043, 2043),
+                    mutate(x = c(2037, 2042, 2043),
                            y = case_when(scenario == "No new policy" ~ 110,
                                          scenario == "RET < 2 C" ~ 55,
                                          scenario == "Safeguard < 2 C" ~ 90)), 
@@ -331,9 +418,12 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "",
          caption = "Notes: Average prices are calculated by weighting prices in each grid by total sent out generation.") 
   
-  
+  annual_price_chart
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_wholesale_results.pdf",
                    object = annual_price_chart)
+  
+  
+
   
   #check_chart_aspect_ratio()
   
@@ -403,17 +493,46 @@ plot_scenario_results <- function(jacobs_results_summary,
            state != "NT") %>% 
     group_by(year, scenario) %>% 
     summarise(c_kwh = weighted.mean(c_kwh, aggregate_consumption_mwh)) %>% 
-    filter(year >= 2025)
+    filter(year >= 2025) 
   
+  total_consumption <- aggregate_consumption %>%
+    group_by(year) %>%
+    summarise(consumption = sum(aggregate_consumption_mwh)) %>%
+    ungroup()
+  
+  safeguard_comp <- weighted_nem_average_retail_prices %>%
+    pivot_wider(names_from = scenario, 
+                values_from = c_kwh) %>%
+    clean_names() %>%
+    mutate(safeguard_less_ref = safeguard_2_c - no_new_policy) %>%
+    ungroup() %>%
+    left_join(total_consumption) %>%
+    mutate(comp = safeguard_less_ref * consumption) %>%
+    ungroup() %>%
+    mutate(rolling_comp = cumsum(comp))
+  
+  #Check chart
+  ggplot(safeguard_comp) +
+    geom_col(aes(x = year, y = comp/1000000000), colour = grattan_orange) +
+    # geom_line(aes(x = year, y = rolling_comp/1000000000), colour = grattan_red) + 
+    grattan_y_continuous(labels = function(x) paste0("$", x, "b")) +
+    ylab('') +
+    xlab('') +
+    theme_grattan() +
+    labs(title = "Two years of elevated electricity spend is more than compensated for over the following 20 years",
+         subtitle = "Difference between estimated total electricity spend under the Safeguard < 2 C scenario and the Reference case")
+  
+  
+  ## Figure 4.4 ## 
   
   average_nem_retail_chart <- weighted_nem_average_retail_prices %>% 
     ggplot(aes(x = year, y = c_kwh * 1000/100,  #convert to dollars per mwh
                colour = scenario)) +
     geom_line(size = 1) +
     grattan_y_continuous(labels = scales::dollar_format(),
-                         limits = c(0,500)) +
+                         limits = c(0,520)) +
     grattan_label(data = . %>%  filter(year == 2050) %>% 
-                    mutate(x = c(2045.5, 2042, 2036),
+                    mutate(x = c(2043, 2042, 2036),
                            y = case_when(scenario == "No new policy" ~ 395,
                                          scenario == "RET < 2 C" ~ 470,
                                          scenario == "Safeguard < 2 C" ~ 350)), 
@@ -495,6 +614,7 @@ plot_scenario_results <- function(jacobs_results_summary,
   #system cost over time:
   ############################
   
+
   #resource costs, annual
   resource_costs <-  read_excel(jacobs_results_summary, 
                                 sheet = "ResourceCosts",
@@ -505,11 +625,12 @@ plot_scenario_results <- function(jacobs_results_summary,
     mutate(scenario = case_when(str_detect(scenario, "Reference") ~ "No new policy",
                                 str_detect(scenario, "One") ~ "RET < 2 C",
                                 str_detect(scenario, "Two") ~ "Safeguard < 2 C")) %>% 
+    mutate(across(matches("^(19|20)\\d{2}$"), ~ readr::parse_number(as.character(.x)))) %>%
     pivot_longer(cols = contains("20"),
                  names_to = "year",
-                 values_to = "million_dollars") %>% 
+                 values_to = "million_dollars") %>%
     mutate(category = "Resource costs",
-           year = as.numeric(year)) %>% 
+           year = as.integer(year)) %>% 
     select(scenario, year, category, million_dollars)
   
   #calculate emissions differences between scenarios
@@ -543,7 +664,8 @@ plot_scenario_results <- function(jacobs_results_summary,
   
   total_costs <- bind_rows(resource_costs,
                            value_of_emissions) %>% 
-    mutate(discount_factor = 1 / (1 + discount_rate)^(year-2026), #check if Jacobs discount from 2026 or 2027
+    mutate(discount_factor = 1 / (1 + discount_rate)^(year-as.double(2026)), 
+           #check if Jacobs discount from 2026 or 2027
            present_value_billions = million_dollars * discount_factor / 1e3)
   
   
@@ -555,11 +677,11 @@ plot_scenario_results <- function(jacobs_results_summary,
     geom_col(aes(fill = category, colour = category)) +
     geom_hline(aes(yintercept = 0),
                size = 1,
-               colour = grattan_black)+
+               colour = grattan_black) +
     geom_point(data = . %>% 
                  group_by(scenario) %>% 
                  summarise(present_value = sum(present_value)),
-                 colour = grattan_black,
+               colour = grattan_black,
                size = 5) +
     grattan_y_continuous(labels = scales::dollar_format(suffix = "b"),
                          limits = c(-100, 450)) +
@@ -588,13 +710,13 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "",
          caption = "Note: Value of emissions reductions are calculated using AER guidance values. Net present value is calculated using a discount rate of 7.4%")
   
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_npv_results.pdf", object = npv_compare_chart)
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_npv_results.pdf",
-                   object = npv_compare_chart)
   
   
   #check_chart_aspect_ratio()
   
+  ## Figure 4.5 ##
   #cost per tonne abatement
  
   cost_tonne_abatement <- total_costs %>% 
@@ -605,13 +727,11 @@ plot_scenario_results <- function(jacobs_results_summary,
     mutate(cost_diff = present_value_billions - present_value_billions[scenario == "No new policy"]) %>% 
     left_join(ems_difference %>% 
                 #discount emissions reductions, this is standard for calc (see Jacobs)
-                mutate(discount_factor = 1 / (1 + discount_rate)^(year-2026), #check if Jacobs discount from 2026 or 2027
+                mutate(discount_factor = 1 / (1 + discount_rate)^(year-as.double(2026)), #check if Jacobs discount from 2026 or 2027
                        mt_co2e_diff = mt_co2e_diff * discount_factor) %>% 
                 group_by(scenario) %>% 
                 summarise(mt_co2e_diff = sum(mt_co2e_diff))) %>% 
     mutate(dollars_per_ton = -(cost_diff * 1e9)/(mt_co2e_diff * 1e6))
-    
-  
   
   abatement_cost_chart <- cost_tonne_abatement %>% 
     filter(cost_diff != 0) %>% 
