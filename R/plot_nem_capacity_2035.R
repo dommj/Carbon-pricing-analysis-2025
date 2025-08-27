@@ -1,7 +1,7 @@
-####### Generation plots by scenario ######
+####### Capacity plots by scenario ######
 
 
-plot_generation_charts <- function(results_ref,
+plot_nem_capacity_2035 <- function(results_ref,
                             results_1_5_Opt1,
                             results_1_5_Opt2,
                             results_2_Opt1,
@@ -25,8 +25,8 @@ plot_generation_charts <- function(results_ref,
   ##Gathering relevant data from sheets
   
   #Reference case
-  ref_generation <- ref_cells %>% 
-    filter(sheet == "AustGeneration",
+  ref_capacity <- ref_cells %>% 
+    filter(sheet == "AustCapacity",
            row != 1,
            row <= 262) %>% 
     behead("up",
@@ -35,20 +35,20 @@ plot_generation_charts <- function(results_ref,
               direction = "left-up",
               name = "region") %>% 
     behead("left",
-           "gen_type") %>% 
-    mutate(generation_sent_out_gwh = content %>% as.numeric()) %>% 
-    select(region, year, gen_type, generation_sent_out_gwh) %>% 
-    filter(!is.na(generation_sent_out_gwh),
+           "cap_type") %>% 
+    mutate(capacity_mw = content %>% as.numeric()) %>% 
+    select(region, year, cap_type, capacity_mw) %>% 
+    filter(!is.na(capacity_mw),
            !is.na(year),
-           gen_type != "Total",
+           cap_type != "Total",
            #filter out aggregates that have sub-levels
            region %nin% c("Total NEM ", "Queensland")) %>% 
     mutate(year = as.numeric(year),
            scenario = "No new policy") 
   
   #2 degrees, RET policy
-  ret_2_generation <- ret_2_cells %>% 
-    filter(sheet == "AustGeneration",
+  ret_2_capacity <- ret_2_cells %>% 
+    filter(sheet == "AustCapacity",
            row != 1,
            row <= 262) %>% 
     behead("up",
@@ -57,20 +57,20 @@ plot_generation_charts <- function(results_ref,
               direction = "left-up",
               name = "region") %>% 
     behead("left",
-           "gen_type") %>% 
-    mutate(generation_sent_out_gwh = content %>% as.numeric()) %>% 
-    select(region, year, gen_type, generation_sent_out_gwh) %>% 
-    filter(!is.na(generation_sent_out_gwh),
+           "cap_type") %>% 
+    mutate(capacity_mw = content %>% as.numeric()) %>% 
+    select(region, year, cap_type, capacity_mw) %>% 
+    filter(!is.na(capacity_mw),
            !is.na(year),
-           gen_type != "Total",
+           cap_type != "Total",
            #filter out aggregates that have sub-levels
            region %nin% c("Total NEM ", "Queensland")) %>% 
     mutate(year = as.numeric(year),
            scenario = "RET < 2 C") 
   
   #1 degrees, Safeguard policy
-  safeguard_2_generation <- safeguard_2_cells %>% 
-    filter(sheet == "AustGeneration",
+  safeguard_2_capacity <- safeguard_2_cells %>% 
+    filter(sheet == "AustCapacity",
            row != 1,
            row <= 262) %>% 
     behead("up",
@@ -79,20 +79,20 @@ plot_generation_charts <- function(results_ref,
               direction = "left-up",
               name = "region") %>% 
     behead("left",
-           "gen_type") %>% 
-    mutate(generation_sent_out_gwh = content %>% as.numeric()) %>% 
-    select(region, year, gen_type, generation_sent_out_gwh) %>% 
-    filter(!is.na(generation_sent_out_gwh),
+           "cap_type") %>% 
+    mutate(capacity_mw = content %>% as.numeric()) %>% 
+    select(region, year, cap_type, capacity_mw) %>% 
+    filter(!is.na(capacity_mw),
            !is.na(year),
-           gen_type != "Total",
+           cap_type != "Total",
            #filter out aggregates that have sub-levels
            region %nin% c("Total NEM ", "Queensland")) %>% 
     mutate(year = as.numeric(year),
            scenario = "Safeguard < 2 C") 
   
   #1.5 degrees, RET policy
-  ret_1_5_generation <- ret_1_5_cells %>% 
-    filter(sheet == "AustGeneration",
+  ret_1_5_capacity <- ret_1_5_cells %>% 
+    filter(sheet == "AustCapacity",
            row != 1,
            row <= 262) %>% 
     behead("up",
@@ -101,20 +101,20 @@ plot_generation_charts <- function(results_ref,
               direction = "left-up",
               name = "region") %>% 
     behead("left",
-           "gen_type") %>% 
-    mutate(generation_sent_out_gwh = content %>% as.numeric()) %>% 
-    select(region, year, gen_type, generation_sent_out_gwh) %>% 
-    filter(!is.na(generation_sent_out_gwh),
+           "cap_type") %>% 
+    mutate(capacity_mw = content %>% as.numeric()) %>% 
+    select(region, year, cap_type, capacity_mw) %>% 
+    filter(!is.na(capacity_mw),
            !is.na(year),
-           gen_type != "Total",
+           cap_type != "Total",
            #filter out aggregates that have sub-levels
            region %nin% c("Total NEM ", "Queensland")) %>% 
     mutate(year = as.numeric(year),
            scenario = "RET < 1.5 C") 
   
   #1.5 degrees, Safeguard policy
-  safeguard_1_5_generation <- safeguard_1_5_cells %>% 
-    filter(sheet == "AustGeneration",
+  safeguard_1_5_capacity <- safeguard_1_5_cells %>% 
+    filter(sheet == "AustCapacity",
            row != 1,
            row <= 262) %>% 
     behead("up",
@@ -123,37 +123,37 @@ plot_generation_charts <- function(results_ref,
               direction = "left-up",
               name = "region") %>% 
     behead("left",
-           "gen_type") %>% 
-    mutate(generation_sent_out_gwh = content %>% as.numeric()) %>% 
-    select(region, year, gen_type, generation_sent_out_gwh) %>% 
-    filter(!is.na(generation_sent_out_gwh),
+           "cap_type") %>% 
+    mutate(capacity_mw = content %>% as.numeric()) %>% 
+    select(region, year, cap_type, capacity_mw) %>% 
+    filter(!is.na(capacity_mw),
            !is.na(year),
-           gen_type != "Total",
+           cap_type != "Total",
            #filter out aggregates that have sub-levels
            region %nin% c("Total NEM ", "Queensland")) %>% 
     mutate(year = as.numeric(year),
            scenario = "Safeguard < 1.5 C") 
   
   ##Combining datasets
-  scenario_generation <- bind_rows(safeguard_1_5_generation,
-                                   ret_1_5_generation,
-                                   safeguard_2_generation, 
-                                   ret_2_generation,
-                                   ref_generation) %>% 
-    mutate(type = case_when(str_detect(gen_type, 'Coal') ~ "Coal",
-                            str_detect(gen_type, 'Gas|Hydrogen') ~ 'Gas',
-                            str_detect(gen_type, '[w|W]ind') ~ "Wind",
-                            str_detect(gen_type, 'Solar') ~ "Utility solar",
-                            str_detect(gen_type, 'PV') ~ "Rooftop PV",
-                            .default = gen_type),
-           renewable = case_when(gen_type %in% c("Hydro",
+  scenario_capacity <- bind_rows(safeguard_1_5_capacity,
+                                   ret_1_5_capacity,
+                                   safeguard_2_capacity, 
+                                   ret_2_capacity,
+                                   ref_capacity) %>% 
+    mutate(type = case_when(str_detect(cap_type, 'Coal') ~ "Coal",
+                            str_detect(cap_type, 'Gas|Hydrogen') ~ 'Gas',
+                            str_detect(cap_type, '[w|W]ind') ~ "Wind",
+                            str_detect(cap_type, 'Solar') ~ "Utility solar",
+                            str_detect(cap_type, 'PV') ~ "Rooftop PV",
+                            .default = cap_type),
+           renewable = case_when(cap_type %in% c("Hydro",
                                                  "Wind",
                                                  "Biomass",
                                                  "Solar",
                                                  "Solar + Storage",
                                                  "Geothermal",
                                                  "Rooftop PV") ~ "Renewable",
-                                 gen_type %in% c("Pumped Hydro", 
+                                 cap_type %in% c("Pumped Hydro", 
                                                  "Battery Storage",
                                                  "Embedded Battery") ~ "Storage",
                                  .default = "Fossil fuel")) %>%
@@ -174,7 +174,7 @@ plot_generation_charts <- function(results_ref,
                                'DKIS' = c("Northern Territory"),
                                'Mt Isa' = c("Mt Isa"),
                                'NWIS' = c('NW'))) %>%
-    mutate(source = fct_collapse(gen_type,
+    mutate(source = fct_collapse(cap_type,
                                  'Wind' = c("Wind"),
                                  'Solar' = c("Rooftop PV", "Solar", "Solar + Storage"),
                                  'Hydro' = c("Pumped Hydro", "Hydro"),
@@ -190,7 +190,7 @@ plot_generation_charts <- function(results_ref,
   ####### Plotting generation charts #######
   
   #Create generation palette
-  gen_pal <- c("Solar" = grattan_yellow,
+  cap_pal <- c("Solar" = grattan_yellow,
                "Wind" = grattan_orange,
                "Hydro" = grattan_lightblue,
                "Battery" = grattan_lightorange2,
@@ -203,18 +203,19 @@ plot_generation_charts <- function(results_ref,
   ## Plotting 2 degrees, RET policy chart
   
   #Creating chart data
-  gen_plot_data <- scenario_generation %>%
+  cap_plot_data <- scenario_capacity %>%
     group_by(grid, scenario, year, source) %>%
-    summarise(generation = sum(generation_sent_out_gwh)) %>%
-    filter(grid == "NEM" | grid == "SWIS")
+    summarise(capacity = sum(capacity_mw)) %>%
+    filter(grid == "NEM") %>%
+    filter(year >= 2025, year <= 2035)
   
-  source_levels <- levels(fct_rev(scenario_generation$source))
+  source_levels <- levels(fct_rev(scenario_capacity$source))
   
   source_labels <- data.frame(
     labels = source_levels,
-    cols = gen_pal,
-    x = c(2022.5, 2022.5, 2022.5, 2022.5, 2028.5, 2028.5, 2028.5),
-    y = c(seq(500000,630000, length.out = 4), seq(550000,630000, length.out = 3)),
+    cols = cap_pal,
+    x = c(2025, 2025, 2025, 2025, 2026, 2026, 2026),
+    y = c(seq(140000,185000, length.out = 4), seq(160000, 185000, length.out = 3)),
     stringsAsFactors = FALSE,
     grid = "NEM")
   
@@ -224,8 +225,8 @@ plot_generation_charts <- function(results_ref,
   scenarios <- data.frame(
     scenario = c('No new policy', 'RET < 2 C', 'Safeguard < 2 C', 
                  'RET < 1.5 C', 'Safeguard < 1.5 C'),
-    plot_name = c('gen_plot_ref', 'gen_plot_ret_2', 'gen_plot_safeguard_2', 
-                  'gen_plot_ret_1_5', 'gen_plot_safeguard_1_5'),
+    plot_name = c('cap_plot_ref', 'cap_plot_ret_2', 'cap_plot_safeguard_2', 
+                  'cap_plot_ret_1_5', 'cap_plot_safeguard_1_5'),
     file_name = c('reference.pdf', '2_degree_ret.pdf', 
                   '2_degree_safeguard.pdf', '1_5_degree_ret.pdf',
                   '1_5_degree_safeguard.pdf'),
@@ -241,15 +242,15 @@ plot_generation_charts <- function(results_ref,
     file_name <- scenarios$file_name[i]
     
     # Create plot
-    current_plot <- ggplot(gen_plot_data %>% filter(scenario == current_scenario)) +
-      geom_col(aes(x = year, y = generation, fill = source, colour = source)) +
+    current_plot <- ggplot(cap_plot_data %>% filter(scenario == current_scenario)) +
+      geom_col(aes(x = year, y = capacity, fill = source, colour = source)) +
       facet_wrap(~grid,
                  ncol = 2,
                  scales = 'free_y') +
-      scale_fill_manual(values = gen_pal) + 
-      scale_colour_manual(values = gen_pal) + 
-      scale_y_continuous(labels = function(x) paste0(x/1000, 'k GWH'),
-                         expand = expansion(mult = c(0, 0.1)),
+      scale_fill_manual(values = cap_pal) + 
+      scale_colour_manual(values = cap_pal) + 
+      scale_y_continuous(labels = function(x) paste0(x/1000, ' gw'),
+                         expand = expansion(mult = c(0, 0.15)),
                          breaks = scales::breaks_pretty(n = 3)) +
       xlab('') +
       scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
@@ -257,9 +258,10 @@ plot_generation_charts <- function(results_ref,
                 aes(x = x, y = y, label = labels, colour = labels),
                 inherit.aes = F,
                 hjust = 0, 
-                size = 5) + 
-      labs(title = paste0(current_scenario, " - generation mix"),
-           subtitle = "Generation in GWH by grid",
+                size = 6,
+                nudge_x = -0.3) + 
+      labs(title = paste0(current_scenario, " - capacity mix"),
+           subtitle = "Capacity in GW by grid",
            x = '',
            y = '') +
       theme_grattan()
@@ -268,8 +270,10 @@ plot_generation_charts <- function(results_ref,
     plot_list[[plot_name]] <- current_plot
   }
   current_plot
-  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/generation_plots.pptx')
+  check_chart_aspect_ratio(type = 'fullslide') 
+  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/nem_capacity_2035.pptx')
   return(plot_list)
   
 }
+
 

@@ -15,6 +15,8 @@ plot_transmission_build <- function(results_ref,
   
   # Create empty list to store transmission plots
   transmission_plot_list <- list()
+  transmission_data_list <- list()
+  
   
   # Loop through each scenario to create transmission plots
   for (i in 1:nrow(transmission_scenarios)) {
@@ -47,26 +49,41 @@ plot_transmission_build <- function(results_ref,
                                               'SA-Redcliff' = 'SA-REDCLIFF',
                                               'SA-VIC' = 'SA-VIC',
                                               'Snowy-VIC' = 'SNOWY-VIC',
-                                              'VIC-TAS' = 'VIC to TAS'))
+                                              'VIC-TAS' = 'VIC to TAS')) %>%
+      mutate(scenario = current_scenario)
+    
+    transmission_data_list[[i]] <- transmission_data
+    
     
     # Create plot
     current_transmission_plot <- ggplot(transmission_data) + 
       geom_col(aes(x = year, y = mw, colour = grattan_orange, fill = grattan_orange)) +
-      facet_wrap(~connection) +
+      facet_wrap(~connection, 
+                 ncol = 5) +
       scale_x_continuous(breaks = seq(2025, 2050, by = 10)) +
       scale_y_continuous(labels = function(x) paste0(comma(x/1000), "k MW"),
-                         expand = expansion(mult = c(0, -0.05))) + 
+                         expand = expansion(mult = c(0, 0)),
+                         breaks = c(0, 2000, 4000)) + 
       xlab('') +
+      labs(title = paste0(current_scenario, " - transmission build by connection"),
+           subtitle = "Total transmission capacity",
+           x = '',
+           y = '') +
       theme_grattan()
     
-    # Save plot
-    grattan_save_all(paste0("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/", file_name),
-                     object = current_transmission_plot)
-    
-    # Add to plot list
+    # # Add to plot list
     transmission_plot_list[[plot_name]] <- current_transmission_plot
   }
   
+  transmission_build_profile <- do.call(rbind, transmission_data_list)
+  
+  transmission_build_profile <- transmission_build_profile %>%
+    select(scenario, connection, year, mw)
+
   # Return the list of plots
-  return(transmission_plot_list)
+  grattan_save_pptx(p = transmission_plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/transmission_plots.pptx')
+  return(list(
+    plots = transmission_plot_list,
+    transmission_build_profile = transmission_build_profile
+  ))
 }

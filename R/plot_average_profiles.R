@@ -43,7 +43,7 @@ plot_average_profiles <- function(all_average_profiles){
   
   check_chart_aspect_ratio()
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/average_demand_shape_over_time.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Profiles/average_demand_shape_over_time.pdf",
                    object = plot)
   
   

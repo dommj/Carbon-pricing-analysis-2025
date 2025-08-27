@@ -103,6 +103,28 @@ plot_cp_burden_and_savings <- function(average_net_costs,
   
   plot
   
+  #State by state version
+  
+  state_chart_data <- average_net_costs %>%
+    filter(state != "WA",
+           scenario == "Ref" | scenario == '2_Opt1' | scenario == '2_Opt2',
+           year %in% years,
+           electrification == T) %>% 
+    group_by(year, scenario, state) %>%
+    summarise(state_cost = sum(average_cost_dollars)) %>%
+    ungroup()
+    
+  ggplot(state_chart_data) + 
+    geom_line(aes(x = year, y = state_cost, colour = scenario)) + 
+    facet_wrap(~state) +
+    scale_y_continuous(limits = c(0,6500),
+                       labels = function(x) paste0('$', comma(x)),
+                       expand = expansion(mult = c(0, 0))) +
+    scale_x_continuous(breaks = seq(2025, 2050, by = 15)) +
+    xlab('') +
+    theme_grattan()
+  
+  check_chart_aspect_ratio()
   
   ##########################
   #total annualised
@@ -122,10 +144,39 @@ plot_cp_burden_and_savings <- function(average_net_costs,
     group_by(scenario, category) %>% 
     summarise(annualised_cost = sum(average_cost_dollars) / n())
   
+  ###### #Trying to do consumption chart ########
   
+  total_consumption <- aggregate_consumption %>%
+    group_by(year) %>%
+    summarise(consumption = sum(aggregate_consumption_mwh)) %>%
+    ungroup()
+  
+  safeguard_comp <- weighted_nem_average_retail_prices %>%
+    pivot_wider(names_from = scenario, 
+                values_from = c_kwh) %>%
+    clean_names() %>%
+    mutate(safeguard_less_ref = safeguard_2_c - no_new_policy) %>%
+    ungroup() %>%
+    left_join(total_consumption) %>%
+    mutate(comp = safeguard_less_ref * consumption) %>%
+    ungroup() %>%
+    mutate(rolling_comp = cumsum(comp))
+  
+  #Check chart
+  ggplot(safeguard_comp) +
+    geom_col(aes(x = year, y = comp/1000000000), colour = grattan_orange) +
+    # geom_line(aes(x = year, y = rolling_comp/1000000000), colour = grattan_red) + 
+    grattan_y_continuous(labels = function(x) paste0("$", x, "b")) +
+    ylab('') +
+    xlab('') +
+    theme_grattan() +
+    labs(title = "Two years of elevated electricity spend is more than compensated for over the following 20 years",
+         subtitle = "Difference between estimated total electricity spend under the Safeguard < 2 C scenario and the Reference case")
   
 }
 
+
+######
 #investigating consumption discontinuities
 
 function(){

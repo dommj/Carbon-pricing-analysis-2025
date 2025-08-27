@@ -108,6 +108,8 @@ tar_source("R/calculate_average_electricity_costs.R")
 tar_source("R/calculate_average_petrol_costs.R")
 
 #create charts
+tar_source("example_reconstruct_plot_from_list.R")
+
 tar_source("R/plot_scenario_results.R")
 
 tar_source("R/compile_average_net_costs.R")
@@ -118,6 +120,13 @@ tar_source("R/plot_gas_supply_charges.R")
 tar_source("R/plot_average_profiles.R")
 tar_source("R/plot_generation_charts.R")
 tar_source("R/plot_transmission_build.R")
+tar_source("R/plot_coal_exits.R")
+tar_source("R/plot_total_energy_costs.R")
+tar_source("R/plot_state_energy_costs.R")
+tar_source("R/plot_nem_generation_2035.R")
+tar_source("R/plot_capacity_charts.R")
+tar_source("R/plot_nem_capacity_2035.R")
+tar_source("R/plot_patchworks.R")
 
 #tar_source("R/create_esoo_demand_chart.R")
 
@@ -258,11 +267,11 @@ tar_plan(
   
   tar_map(
     tibble(scenario = c("reference_case", "1_5_opt1", "1_5_opt2", "2_opt1", "2_opt2"),
-           filepath = c("Data/Jacobs/Update/RetailPriceProjections_Ref.xlsx",
-                        "Data/Jacobs/Update/RetailPriceProjections_1_5_Opt1.xlsx", 
-                        "Data/Jacobs/Update/RetailPriceProjections_1_5_Opt2.xlsx",
-                        "Data/Jacobs/Update/RetailPriceProjections_2_Opt1.xlsx", 
-                        "Data/Jacobs/Update/RetailPriceProjections_2_Opt2.xlsx")),
+           filepath = c("Data/Jacobs/Final Update/RetailPriceProjections_Ref.xlsx",
+                        "Data/Jacobs/Final Update/RetailPriceProjections_1_5_Opt1.xlsx", 
+                        "Data/Jacobs/Final Update/RetailPriceProjections_1_5_Opt2.xlsx",
+                        "Data/Jacobs/Final Update/RetailPriceProjections_2_Opt1.xlsx", 
+                        "Data/Jacobs/Final Update/RetailPriceProjections_2_Opt2.xlsx")),
     names = scenario,
     tar_target(jacobs_retail_model, filepath, format = "file"),
     tar_target(jacobs_retail_prices, 
@@ -662,9 +671,9 @@ tar_plan(
   
   ##################### Chapter 4 - Jacobs Results #######################
   
-  tar_file(jacobs_results_summary, "Data/Jacobs/Update/SummaryResultsV4U.xlsx"),
+  tar_file(jacobs_results_summary, "Data/Jacobs/Final Update/SummaryResultsV4U.xlsx"),
   
-  tar_file(results_ref, "Data/Jacobs/Update/Results_RefV3.xlsx"),
+  tar_file(results_ref, "Data/Jacobs/Final Update/Results_RefV3.xlsx"),
   
   tar_file(results_1_5_Opt1, "Data/Jacobs/Update/Results_Opt1T15V3.xlsx"),
   
@@ -734,11 +743,43 @@ tar_plan(
                                                       results_2_Opt1,
                                                       results_2_Opt2)),
   
+  tar_target(nem_generation_2035, plot_nem_generation_2035(results_ref,
+                                                           results_1_5_Opt1,
+                                                           results_1_5_Opt2,
+                                                           results_2_Opt1,
+                                                           results_2_Opt2)),
+  
   tar_target(transmission_plots, plot_transmission_build(results_ref,
                                                          results_1_5_Opt1,
                                                          results_1_5_Opt2,
                                                          results_2_Opt1,
                                                          results_2_Opt2)),
+  
+  tar_target(coal_plots, plot_coal_exits(results_ref,
+                                         results_1_5_Opt1,
+                                         results_1_5_Opt2,
+                                         results_2_Opt1,
+                                         results_2_Opt2)),
+  
+  tar_target(capacity_charts, plot_capacity_charts(results_ref,
+                                                   results_1_5_Opt1,
+                                                   results_1_5_Opt2,
+                                                   results_2_Opt1,
+                                                   results_2_Opt2)),
+  
+  tar_target(nem_capacity_2035, plot_nem_capacity_2035(results_ref, 
+                                                       results_1_5_Opt1, 
+                                                       results_1_5_Opt2,
+                                                       results_2_Opt1,
+                                                       results_2_Opt2)),
+  
+  tar_target(total_energy_costs_plot, plot_total_energy_costs(average_net_costs,
+                                                              household_connections)),
+  
+  tar_target(state_energy_costs_plot, plot_state_energy_costs(average_net_costs, 
+                                                              household_connections)),
+  
+  tar_target(patchworks, plot_patchworks(jacobs_results_charts)),
   
   ################
   #Appendix C
@@ -775,4 +816,3 @@ tar_plan(
   #create_charts.qmd
   
 )
-

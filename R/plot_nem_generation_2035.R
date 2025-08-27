@@ -1,7 +1,6 @@
 ####### Generation plots by scenario ######
 
-
-plot_generation_charts <- function(results_ref,
+plot_nem_generation_2035 <- function(results_ref,
                             results_1_5_Opt1,
                             results_1_5_Opt2,
                             results_2_Opt1,
@@ -206,15 +205,16 @@ plot_generation_charts <- function(results_ref,
   gen_plot_data <- scenario_generation %>%
     group_by(grid, scenario, year, source) %>%
     summarise(generation = sum(generation_sent_out_gwh)) %>%
-    filter(grid == "NEM" | grid == "SWIS")
+    filter(grid == "NEM") %>%
+    filter(year >= 2025, year <= 2035)
   
   source_levels <- levels(fct_rev(scenario_generation$source))
   
   source_labels <- data.frame(
     labels = source_levels,
     cols = gen_pal,
-    x = c(2022.5, 2022.5, 2022.5, 2022.5, 2028.5, 2028.5, 2028.5),
-    y = c(seq(500000,630000, length.out = 4), seq(550000,630000, length.out = 3)),
+    x = c(2025, 2025, 2025, 2025, 2026, 2026, 2026),
+    y = c(seq(280000,350000, length.out = 4), seq(300000, 350000, length.out = 3)),
     stringsAsFactors = FALSE,
     grid = "NEM")
   
@@ -243,21 +243,18 @@ plot_generation_charts <- function(results_ref,
     # Create plot
     current_plot <- ggplot(gen_plot_data %>% filter(scenario == current_scenario)) +
       geom_col(aes(x = year, y = generation, fill = source, colour = source)) +
-      facet_wrap(~grid,
-                 ncol = 2,
-                 scales = 'free_y') +
       scale_fill_manual(values = gen_pal) + 
       scale_colour_manual(values = gen_pal) + 
       scale_y_continuous(labels = function(x) paste0(x/1000, 'k GWH'),
                          expand = expansion(mult = c(0, 0.1)),
                          breaks = scales::breaks_pretty(n = 3)) +
       xlab('') +
-      scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
       geom_text(data = source_labels,
                 aes(x = x, y = y, label = labels, colour = labels),
                 inherit.aes = F,
                 hjust = 0, 
-                size = 5) + 
+                nudge_x = -0.4,
+                size = 6) + 
       labs(title = paste0(current_scenario, " - generation mix"),
            subtitle = "Generation in GWH by grid",
            x = '',
@@ -266,9 +263,12 @@ plot_generation_charts <- function(results_ref,
 
     # Add to plot list
     plot_list[[plot_name]] <- current_plot
+    current_plot
+    check_chart_aspect_ratio(type = 'fullslide')
   }
-  current_plot
-  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/generation_plots.pptx')
+  
+  
+  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/nem_generation_2035.pptx')
   return(plot_list)
   
 }

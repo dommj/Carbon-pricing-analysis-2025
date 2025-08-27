@@ -24,7 +24,7 @@ plot_consumer_charts <- function(average_net_costs,
   chart_data <- average_net_costs %>% 
     left_join(household_connections) %>% 
     filter(state != "WA",
-           scenario == "Ref" | scenario == "2_Opt2" | scenario == "2_Opt1",
+           scenario == "Ref" | scenario == "2_Opt2" | scenario == "2_Opt1", #Have to come back here to get all the scenarios in by degrees
            #electrification == T is the default scenario that we use for all, showing the expected electrification
            electrification == T) %>% 
     group_by(year, scenario, category) %>% 
@@ -79,11 +79,9 @@ plot_consumer_charts <- function(average_net_costs,
     labs(x = "")
   
   # Combine plots vertically using patchwork
-  bill_diff_plot <- p1 / p2 
+  bill_diff_plot <- p1 + p2 
 
-  
-  
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_dif_in_bills.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/2_degree_dif_in_bills.pdf",
                    object = bill_diff_plot)   
 
   
@@ -136,8 +134,7 @@ plot_consumer_charts <- function(average_net_costs,
          y = '',
          caption = "Notes: \nSource: Grattan Institute analaysis see app X")
   
-  
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_energy_cost_over_time_safeguard.pdf",
+    grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/2_degree_energy_cost_over_time_safeguard.pdf",
                    object = energy_wallet_over_time_plot)
   
   
@@ -317,7 +314,7 @@ plot_consumer_charts <- function(average_net_costs,
   
   #check_chart_aspect_ratio(type = "wholecolumn")
     
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_waterfall_nsw_vic.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Waterfall/2_degree_waterfall_nsw_vic.pdf",
                    object = nsw_vic_waterfall_plot)   
   
   
@@ -392,7 +389,7 @@ plot_consumer_charts <- function(average_net_costs,
   #check_chart_aspect_ratio()
   
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/2_degree_gas_v_electric_household.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Gas Connections/2_degree_gas_v_electric_household.pdf",
                    object = gas_v_electric_household_plot)   
   
   

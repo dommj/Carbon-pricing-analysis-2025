@@ -43,7 +43,7 @@ convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar
   if (unit_type == "calendar year"){
     
     dollars_25 <- dollars_25 <- dollars * 
-      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
+      (cpi_qtr %>% filter(date == "2025-06-01") %>% pull(cpi)) / 
       (cpi_calendar %>% filter(year == current_year) %>% pull(cpi))
     
   }
@@ -51,7 +51,7 @@ convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar
   if (unit_type == "fy"){
     
     dollars_25 <- dollars_25 <- dollars * 
-      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
+      (cpi_qtr %>% filter(date == "2025-06-01") %>% pull(cpi)) / 
       (cpi_fy %>% filter(fy == current_year) %>% pull(cpi))
     
   }
@@ -59,7 +59,7 @@ convert_to_2024_dollars <- function(dollars, current_year, unit_type = "calendar
   if (unit_type == "qtr"){
     
     dollars_25 <- dollars_25 <- dollars * 
-      (cpi_qtr %>% filter(date == "2025-03-01") %>% pull(cpi)) / 
+      (cpi_qtr %>% filter(date == "2025-06-01") %>% pull(cpi)) / 
       (cpi_qtr %>% filter(qtr == current_year) %>% pull(cpi))
     
   }
