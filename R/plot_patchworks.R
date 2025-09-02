@@ -6,11 +6,11 @@ plot_patchworks <- function(jacobs_results_charts) {
   plot_list = list()
   
   #Reconstruct emissions and renewables plots
-  emissions_plot <- reconstruct_plot("emissions_plot", jacobs_results_charts) + 
+  emissions_plot <- reconstruct_plot("emissions_plot_2c", jacobs_results_charts) + 
     theme(plot.title = element_blank(),
           plot.subtitle = element_blank(),
           plot.caption = element_blank())
-  renewables_plot <- reconstruct_plot("renewable_pct_plot", jacobs_results_charts) + 
+  renewables_plot <- reconstruct_plot("renewable_pct_plot_2c", jacobs_results_charts) + 
     theme(plot.title = element_blank(),
           plot.subtitle = element_blank(),
           plot.caption = element_blank())
@@ -24,11 +24,11 @@ plot_patchworks <- function(jacobs_results_charts) {
   plot_list['emission_renewables'] <- list(emission_renewables)
   
   #Reconstruct pricing charts 
-  annual_price_chart <- reconstruct_plot("annual_price_chart", jacobs_results_charts) + 
+  annual_price_chart <- reconstruct_plot("annual_price_chart_2c", jacobs_results_charts) + 
     theme(plot.title = element_blank(), 
           plot.subtitle = element_blank(),
           plot.caption = element_blank())
-  average_nem_retail_chart <- reconstruct_plot("average_nem_retail_chart", jacobs_results_charts) +
+  average_nem_retail_chart <- reconstruct_plot("average_nem_retail_chart_2c", jacobs_results_charts) +
     theme(plot.title = element_blank(),
           plot.subtitle = element_blank(),
           plot.caption = element_blank())

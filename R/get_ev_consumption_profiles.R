@@ -359,6 +359,19 @@ get_ev_consumption_profiles <- function(electric_vehicle_workbook_file,
 ##########################################
 #old
 ##########################################
+# ggplot(ev_fleet_data %>%
+#          filter(year >= 2025, year <= 2050) %>%
+#          group_by(year) %>%
+#          mutate(total = sum(vehicles_count)) %>%
+#          ungroup() %>%
+#          group_by(fuel_type, year, total) %>%
+#          summarise(stock = sum(vehicles_count)) %>%
+#          mutate(pct = stock/total) %>%
+#          ungroup()) +
+#   geom_line(aes(x = year, y = pct, colour = fuel_type)) +
+#   scale_y_continuous(labels = function(x) paste0(percent(x))) +
+#   theme_grattan(legend = 'top')
+
 function(){
   
   

@@ -87,3 +87,16 @@ estimate_pv_system_stock <- function(rbs_outputs_data_file,
   return(interpolated_pv_stock)
   
 }
+
+#Calculations for report 
+
+# ggplot(interpolated_pv_stock %>%
+#          group_by(year) %>%
+#          summarise(stock = sum(pv_stock)) %>%
+#          ungroup()) + 
+#   geom_line(aes(x = year, y = stock)) +
+#   scale_y_continuous(labels = function(x) paste0(comma(x/1000000), 'm')) +
+#   xlab('') +
+#   theme_grattan() 
+
+            
