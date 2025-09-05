@@ -40,6 +40,16 @@ estimate_battery_prevalence <- function(esoo_2024_assumptions_workbook_file,
   return(battery_prevalence)
 }
 
+#Calcs on battery
+
+# ggplot(battery_prevalence %>%
+#          filter(year >= 2025, year <= 2050) %>%
+#          group_by(year) %>%
+#          summarise(battery_stock = sum(battery_stock))) + 
+#   geom_line(aes(x = year, y = battery_stock)) +
+#   scale_y_continuous(labels = function(x) paste0(comma(x/1000000), 'm'),
+#                      limits = c(0, 6000000)) +
+#   theme_grattan()
 
 #archived
 function(){

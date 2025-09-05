@@ -517,7 +517,6 @@ plot_consumer_charts <- function(average_net_costs,
   
   plots_2c_ret <- map2(split_data_2c_ret, facet_labels, ~{
     base_plot <- create_plot( .x, .y)
-    )
     
     # Determine if this is a leftmost plot (first in each row)
     plot_index <- which(facet_labels == .y)

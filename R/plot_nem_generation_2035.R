@@ -176,14 +176,14 @@ plot_nem_generation_2035 <- function(results_ref,
     mutate(source = fct_collapse(gen_type,
                                  'Wind' = c("Wind"),
                                  'Solar' = c("Rooftop PV", "Solar", "Solar + Storage"),
-                                 'Hydro' = c("Pumped Hydro", "Hydro"),
+                                 'Hydro' = c("Hydro"),
                                  'Coal' = c("Black Coal", "Brown Coal"),
                                  'Gas' = c("Gas CC CCS", "Gas CCGT & Cogen",
-                                           "Gas GT", "Gas Steam"),
-                                 'Battery' = c("Battery Storage", "Embedded Battery"),
+                                           "Gas GT", "Gas Steam", "Hydrogen ready"),
+                                 'Storage' = c("Battery Storage", "Embedded Battery", "Pumped Hydro"),
                                  'Other' = c("Biomass", "Distillate", 
-                                             "Geothermal", "Hydrogen ready"))) %>%
-    mutate(source = fct_relevel(source, "Wind", "Solar", "Hydro", "Battery", 
+                                             "Geothermal"))) %>%
+    mutate(source = fct_relevel(source, "Wind", "Solar", "Hydro", "Storage", 
                                 "Coal", "Gas", "Other"))
   
   ####### Plotting generation charts #######
@@ -192,7 +192,7 @@ plot_nem_generation_2035 <- function(results_ref,
   gen_pal <- c("Solar" = grattan_yellow,
                "Wind" = grattan_orange,
                "Hydro" = grattan_lightblue,
-               "Battery" = grattan_lightorange2,
+               "Storage" = grattan_lightorange2,
                "Gas" = grattan_red,
                "Coal" = grattan_black,
                "Other" = grattan_lightblue6)
@@ -206,14 +206,14 @@ plot_nem_generation_2035 <- function(results_ref,
     group_by(grid, scenario, year, source) %>%
     summarise(generation = sum(generation_sent_out_gwh)) %>%
     filter(grid == "NEM") %>%
-    filter(year >= 2025, year <= 2035)
+    filter(year >= 2030, year <= 2035)
   
   source_levels <- levels(fct_rev(scenario_generation$source))
   
   source_labels <- data.frame(
     labels = source_levels,
     cols = gen_pal,
-    x = c(2025, 2025, 2025, 2025, 2026, 2026, 2026),
+    x = c(2030, 2030, 2030, 2030, 2031, 2031, 2031),
     y = c(seq(280000,350000, length.out = 4), seq(300000, 350000, length.out = 3)),
     stringsAsFactors = FALSE,
     grid = "NEM")
@@ -256,19 +256,16 @@ plot_nem_generation_2035 <- function(results_ref,
                 nudge_x = -0.4,
                 size = 6) + 
       labs(title = paste0(current_scenario, " - generation mix"),
-           subtitle = "Generation in GWH by grid",
+           subtitle = "Generation in GWH, NEM",
            x = '',
            y = '') +
       theme_grattan()
 
     # Add to plot list
     plot_list[[plot_name]] <- current_plot
-    current_plot
-    check_chart_aspect_ratio(type = 'fullslide')
   }
   
-  
-  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/nem_generation_2035.pptx')
+  grattan_save_pptx(p = plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/nem_generation_2035_1.pptx')
   return(plot_list)
   
 }
