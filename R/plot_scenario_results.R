@@ -619,9 +619,9 @@ plot_scenario_results <- function(jacobs_results_summary,
     grattan_y_continuous(labels = scales::dollar_format(),
                          limits = c(0,520)) +
     grattan_label(data = . %>%  filter(year == 2050) %>% 
-                    mutate(x = c(2044, 2041, 2042),
+                    mutate(x = c(2044, 2035, 2042),
                            y = case_when(scenario == "No new policy" ~ 370,
-                                         scenario == "RET < 1.5 C" ~ 360,
+                                         scenario == "RET < 1.5 C" ~ 350,
                                          scenario == "Safeguard < 1.5 C" ~ 500)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
