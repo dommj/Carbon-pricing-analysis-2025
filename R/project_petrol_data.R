@@ -30,4 +30,3 @@ project_petrol_data <- function(petrol_price_data, end_year) {
 # project_petrol_data(petrol_data, 2050) %>% 
 #   ggplot(aes(x = year, y = c_litre)) +
 #   geom_line()
-  

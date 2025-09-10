@@ -16,9 +16,7 @@ plot_consumer_charts <- function(average_net_costs,
   
   
   chart_palette_scenarios <- c("No new policy" = grattan_red,
-                     "RET < 2 C" = grattan_yellow,
                      "Safeguard < 2 C" = grattan_orange,
-                     "RET < 1.5 C" = grattan_yellow2,
                      "Safeguard < 1.5 C" = grattan_orange2)
   
   
@@ -58,6 +56,7 @@ plot_consumer_charts <- function(average_net_costs,
     )
   
   p1_2c <- annual_chart_data_2c %>% 
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
     filter(facet == "Total bills") %>% 
     ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
@@ -71,11 +70,12 @@ plot_consumer_charts <- function(average_net_costs,
     filter(facet == "Difference in bills") %>% 
     #set zero value to NA so we don't get a white box
     mutate(annualised_cost = if_else(annualised_cost ==0, NA, annualised_cost)) %>% 
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
     ggplot(aes(x = scenario, y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
-    scale_x_discrete(limits = c("No new policy", "RET < 2 C", "Safeguard < 2 C")) +
+    scale_x_discrete(limits = c("No new policy", "Safeguard < 2 C")) +
     scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
     labs(x = "")
@@ -86,17 +86,17 @@ plot_consumer_charts <- function(average_net_costs,
   
   bill_diff_plot_1_2c
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/2_degree_dif_in_bills_by_side.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_dif_in_bills_by_side.pdf",
                    object = bill_diff_plot_1_2c)   
 
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/2_degree_dif_in_bills_stack.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_dif_in_bills_stack.pdf",
                    object = bill_diff_plot_2_2c) 
   
   #average electricity bills 1.5C
   chart_data_15c <- average_net_costs %>% 
     left_join(household_connections) %>% 
     filter(state != "WA",
-           scenario == "Ref" | scenario == "1_5_Opt2" | scenario == "1_5_Opt1", #Have to come back here to get all the scenarios in by degrees
+           scenario == "Ref" | scenario == "1_5_Opt2", #Have to come back here to get all the scenarios in by degrees
            #electrification == T is the default scenario that we use for all, showing the expected electrification
            electrification == T) %>% 
     group_by(year, scenario, category) %>% 
@@ -128,7 +128,8 @@ plot_consumer_charts <- function(average_net_costs,
     )
   
   p1_15c <- annual_chart_data_15c %>% 
-    filter(facet == "Total bills") %>% 
+    filter(facet == "Total bills") %>%
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
     ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
@@ -141,11 +142,12 @@ plot_consumer_charts <- function(average_net_costs,
     filter(facet == "Difference in bills") %>% 
     #set zero value to NA so we don't get a white box
     mutate(annualised_cost = if_else(annualised_cost == 0, NA, annualised_cost)) %>% 
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 1.5 C') %>%
     ggplot(aes(x = scenario, y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
-    scale_x_discrete(limits = c("No new policy", "RET < 1.5 C", "Safeguard < 1.5 C")) +
+    scale_x_discrete(limits = c("No new policy", "Safeguard < 1.5 C")) +
     scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
     labs(x = "")
@@ -154,10 +156,10 @@ plot_consumer_charts <- function(average_net_costs,
   bill_diff_plot_1_15c <- p1_15c + p2_15c
   bill_diff_plot_2_15c <- p1_15c / p2_15c
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/1.5C/Energy Bills/1_5_degree_dif_in_bills_by_side.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/1.5C/Energy Bills/1_5_degree_dif_in_bills_by_side.pdf",
                    object = bill_diff_plot_1_15c)   
   
-  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/1.5C/Energy Bills/1_5_degree_dif_in_bills_stack.pdf",
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/1.5C/Energy Bills/1_5_degree_dif_in_bills_stack.pdf",
                    object = bill_diff_plot_2_15c)   
   
   
@@ -207,9 +209,9 @@ plot_consumer_charts <- function(average_net_costs,
          subtitle = 'Average NEM household energy costs in the Safeguard < 2 C scenario, ($2025)',
          x = '',
          y = '',
-         caption = "Notes: \nSource: Grattan Institute analaysis see app X")
+         caption = "Notes: \nSource: Grattan Institute analysis see app X")
   
-    grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/2_degree_energy_cost_over_time_safeguard.pdf",
+    grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_energy_cost_over_time_safeguard.pdf",
                    object = energy_wallet_over_time_plot_2c)
   
   
