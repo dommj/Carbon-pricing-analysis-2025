@@ -454,7 +454,8 @@ plot_scenario_results <- function(jacobs_results_summary,
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
     grattan_y_continuous(limits = c(0, 130), labels = scales::dollar_format()) +
-    scale_x_continuous_grattan(breaks = seq(2025, 2050, by = 5)) +
+    scale_x_continuous_grattan(breaks = seq(2025, 2050, by = 5),
+                               expand_right = 0.05) + 
     theme_grattan() +
     scale_colour_manual(values = chart_palette) +
     labs(title = "The Renewable Energy target keeps wholesale prices low, Safeguard is comparable with no new policy",
@@ -495,7 +496,8 @@ plot_scenario_results <- function(jacobs_results_summary,
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
     grattan_y_continuous(limits = c(0, 180), labels = scales::dollar_format()) +
-    scale_x_continuous_grattan(breaks = seq(2025, 2050, by = 5)) +
+    scale_x_continuous_grattan(breaks = seq(2025, 2050, by = 5),
+                               expand_right = 0.05) +
     theme_grattan() +
     scale_colour_manual(values = chart_palette) +
     labs(title = "The Renewable Energy target keeps wholesale prices low, Safeguard is comparable with no new policy",
@@ -504,7 +506,7 @@ plot_scenario_results <- function(jacobs_results_summary,
          y = "",
          caption = "Notes: Average prices are calculated by weighting prices in each grid by total sent out generation.") 
   
-  annual_price_chart_15c
+  
   
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/1.5C/Prices/1_5_degree_wholesale_results.pdf",
                    object = annual_price_chart_15c)
@@ -598,7 +600,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                          scenario == "Safeguard < 2 C" ~ 330)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
-    scale_x_continuous_grattan() +
+    scale_x_continuous_grattan(expand_right = 0.05) +
     scale_colour_manual(values = chart_palette) +
     theme_grattan() +
     labs(title = "Retail prices are similar across all scenarios, but the Safeguard outperforms the RET",
@@ -625,7 +627,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                                          scenario == "Safeguard < 1.5 C" ~ 500)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
-    scale_x_continuous_grattan() +
+    scale_x_continuous_grattan(expand_right = 0.05) +
     scale_colour_manual(values = chart_palette) +
     theme_grattan() +
     labs(title = "Retail prices are similar across all scenarios, but the Safeguard outperforms the RET",
@@ -806,7 +808,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                size = 5) +
     grattan_y_continuous(labels = scales::dollar_format(suffix = "b"),
                          limits = c(-100, 450)) +
-    scale_x_discrete(expand = expansion(add = c(0, 1.6))) +
+    scale_x_discrete(expand = expansion(add = c(0, 1.8))) +
     grattan_label(data = . %>%  filter(scenario == "Safeguard < 2 C") %>% 
                     mutate(y = present_value / 2), 
                   aes(x = scenario, y = y, 
@@ -820,7 +822,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                     filter(scenario == "Safeguard < 2 C") %>% 
                     mutate(y = present_value), 
                   aes(x = scenario, y = y, 
-                      label = str_wrap("Net resource costs and value of emissions", 19)),
+                      label = str_wrap("Net resource costs and value of emissions\nreduction", 19)),
                   colour = grattan_black,
                   hjust = 0,
                   nudge_x = 0.5) +
@@ -830,6 +832,9 @@ plot_scenario_results <- function(jacobs_results_summary,
          x = "",
          y = "",
          caption = "Note: Value of emissions reductions are calculated using AER guidance values. Net present value is calculated using a discount rate of 7.4%")
+  
+  npv_compare_chart_2c
+  check_chart_aspect_ratio(type = 'normal')
   
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/NPV Compare/2_degree_npv_results.pdf", object = npv_compare_chart_2c)
   
@@ -908,7 +913,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                size = 5) +
     grattan_y_continuous(labels = scales::dollar_format(suffix = "b"),
                          limits = c(-100, 450)) +
-    scale_x_discrete(expand = expansion(add = c(0, 1.6))) +
+    scale_x_discrete(expand = expansion(add = c(0, 1.8))) +
     grattan_label(data = . %>%  filter(scenario == "Safeguard < 1.5 C") %>% 
                     mutate(y = present_value / 2), 
                   aes(x = scenario, y = y, 
@@ -922,7 +927,7 @@ plot_scenario_results <- function(jacobs_results_summary,
                     filter(scenario == "Safeguard < 1.5 C") %>% 
                     mutate(y = present_value), 
                   aes(x = scenario, y = y, 
-                      label = str_wrap("Net resource costs and value of emissions", 19)),
+                      label = str_wrap("Net resource costs and value of emissions reduction", 19)),
                   colour = grattan_black,
                   hjust = 0,
                   nudge_x = 0.5) +

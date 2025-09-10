@@ -160,7 +160,55 @@ plot_consumer_charts <- function(average_net_costs,
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/1.5C/Energy Bills/1_5_degree_dif_in_bills_stack.pdf",
                    object = bill_diff_plot_2_15c)   
   
+  ####################################
+  #total energy Wallet over time - Ref
+  ####################################
+  label_data_ref <- chart_data_2c %>% 
+    filter(scenario == "No new policy") %>% 
+    # Calculate the y positions for the labels at the midpoints of each stack
+    group_by(year) %>% 
+    arrange(category) %>% 
+    mutate(y_position = cumsum(average_cost_dollars),
+           y_position = y_position - 0.5 * average_cost_dollars) %>% 
+    ungroup()
   
+  gap_data_ref <- chart_data_2c %>% 
+    filter(scenario == "No new policy",
+           year >= 2025) %>%
+    group_by(year) %>% 
+    summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
+    ungroup() %>% 
+    mutate(gap = average_cost_dollars - average_cost_dollars[year==2025])
+  
+  energy_wallet_over_time_plot_ref <- chart_data_2c %>% 
+    filter(scenario == "No new policy",
+           year >= 2025) %>% 
+    ggplot(aes(x = year, y = average_cost_dollars)) +
+    geom_col(aes(x = year, y = average_cost_dollars, 
+                 colour = fct_rev(category), fill = fct_rev(category))) +
+    grattan_label(data = label_data_ref %>% 
+                    filter(year == 2050), 
+                  aes(x = year, 
+                      y = y_position, 
+                      label = str_wrap(category, 13),
+                      colour = category),
+                  hjust = 0,
+                  nudge_x = 0.6) +
+    
+    grattan_y_continuous(labels = scales::dollar_format(), expand_top = 0.1) +
+    scale_x_continuous_grattan(expand_right = 0.17,
+                               breaks = seq(2025,2050, by = 5)) +
+    scale_colour_manual(values = chart_palette_fuels) +
+    scale_fill_manual(values = chart_palette_fuels) +
+    theme_grattan() +
+    labs(title = paste0("Households are set to save on energy costs throughout the transition"),
+         subtitle = 'Average NEM household energy costs in the Reference Case scenario, ($2025)',
+         x = '',
+         y = '',
+         caption = "Notes: \nSource: Grattan Institute analysis see app X")
+  
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Energy Bills/reference_energy_cost_over_time.pdf",
+                   object = energy_wallet_over_time_plot_ref)
   
   ####################################
   #total energy Wallet over time - 2C
@@ -627,6 +675,7 @@ plot_consumer_charts <- function(average_net_costs,
            "bill_diff_plot_2_2c" = bill_diff_plot_2_2c,
            "bill_diff_plot_1_15c" = bill_diff_plot_1_15c,
            "bill_diff_plot_2_15c" = bill_diff_plot_2_15c,
+           "energy_wallet_over_time_plot_ref" = energy_wallet_over_time_plot_ref,
          "energy_wallet_over_time_plot_2c" = energy_wallet_over_time_plot_2c,
          "energy_wallet_over_time_plot_15c" = energy_wallet_over_time_plot_15c,
          "nsw_vic_waterfall_plot_2c_safeguard" = nsw_vic_waterfall_plot_2c_safeguard,
