@@ -614,11 +614,11 @@ plot_scenario_results <- function(jacobs_results_summary,
     ggplot(aes(x = year, y = c_kwh, colour = scenario)) +
     geom_line(size = 1) +
     grattan_y_continuous(labels = function(x) paste0(x, "c"),
-                         limits = c(0,52)) +
+                         limits = c(0,80)) +
     grattan_label(data = . %>% filter(year == 2050) %>% 
-                    mutate(x = c(2044, 2031),
-                           y = case_when(scenario == "No new policy" ~ 36,
-                                         scenario == "Safeguard < 2\u00B0C" ~ 43)), 
+                    mutate(x = c(2044, 2044),
+                           y = case_when(scenario == "No new policy" ~ 60,
+                                         scenario == "Safeguard < 2\u00B0C" ~ 70)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
     scale_x_continuous_grattan(expand_right = 0.05) +
@@ -641,11 +641,11 @@ plot_scenario_results <- function(jacobs_results_summary,
                colour = scenario)) +
     geom_line(size = 1) +
     grattan_y_continuous(labels = function(x) paste0(x, "c"),
-                         limits = c(0,52)) +
+                         limits = c(0,80)) +
     grattan_label(data = . %>%  filter(year == 2050) %>% 
                     mutate(x = c(2042, 2042),
-                           y = case_when(scenario == "No new policy" ~ 35,
-                                         scenario == "Safeguard 1.5\u00B0C" ~ 46)), 
+                           y = case_when(scenario == "No new policy" ~ 60,
+                                         scenario == "Safeguard 1.5\u00B0C" ~ 70)), 
                   aes(x = x, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
     scale_x_continuous_grattan(expand_right = 0.05) +

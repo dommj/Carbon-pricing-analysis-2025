@@ -267,11 +267,11 @@ tar_plan(
   
   tar_map(
     tibble(scenario = c("reference_case", "1_5_opt1", "1_5_opt2", "2_opt1", "2_opt2"),
-           filepath = c("Data/Jacobs/Final Update/RetailPriceProjections_Ref.xlsx",
-                        "Data/Jacobs/Final Update/RetailPriceProjections_1_5_Opt1.xlsx", 
-                        "Data/Jacobs/Final Update/RetailPriceProjections_1_5_Opt2.xlsx",
-                        "Data/Jacobs/Final Update/RetailPriceProjections_2_Opt1.xlsx", 
-                        "Data/Jacobs/Final Update/RetailPriceProjections_2_Opt2.xlsx")),
+           filepath = c("Data/Jacobs/Price Increases/RetailPriceProjections_Ref.xlsx",
+                        "Data/Jacobs/Price Increases/RetailPriceProjections_1_5_Opt1.xlsx", 
+                        "Data/Jacobs/Price Increases/RetailPriceProjections_1_5_Opt2.xlsx",
+                        "Data/Jacobs/Price Increases/RetailPriceProjections_2_Opt1.xlsx", 
+                        "Data/Jacobs/Price Increases/RetailPriceProjections_2_Opt2.xlsx")),
     names = scenario,
     tar_target(jacobs_retail_model, filepath, format = "file"),
     tar_target(jacobs_retail_prices, 

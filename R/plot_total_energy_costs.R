@@ -102,5 +102,10 @@ plot_total_energy_costs <- function(average_net_costs,
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/1.5C/Energy Bills",
                    object = total_energy_chart_15c)
 
-  return(list(total_energy_chart_15c, total_energy_chart_2c))
+  View(total_energy_chart_2c$data)
+  writexl::write_xlsx(total_energy_chart_2c$data, '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Carbon-pricing-analysis-2025/Interim Analyses/double_wholesale_prices_2c.xlsx')
+  writexl::write_xlsx(total_energy_chart_15c$data, '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Carbon-pricing-analysis-2025/Interim Analyses/double_wholesale_prices_15c.xlsx')
+  
+    return(list(total_energy_chart_15c, total_energy_chart_2c))
 }
+
