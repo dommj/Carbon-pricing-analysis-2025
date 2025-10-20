@@ -755,7 +755,7 @@ tar_plan(
                                                          results_2_Opt1,
                                                          results_2_Opt2)),
   
-  tar_target(coal_plots, plot_coal_exits(results_ref,
+  tar_target(coal_exits, plot_coal_exits(results_ref,
                                          results_1_5_Opt1,
                                          results_1_5_Opt2,
                                          results_2_Opt1,

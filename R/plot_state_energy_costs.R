@@ -13,8 +13,8 @@ plot_state_energy_costs <- function(average_net_costs,
   chart_palette_scenarios <- c("No new policy" = grattan_red,
                                "RET < 2 C" = grattan_yellow,
                                "Safeguard < 2 C" = grattan_orange,
-                               "RET < 1.5 C" = grattan_yellow,
-                               "Safeguard < 1.5 C" = grattan_orange)
+                               "RET 1.5 C" = grattan_yellow,
+                               "Safeguard 1.5 C" = grattan_orange)
   
   #Constructing total household energy costs by state and scenario over time, 2 degrees
   
@@ -87,8 +87,8 @@ plot_state_energy_costs <- function(average_net_costs,
     grattan_label(data = . %>%  filter(year == 2040, state == "NSW and ACT") %>% 
                     mutate(x = year,
                            y = case_when(scenario == "No new policy" ~ 3000,
-                                         scenario == "RET < 1.5 C" ~ 4300,
-                                         scenario == "Safeguard < 1.5 C" ~ 2600)), 
+                                         scenario == "RET 1.5 C" ~ 4300,
+                                         scenario == "Safeguard 1.5 C" ~ 2600)), 
                   aes(x = year, y = y, label = scenario, colour = scenario),
                   hjust = 0) +
     theme_grattan()

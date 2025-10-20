@@ -16,8 +16,8 @@ plot_consumer_charts <- function(average_net_costs,
   
   
   chart_palette_scenarios <- c("No new policy" = grattan_red,
-                     "Safeguard < 2 C" = grattan_orange,
-                     "Safeguard < 1.5 C" = grattan_orange2)
+                     "Safeguard < 2\u00B0C" = grattan_orange,
+                     "Safeguard 1.5\u00B0C" = grattan_orange2)
   
   
   #average electricity bills 2C 
@@ -31,10 +31,10 @@ plot_consumer_charts <- function(average_net_costs,
     summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
     mutate(category = fct(category, levels = c("Petrol", "Electricity", "Gas")),
            scenario = fct_case_when(scenario == "Ref" ~ "No new policy",
-                                    scenario == "1_5_Opt1" ~ "RET < 1.5 C",
-                                    scenario == "1_5_Opt2"  ~ "Safeguard < 1.5 C",
-                                    scenario == "2_Opt1"  ~ "RET < 2 C",
-                                    scenario == "2_Opt2" ~ "Safeguard < 2 C")) %>% 
+                                    scenario == "1_5_Opt1" ~ "RET 1.5\u00B0C",
+                                    scenario == "1_5_Opt2"  ~ "Safeguard 1.5\u00B0C",
+                                    scenario == "2_Opt1"  ~ "RET < 2\u00B0C",
+                                    scenario == "2_Opt2" ~ "Safeguard < 2\u00B0C")) %>% 
     ungroup() 
   
   
@@ -56,12 +56,18 @@ plot_consumer_charts <- function(average_net_costs,
     )
   
   p1_2c <- annual_chart_data_2c %>% 
-    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2\u00B0C') %>%
     filter(facet == "Total bills") %>% 
     ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
-    grattan_y_continuous(labels = scales::dollar_format()) +
+    grattan_y_continuous(labels = scales::dollar_format(),
+                         expand_top = 0.1,
+                         limits = c(0,2600),
+                         breaks = seq(0, 2600, 500)) +
+    geom_text(aes(label = scales::dollar(annualised_cost, accuracy = 1)),
+              vjust = -0.5, 
+              size = 6) + 
     theme_grattan() +
     labs(x = "") +
     scale_fill_manual(values = chart_palette_scenarios)
@@ -70,12 +76,12 @@ plot_consumer_charts <- function(average_net_costs,
     filter(facet == "Difference in bills") %>% 
     #set zero value to NA so we don't get a white box
     mutate(annualised_cost = if_else(annualised_cost ==0, NA, annualised_cost)) %>% 
-    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
+    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2\u00B0C') %>%
     ggplot(aes(x = scenario, y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
-    scale_x_discrete(limits = c("No new policy", "Safeguard < 2 C")) +
+    scale_x_discrete(limits = c("No new policy", "Safeguard < 2\u00B0C")) +
     scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
     labs(x = "")
@@ -84,7 +90,8 @@ plot_consumer_charts <- function(average_net_costs,
   bill_diff_plot_1_2c <- p1_2c + p2_2c
   bill_diff_plot_2_2c <- p1_2c / p2_2c
   
-  bill_diff_plot_1_2c
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_bills.pdf",
+                   object = p1_2c)   
   
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_dif_in_bills_by_side.pdf",
                    object = bill_diff_plot_1_2c)   
@@ -103,10 +110,10 @@ plot_consumer_charts <- function(average_net_costs,
     summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
     mutate(category = fct(category, levels = c("Petrol", "Electricity", "Gas")),
            scenario = fct_case_when(scenario == "Ref" ~ "No new policy",
-                                    scenario == "1_5_Opt1" ~ "RET < 1.5 C",
-                                    scenario == "1_5_Opt2"  ~ "Safeguard < 1.5 C",
-                                    scenario == "2_Opt1"  ~ "RET < 2 C",
-                                    scenario == "2_Opt2" ~ "Safeguard < 2 C")) %>% 
+                                    scenario == "1_5_Opt1" ~ "RET 1.5\u00B0C",
+                                    scenario == "1_5_Opt2"  ~ "Safeguard 1.5\u00B0C",
+                                    scenario == "2_Opt1"  ~ "RET < 2\u00B0C",
+                                    scenario == "2_Opt2" ~ "Safeguard < 2\u00B0C")) %>% 
     ungroup() 
   
   
@@ -129,11 +136,15 @@ plot_consumer_charts <- function(average_net_costs,
   
   p1_15c <- annual_chart_data_15c %>% 
     filter(facet == "Total bills") %>%
-    filter(scenario == 'No new policy' | scenario == 'Safeguard < 2 C') %>%
+    filter(scenario == 'No new policy' | scenario == 'Safeguard 1.5\u00B0C') %>%
     ggplot(aes(reorder(x = scenario, annualised_cost), y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
-    grattan_y_continuous(labels = scales::dollar_format()) +
+    grattan_y_continuous(labels = scales::dollar_format(),
+                         expand_top = 0.1) +
+    geom_text(aes(label = scales::dollar(annualised_cost, accuracy = 1)),
+              vjust = -0.5, 
+              size = 6) + 
     theme_grattan() +
     labs(x = "") +
     scale_fill_manual(values = chart_palette_scenarios)
@@ -142,19 +153,24 @@ plot_consumer_charts <- function(average_net_costs,
     filter(facet == "Difference in bills") %>% 
     #set zero value to NA so we don't get a white box
     mutate(annualised_cost = if_else(annualised_cost == 0, NA, annualised_cost)) %>% 
-    filter(scenario == 'No new policy' | scenario == 'Safeguard < 1.5 C') %>%
+    filter(scenario == 'No new policy' | scenario == 'Safeguard 1.5\u00B0C') %>%
     ggplot(aes(x = scenario, y = annualised_cost, fill = scenario)) +
     facet_wrap(~facet, ncol = 1) +
     geom_col() +
     grattan_y_continuous(labels = scales::dollar_format()) +
-    scale_x_discrete(limits = c("No new policy", "Safeguard < 1.5 C")) +
+    scale_x_discrete(limits = c("No new policy", "Safeguard 1.5\u00B0C")) +
     scale_fill_manual(values = chart_palette_scenarios) +
     theme_grattan() +
     labs(x = "")
   
+  p1_15c
+  
   # Combine plots vertically using patchwork
   bill_diff_plot_1_15c <- p1_15c + p2_15c
   bill_diff_plot_2_15c <- p1_15c / p2_15c
+  
+  grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/1.5C/Energy Bills/1_5_degree_bills.pdf",
+                   object = p1_15c)   
   
   grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/1.5C/Energy Bills/1_5_degree_dif_in_bills_by_side.pdf",
                    object = bill_diff_plot_1_15c)   
@@ -168,7 +184,7 @@ plot_consumer_charts <- function(average_net_costs,
   #total energy Wallet over time - 2C
   ####################################
   label_data_2c <- chart_data_2c %>% 
-    filter(scenario == "Safeguard < 2 C") %>% 
+    filter(scenario == "Safeguard < 2\u00B0C") %>% 
     # Calculate the y positions for the labels at the midpoints of each stack
     group_by(year) %>% 
     arrange(category) %>% 
@@ -177,7 +193,7 @@ plot_consumer_charts <- function(average_net_costs,
     ungroup()
   
   gap_data_2c <- chart_data_2c %>% 
-    filter(scenario == "Safeguard < 2 C",
+    filter(scenario == "Safeguard < 2\u00B0C",
            year >= 2025) %>%
     group_by(year) %>% 
     summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
@@ -185,7 +201,7 @@ plot_consumer_charts <- function(average_net_costs,
     mutate(gap = average_cost_dollars - average_cost_dollars[year==2025])
 
   energy_wallet_over_time_plot_2c <- chart_data_2c %>% 
-    filter(scenario == "Safeguard < 2 C",
+    filter(scenario == "Safeguard < 2\u00B0C",
            year >= 2025) %>% 
     ggplot(aes(x = year, y = average_cost_dollars)) +
     geom_col(aes(x = year, y = average_cost_dollars, 
@@ -206,7 +222,7 @@ plot_consumer_charts <- function(average_net_costs,
     scale_fill_manual(values = chart_palette_fuels) +
     theme_grattan() +
     labs(title = paste0("Households are set to save on energy costs throughout the transition"),
-         subtitle = 'Average NEM household energy costs in the Safeguard < 2 C scenario, ($2025)',
+         subtitle = 'Average NEM household energy costs in the Safeguard < 2\u00B0C scenario, ($2025)',
          x = '',
          y = '',
          caption = "Notes: \nSource: Grattan Institute analysis see app X")
@@ -214,12 +230,33 @@ plot_consumer_charts <- function(average_net_costs,
     grattan_save_all("/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/No RET/Energy Bills/2_degree_energy_cost_over_time_safeguard.pdf",
                    object = energy_wallet_over_time_plot_2c)
   
-  
+  #State by state analysis
+    state_by_state_data <- average_net_costs %>% 
+      left_join(household_connections) %>% 
+      filter(scenario == "Ref" | scenario == "2_Opt2" | scenario == "2_Opt1", 
+             electrification == T) %>% 
+      group_by(year, scenario, category, state) %>% 
+      summarise(average_cost_dollars = weighted.mean(average_cost_dollars, connections)) %>% 
+      mutate(category = fct(category, levels = c("Petrol", "Electricity", "Gas")),
+             scenario = fct_case_when(scenario == "Ref" ~ "No new policy",
+                                      scenario == "1_5_Opt1" ~ "RET 1.5\u00B0C",
+                                      scenario == "1_5_Opt2"  ~ "Safeguard 1.5\u00B0C",
+                                      scenario == "2_Opt1"  ~ "RET < 2\u00B0C",
+                                      scenario == "2_Opt2" ~ "Safeguard < 2\u00B0C")) %>% 
+      ungroup() %>%
+      group_by(year, scenario, state) %>%
+      summarise(total_bills = sum(average_cost_dollars)) %>%
+      filter(year >= 2025, year <= 2050) %>%
+      ungroup()
+    
+    writexl::write_xlsx(state_by_state_data, '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Carbon-pricing-analysis-2025/Interim Analyses/state_by_state_data.xlsx')
+    
+    
     ######################################
     #total energy Wallet over time - 1.5C
     ######################################
     label_data_15c <- chart_data_15c %>% 
-      filter(scenario == "Safeguard < 1.5 C") %>% 
+      filter(scenario == "Safeguard 1.5\u00B0C") %>% 
       # Calculate the y positions for the labels at the midpoints of each stack
       group_by(year) %>% 
       arrange(category) %>% 
@@ -228,7 +265,7 @@ plot_consumer_charts <- function(average_net_costs,
       ungroup()
     
     gap_data_15c <- chart_data_15c %>% 
-      filter(scenario == "Safeguard < 1.5 C",
+      filter(scenario == "Safeguard 1.5\u00B0C",
              year >= 2025) %>%
       group_by(year) %>% 
       summarise(average_cost_dollars = sum(average_cost_dollars)) %>% 
@@ -236,7 +273,7 @@ plot_consumer_charts <- function(average_net_costs,
       mutate(gap = average_cost_dollars - average_cost_dollars[year==2025])
     
     energy_wallet_over_time_plot_15c <- chart_data_15c %>% 
-      filter(scenario == "Safeguard < 1.5 C",
+      filter(scenario == "Safeguard 1.5\u00B0C",
              year >= 2025) %>% 
       ggplot(aes(x = year, y = average_cost_dollars)) +
       geom_col(aes(x = year, y = average_cost_dollars, 
@@ -257,7 +294,7 @@ plot_consumer_charts <- function(average_net_costs,
       scale_fill_manual(values = chart_palette_fuels) +
       theme_grattan() +
       labs(title = paste0("Households are set to save on energy costs throughout the transition"),
-           subtitle = 'Average NEM household energy costs in the Safeguard < 1.5 C scenario, ($2025)',
+           subtitle = 'Average NEM household energy costs in the Safeguard 1.5\u00B0C scenario, ($2025)',
            x = '',
            y = '',
            caption = "Notes: \nSource: Grattan Institute analaysis see app X")
@@ -272,14 +309,14 @@ plot_consumer_charts <- function(average_net_costs,
     
     bar_text <- data %>% 
       mutate(chart_value = if_else(chart_value >=0, 
-                                   paste0('$',signif(chart_value, 3)),
-                                   paste0('-$',-signif(chart_value, 3)))) %>% 
+                                   paste0('$',format(signif(chart_value, 3), big.mark = ",")),
+                                   paste0('-$',format(-signif(chart_value, 3), big.mark = ",")))) %>% 
       pull(chart_value)
     
-    total_text <- paste0("$", data %>% 
+    total_text <- paste0("$", format(data %>% 
                            pull(chart_value) %>% 
                            sum() %>% 
-                           signif(3))
+                           signif(3), big.mark = ","))
     
     data %>% 
       select(-state) %>% 
@@ -565,7 +602,7 @@ plot_consumer_charts <- function(average_net_costs,
     filter(consumer_type %in% c("gas_gas_gas_0_FALSE_FALSE_0", # all gas
                                 "electric_electric_electric_0_FALSE_FALSE_0")) %>%  #all electric
     mutate(consumer_name = fct_case_when(consumer_type == "gas_gas_gas_0_FALSE_FALSE_0" ~ "Mostly gas household",
-                                         consumer_type == "electric_electric_electric_0_FALSE_FALSE_0" ~ "All electric household") %>% fct_rev(),
+                                         consumer_type == "electric_electric_electric_0_FALSE_FALSE_0" ~ "All-electric household") %>% fct_rev(),
            category = case_when(category == "Electricity consumption" ~ "Electricity", 
                                 category == "Gas volumetric" ~ "Gas consumption",
                                 .default = category),
@@ -595,7 +632,7 @@ plot_consumer_charts <- function(average_net_costs,
   
   label_data <- tibble(consumer_name = c("Mostly gas household", 
                                          "Mostly gas household",
-                                         "All electric household"),
+                                         "All-electric household"),
                        year = c(2025, 2025, 2025),
                        y = c(4500, 4000, 3000),
                        category = c("Gas connection",

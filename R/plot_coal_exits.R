@@ -40,6 +40,8 @@ plot_coal_exits <- function(results_ref,
   
   # Create empty list to store coal exit plots
   coal_plot_list <- list()
+  coal_data_list <- list()
+  coal_exit_events_list <- list()
   
   # Loop through each scenario to create coal exit plots
   for (i in 1:nrow(coal_scenarios)) {
@@ -76,6 +78,13 @@ plot_coal_exits <- function(results_ref,
       group_by(grid) %>%
       arrange(-mw)
     
+    #Add scenario column to coal_exit data
+    coal_exit <- coal_exit %>%
+      mutate(scenario = current_scenario)
+    
+    #Store the full data frame
+    coal_data_list[[current_scenario]] <- coal_exit
+    
     # Calculate totals for grid plot
     totals <- coal_exit %>%
       group_by(nem, year) %>%
@@ -90,11 +99,18 @@ plot_coal_exits <- function(results_ref,
       filter(exit) %>%
       summarise(exit_year = first(year), .groups = 'drop')
     
-    # Create label frame for grid plot
-    label_frame <- exit_events %>%
+    # Add plant names and scenario to exit events
+    exit_events <- exit_events %>%
       mutate(plant_name = ifelse(plant %in% names(plant_names),
                                  plant_names[plant],
-                                 plant)) %>%
+                                 plant),
+             scenario = current_scenario)
+    
+    #Create list of coal exit events
+    coal_exit_events_list[[current_scenario]] <- exit_events
+    
+    # Create label frame for grid plot
+    label_frame <- exit_events %>%
       group_by(nem, exit_year) %>%
       summarise(plant = paste(plant_name, collapse = ',\n'), .groups = 'drop') %>%
       left_join(totals, by = c('nem', 'exit_year' = 'year')) %>%
@@ -136,7 +152,37 @@ plot_coal_exits <- function(results_ref,
     coal_plot_list[[paste0(plot_name, "_grid")]] <- coal_exit_plot_by_grid
   }
   
+  #Combine all data frames
+  coal_exit_combined <- bind_rows(coal_data_list)
+  
+  #Combine all exit events 
+  coal_exit_events_combined <- bind_rows(coal_exit_events_list)
+  
   # Return the list of plots
   grattan_save_pptx(p = coal_plot_list, filename = '/Users/bjjefferson/Grattan Institute Dropbox/Ben Jefferson/Apps/Overleaf/energy-2025-carbon-pricing-for-electricity/atlas/Backups/Backup Compendia/coal_exit_plots.pptx')
-  return(coal_plot_list)
+  return(list(
+    plots = coal_plot_list,
+    data_all = coal_exit_combined,
+    data_by_scenario = coal_data_list, 
+    exit_events = coal_exit_events_combined,
+    exit_events_by_scenario = coal_exit_events_list
+  ))
+}
+
+#Helper function
+
+lookup_coal_exit <- function(results, plant_filter = NULL, scenario_filter = NULL) {
+  df <- results$exit_events
+  
+  if (!is.null(plant_filter)) {
+    df <- df %>% filter(plant %in% plant_filter | plant_name %in% plant_filter)
+  }
+  
+  if (!is.null(scenario_filter)) {
+    df <- df %>% filter(scenario %in% scenario_filter)
+  }
+  
+  df %>%
+    select(scenario, plant, plant_name, nem, exit_year) %>%
+    arrange(scenario, exit_year, plant_name)
 }
