@@ -5,4 +5,4 @@ This project provides the underlying household budget analysis for the 2025 Grat
 
 The modelling pipeline takes price forecasts for retail gas and electricity markets and combines them with granular estimates of household energy use, including time-of-day usage and solar traces. These demand traces and price forecasts are then combined with real retail tariff structures to estimate household bills for consumers with different appliance mixes (e.g. EVs, rooftop solar, gas heating) over the forecast period.
 
-A full description of the methodology can be found in the appendices of the report.
+A full description of the methodology can be found in the appendices of the report. Documentation for the the use of the model and the individual scripts is included in *'Documentation - consumer wallet methodology.pdf'*
